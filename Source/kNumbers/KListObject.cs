@@ -22,7 +22,6 @@ namespace kNumbers
             Skill,
             Gear,   //weapon and all apparel
             Record,
-            ControlPrisonerGetsFood,
             ControlMedicalCare,
             ControlPrisonerInteraction,
             PrisonerRecruitmentDifficulty,
@@ -148,10 +147,6 @@ namespace kNumbers
 
                 case ObjectType.Gear:
                     minWidthDesired = 210f;
-                    break;
-
-                case ObjectType.ControlPrisonerGetsFood:
-                    minWidthDesired = 40f;
                     break;
 
                 case ObjectType.MentalState:
@@ -505,7 +500,7 @@ namespace kNumbers
 
                 case ObjectType.Age:
                     Text.Anchor = TextAnchor.MiddleCenter;
-                    string ageValue = ((ownerPawn as Pawn).ageTracker.AgeBiologicalYears.ToString());
+                    string ageValue = Math.Round((ownerPawn as Pawn).ageTracker.AgeBiologicalYearsFloat, 2).ToString("0.00");
                     Widgets.Label(rect, ageValue);
                     if (Mouse.IsOver(rect))
                     {
@@ -525,19 +520,6 @@ namespace kNumbers
 
                 case ObjectType.Gear:
                     DrawGear(rect, ownerPawn);
-                    break;
-
-                case ObjectType.ControlPrisonerGetsFood:
-                    if (ownerPawn is Pawn)
-                    {
-                        if (Mouse.IsOver(rect))
-                        {
-                            GUI.DrawTexture(rect, TexUI.HighlightTex);
-                        }
-                        bool getsFood = (ownerPawn as Pawn).guest.GetsFood;
-                        Widgets.CheckboxLabeled(new Rect(rect.x + 8f, rect.y + 3f, 27f, 27f), "", ref getsFood, false);
-                        (ownerPawn as Pawn).guest.GetsFood = getsFood;
-                    }
                     break;
 
                 case ObjectType.ControlPrisonerInteraction:

@@ -443,10 +443,6 @@ namespace kNumbers
                             this.things = tempPawns.Where(p => p is Pawn).OrderBy(p => (p as Pawn).MentalState != null ? (p as Pawn).MentalState.ToString() : "").ToList();
                             break;
 
-                        case KListObject.ObjectType.ControlPrisonerGetsFood:
-                            this.things = tempPawns.Where(p => p is Pawn).OrderBy(p => (p as Pawn).guest.GetsFood).ToList();
-                            break;
-
                         case KListObject.ObjectType.ControlPrisonerInteraction:
                             this.things = tempPawns.Where(p => p is Pawn).OrderBy(p => (p as Pawn).guest.interactionMode.index).ToList();
                             break;
@@ -688,13 +684,6 @@ namespace kNumbers
 
             if (component.chosenPawnType == PawnType.Prisoners)
             {
-                Action action = delegate
-                {
-                    KListObject kl = new KListObject(KListObject.ObjectType.ControlPrisonerGetsFood, "GetsFood".Translate(), null);
-                    //if (fits(kl.minWidthDesired))
-                    kList.Add(kl);
-                };
-                list.Add(new FloatMenuOption("GetsFood".Translate(), action, MenuOptionPriority.Default, null, null));
 
                 Action action2 = delegate
                 {
