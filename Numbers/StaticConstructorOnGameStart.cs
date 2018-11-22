@@ -16,6 +16,8 @@ namespace Numbers
         public static readonly Texture2D Info = ContentFinder<Texture2D>.Get("UI/Buttons/InfoButton", true);
         public static readonly Texture2D Predator = ContentFinder<Texture2D>.Get("UI/Icons/Animal/Predator");
         public static readonly Texture2D Tame = ContentFinder<Texture2D>.Get("UI/Icons/Animal/Tame");
+        public static List<PawnColumnDef> combatPreset = new List<PawnColumnDef>();
+        public static List<PawnColumnDef> workTabPlusPreset = new List<PawnColumnDef>();
 
         static StaticConstructorOnGameStart()
         {
@@ -38,6 +40,17 @@ namespace Numbers
             {
                 PTSDfromPTDs.columns.Insert(PTSDfromPTDs.columns.Count, remainingspace);
             }
+
+            foreach (PawnColumnDef pcd in DefDatabase<PawnTableDef>.GetNamedSilentFail("Numbers_CombatPreset").columns)
+            {
+                combatPreset.Add(pcd);
+            }
+
+            foreach (PawnColumnDef pawnColumn in DefDatabase<PawnTableDef>.GetNamedSilentFail("Numbers_WorkTabPlusPreset").columns)
+            {
+                workTabPlusPreset.Add(pawnColumn);
+            }
+
         }
     }
 }

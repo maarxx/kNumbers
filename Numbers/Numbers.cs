@@ -20,7 +20,7 @@ namespace Numbers
         public Numbers(ModContentPack content) : base(content)
         {
             HarmonyInstance harmony = HarmonyInstance.Create("mehni.rimworld.numbers");
-            HarmonyInstance.DEBUG = true;
+            //HarmonyInstance.DEBUG = true;
 
             harmony.Patch(AccessTools.Method(typeof(DefGenerator), nameof(DefGenerator.GenerateImpliedDefs_PreResolve)),
                           null, new HarmonyMethod(typeof(Numbers), nameof(Columndefs)));

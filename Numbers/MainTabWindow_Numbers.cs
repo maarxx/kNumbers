@@ -385,7 +385,8 @@ namespace Numbers
             void MakeThisCombat()
             {
                 this.pawnTableDef = NumbersDefOf.Numbers_MainTable;
-                PawnTableDef.columns = DefDatabase<PawnTableDef>.GetNamed("Numbers_CombatPreset").columns;
+                PawnTableDef.columns = new List<PawnColumnDef>();
+                PawnTableDef.columns.AddRange(StaticConstructorOnGameStart.combatPreset);
                 this.UpdateFilter();
                 Notify_ResolutionChanged();
             }
@@ -394,7 +395,8 @@ namespace Numbers
             void MakeThisWorkTabPlus()
             {
                 this.pawnTableDef = NumbersDefOf.Numbers_MainTable;
-                PawnTableDef.columns = DefDatabase<PawnTableDef>.GetNamed("Numbers_WorkTabPlusPreset").columns;
+                PawnTableDef.columns = new List<PawnColumnDef>();
+                PawnTableDef.columns.AddRange(StaticConstructorOnGameStart.workTabPlusPreset);
                 this.UpdateFilter();
                 Notify_ResolutionChanged();
             }

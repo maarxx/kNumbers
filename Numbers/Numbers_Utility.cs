@@ -18,9 +18,8 @@
                         && p.Faction != null && !p.Faction.HostileTo(Faction.OfPlayer) 
                         && p.Faction != Faction.OfPlayer && !p.Position.Fogged(p.MapHeld) && p.Position != IntVec3.Invalid;
 
-        public static bool IsWildAnimal(this Pawn p) => p.RaceProps.Animal && p.Faction != Faction.OfPlayer
-                        && !p.Position.Fogged(p.MapHeld) && p.Position != IntVec3.Invalid;
-
+        public static bool IsWildAnimal(this Pawn p) => p.Spawned && p.Faction == null
+                        && !p.Position.Fogged(p.MapHeld) && p.AnimalOrWildMan();
 
         public static DefModExtension_PawnColumnDefs Ext(this PawnColumnDef def)
         {
