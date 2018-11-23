@@ -26,7 +26,7 @@ namespace Numbers
 
             foreach (PawnColumnDef item in DefDatabase<PawnColumnDef>.AllDefsListForReading.Where(x => x.Worker is PawnColumnWorker_Trainable))
             {
-                animalsTable.columns.Insert(animalsTable.columns.FindIndex((PawnColumnDef x) => x.Worker is PawnColumnWorker_Checkbox) - 1, item);
+                animalsTable.columns.Insert(animalsTable.columns.FindIndex(x => x.Worker is PawnColumnWorker_Checkbox) - 1, item);
             }
 
             //add remaining space to my PTDefs
@@ -46,11 +46,10 @@ namespace Numbers
                 combatPreset.Add(pcd);
             }
 
-            foreach (PawnColumnDef pawnColumn in DefDatabase<PawnTableDef>.GetNamedSilentFail("Numbers_WorkTabPlusPreset").columns)
+            foreach (PawnColumnDef pcd in DefDatabase<PawnTableDef>.GetNamedSilentFail("Numbers_WorkTabPlusPreset").columns)
             {
-                workTabPlusPreset.Add(pawnColumn);
+                workTabPlusPreset.Add(pcd);
             }
-
         }
     }
 }

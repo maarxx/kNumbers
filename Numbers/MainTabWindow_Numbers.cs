@@ -71,7 +71,7 @@ namespace Numbers
 
             PawnTableDef defaultTable = WorldComponent_Numbers.PrimaryFilter.First().Key;
             if (Find.World.GetComponent<WorldComponent_Numbers>().sessionTable.TryGetValue(defaultTable, out List<PawnColumnDef> list))
-                PawnTableDef.columns = list;
+                pawnTableDef.columns = list;
 
             settings = LoadedModManager.GetMod<Numbers>().GetSettings<Numbers_Settings>();
             UpdateFilter();
@@ -490,6 +490,7 @@ namespace Numbers
                     DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_PrisonerRecruitmentDifficulty"),
                     DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_PrisonerResistance"),
                     DefDatabase<PawnColumnDef>.GetNamedSilentFail("FoodRestriction"),
+                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inventory"),
                 };
 
                 foreach (PawnColumnDef pcd in pcdList)
@@ -506,6 +507,7 @@ namespace Numbers
                     DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Milkfullness"),
                     DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_AnimalWoolGrowth"),
                     DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_AnimalEggProgress"),
+                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inventory"),
                 };
 
                 IEnumerable<PawnColumnDef> pawnColumnDefs = pcdList.Concat(DefDatabase<PawnTableDef>.GetNamed("Animals").columns.Where(x => pcdValidator(x)));
@@ -519,15 +521,19 @@ namespace Numbers
 
             if (PawnTableDef == NumbersDefOf.Numbers_MainTable)
             {
+                List<PawnColumnDef> pcdList = new List<PawnColumnDef>
+                {
+                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inspiration"),
+                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inventory"),
+                };
+                // (assign + restrict).Where(validator) + pcdList
                 foreach (var pcd in DefDatabase<PawnTableDef>.GetNamedSilentFail("Assign").columns
-                    .Concat(DefDatabase<PawnTableDef>.GetNamedSilentFail("Restrict").columns).Where(x => pcdValidator(x)))
+                    .Concat(DefDatabase<PawnTableDef>.GetNamedSilentFail("Restrict").columns).Where(x => pcdValidator(x))
+                    .Concat(pcdList))
                 {
                     list.Add(new FloatMenuOption(TryGetBestPawnColumnDefLabel(pcd),
                                 () => AddPawnColumnAtBestPositionAndRefresh(pcd)));
                 }
-                PawnColumnDef pacd = DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inspiration");
-                list.Add(new FloatMenuOption(TryGetBestPawnColumnDefLabel(pacd),
-                            () => AddPawnColumnAtBestPositionAndRefresh(pacd)));
             }
 
             if (PawnTableDef == NumbersDefOf.Numbers_WildAnimals)
@@ -573,6 +579,11 @@ namespace Numbers
             filterValidator.Insert(0, WorldComponent_Numbers.PrimaryFilter[PawnTableDef]);
         }
 
-        private static readonly Func<PawnColumnDef, bool> pcdValidator = pcd => !(pcd.Worker is PawnColumnWorker_Gap) && !(pcd.Worker is PawnColumnWorker_RemainingSpace) && !(pcd.Worker is PawnColumnWorker_Label) && !(pcd.Worker is PawnColumnWorker_CopyPaste) && !(pcd.Worker is PawnColumnWorker_MedicalCare) && !(pcd.Worker is PawnColumnWorker_Timetable); //basically all that are already present, don't have an interactable header, and uh
+        private static readonly Func<PawnColumnDef, bool> pcdValidator = pcd => !(pcd.Worker is PawnColumnWorker_Gap) 
+                                        && !(pcd.Worker is PawnColumnWorker_Label)     && !(pcd.Worker is PawnColumnWorker_RemainingSpace)
+                                        && !(pcd.Worker is PawnColumnWorker_CopyPaste) && !(pcd.Worker is PawnColumnWorker_MedicalCare) 
+                                        && !(pcd.Worker is PawnColumnWorker_Timetable) || (!(pcd.label.NullOrEmpty() && pcd.HeaderIcon == null)
+                                        && !pcd.HeaderInteractable);
+        //basically all that are already present, don't have an interactable header, and uh
     }
 }

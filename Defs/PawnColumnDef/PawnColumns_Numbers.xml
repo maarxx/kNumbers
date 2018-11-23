@@ -53,6 +53,13 @@
   </PawnColumnDef>
 
   <PawnColumnDef>
+    <defName>Numbers_Inventory</defName>
+    <workerClass>Numbers.PawnColumnWorker_Inventory</workerClass>
+    <sortable>true</sortable>
+    <label>Inventory</label>
+  </PawnColumnDef>
+
+  <PawnColumnDef>
     <defName>Numbers_JobCurrent</defName>
     <workerClass>Numbers.PawnColumnWorker_JobCurrent</workerClass>
     <sortable>true</sortable>
@@ -152,5 +159,7 @@
     <headerIcon>UI/Icons/Animal/Predator</headerIcon>
     <width>45</width>
   </PawnColumnDef>
+
+
 
 </Defs>
