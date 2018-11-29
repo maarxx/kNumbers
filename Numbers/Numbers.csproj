@@ -87,6 +87,7 @@
     <Compile Include="PawnColumnWorkers\PawnColumnWorker_Race.cs" />
     <Compile Include="Numbers.cs" />
     <Compile Include="PawnColumnWorkers\PawnColumnWorker_Record.cs" />
+    <Compile Include="PawnColumnWorkers\PawnColumnWorker_SelfTend.cs" />
     <Compile Include="PawnColumnWorkers\PawnColumnWorker_Skill.cs" />
     <Compile Include="PawnColumnWorkers\PawnColumnWorker_Stat.cs" />
     <Compile Include="PawnColumnWorkers\PawnColumnWorker_NeedsTreatment.cs" />
