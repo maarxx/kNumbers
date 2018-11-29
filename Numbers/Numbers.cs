@@ -117,34 +117,9 @@ namespace Numbers
         public static bool NoMouseButtonsPressed() => !Input.GetMouseButton(0) && !Input.GetMouseButton(1);
 
         [UsedImplicitly]
-        public static bool WasClicked(bool useRightButton) => useRightButton && Input.GetMouseButtonDown(1) || !useRightButton && Input.GetMouseButtonDown(0);
-
-        //	if (Event.current.type == EventType.MouseDown && ((useRightButton && Event.current.button == 1) || (!useRightButton && Event.current.button == 0)) && Mouse.IsOver(rect))
-
-        //MethodInfo GetButton = AccessTools.Property(typeof(Event), nameof(Event.button)).GetGetMethod();
-
-        //MethodInfo GetMouseButtonUp = AccessTools.Method(typeof(Input), nameof(Input.GetMouseButtonUp));
-        //MethodInfo GetMouseButtonDown = AccessTools.Method(typeof(Input), nameof(Input.GetMouseButtonDown));
-        //MethodInfo GetMouseButton = AccessTools.Method(typeof(Input), nameof(Input.GetMouseButton));
-        //MethodInfo GetType = AccessTools.Property(typeof(Event), nameof(Event.type)).GetGetMethod();
-
-        //L_02d2: call UnityEngine.Event get_current()
-        //L_02d7: callvirt EventType get_type()
-        //L_02dc: brtrue Label22
-        //L_02e1: ldarg.2
-        //L_02e2: brfalse Label23
-        //L_02e7: call UnityEngine.Event get_current()
-        //L_02ec: callvirt Int32 get_button()
-        //L_02f1: ldc.i4.1
-        //L_02f2: beq Label24
-        //L_02f7: Label23
-        //L_02f7: ldarg.2
-        //L_02f8: brtrue Label25
-        //L_02fd: call UnityEngine.Event get_current()
-        //L_0302: callvirt Int32 get_button()
-        //L_0307: brtrue Label26
-
-        //public static int storedInt = int.MinValue;
+        public static bool WasClicked(bool useRightButton) => 
+                useRightButton && Input.GetMouseButtonDown(1) 
+            || !useRightButton && Input.GetMouseButtonDown(0);
 
         private static IEnumerable<CodeInstruction> MakeHeadersReOrderable(IEnumerable<CodeInstruction> instructions)
         {
@@ -224,20 +199,12 @@ namespace Numbers
 
         private static IEnumerable<CodeInstruction> UseWordWrapOnHeaders(IEnumerable<CodeInstruction> instructions)
         {
-            //MethodInfo transpilerHelper = AccessTools.Method(typeof(Numbers), nameof(HeaderUpperAndDownerHelper));
             MethodInfo Truncate = AccessTools.Method(typeof(GenText), nameof(GenText.Truncate));
             MethodInfo WordWrap = AccessTools.Method(typeof(Numbers_Utility), nameof(Numbers_Utility.WordWrapAt));
-
-            //yield return new CodeInstruction(OpCodes.Ldarg_0); //arg 0 == instance
-            //yield return new CodeInstruction(OpCodes.Ldarg_1); //arg 1 == rect
-            //yield return new CodeInstruction(OpCodes.Ldarg_2);
-            //yield return new CodeInstruction(OpCodes.Call, transpilerHelper);
-            //yield return new CodeInstruction(OpCodes.Starg, 1);
 
             var instructionList = instructions.ToList();
             for (int i = 0; i < instructionList.Count; i++)
             {
-
                 if (instructionList[i].opcode == OpCodes.Ldnull && instructionList[i + 1].operand == Truncate)
                 {
                     instructionList[i].opcode = OpCodes.Ldarg_2;
@@ -245,27 +212,6 @@ namespace Numbers
                 }
                 yield return instructionList[i];
             }
-        }
-
-        //currently unused
-        private static Rect HeaderUpperAndDownerHelper(PawnColumnWorker pawnColumnWorker, Rect headerRect, PawnTable table)
-        {
-            if (!(table is PawnTable_NumbersMain numbersTable))
-                return headerRect;
-
-            if (!(pawnColumnWorker is PawnColumnWorker_Text))
-                return headerRect;
-
-            Vector2 labelSize = new Vector2(pawnColumnWorker.GetMinWidth(table), pawnColumnWorker.GetMinHeaderHeight(table));
-
-            //why yes, this is inspired by RimWorld.PawnColumnWorker_WorkPriority
-            float x = headerRect.center.x;
-            Rect rect = new Rect(x - labelSize.x / 2f, headerRect.y - 20f, labelSize.x, labelSize.y + 20f);
-
-            if (pawnColumnWorker.def.moveWorkTypeLabelDown)
-                rect.y -= 20f;
-
-            return rect;
         }
 
         private static bool RightClickToRemoveHeader(PawnColumnWorker __instance, Rect headerRect, PawnTable table)
@@ -466,7 +412,8 @@ namespace Numbers
             foreach (string storedPawnTableDef in this.settings.storedPawnTableDefs)
             {
                 if (storedPawnTableDef.Split(',')[1] == "Default")
-                    this.cachedList.Add(storedPawnTableDef.Split(',')[0].Split('_')[1] + " (" + storedPawnTableDef.Split(',')[1] + ")"); //Numbers_MainTable,Default => MainTable (Default)
+                    this.cachedList.Add(storedPawnTableDef.Split(',')[0].Split('_')[1] + " (" + storedPawnTableDef.Split(',')[1] + ")");
+                    //Numbers_MainTable,Default => MainTable (Default)
                 else
                     this.cachedList.Add(storedPawnTableDef.Split(',')[1]);
             }

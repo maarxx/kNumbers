@@ -19,13 +19,16 @@ namespace Numbers
             base.FinalizeInit();
             primaryFilter = PrimaryFilter.First();
 
-            List<string> storedPawnTables = LoadedModManager.GetMod<Numbers>().GetSettings<Numbers_Settings>().storedPawnTableDefs;
-            foreach (string item in storedPawnTables)
+            if (!sessionTable.Any())
             {
-                if (item.Split(',')[1] == "Default" && sessionTable.All(x => x.Key.defName != item.Split(',')[0]))
+                List<string> storedPawnTables = LoadedModManager.GetMod<Numbers>().GetSettings<Numbers_Settings>().storedPawnTableDefs;
+                foreach (string item in storedPawnTables)
                 {
-                    PawnTableDef pawnTableDef = HorribleStringParsersForSaving.TurnCommaDelimitedStringIntoPawnTableDef(item);
-                    sessionTable.Add(pawnTableDef, pawnTableDef.columns);
+                    if (item.Split(',')[1] == "Default" && sessionTable.All(x => x.Key.defName != item.Split(',')[0]))
+                    {
+                        PawnTableDef pawnTableDef = HorribleStringParsersForSaving.TurnCommaDelimitedStringIntoPawnTableDef(item);
+                        sessionTable.Add(pawnTableDef, pawnTableDef.columns);
+                    }
                 }
             }
             NotifySettingsChanged();
