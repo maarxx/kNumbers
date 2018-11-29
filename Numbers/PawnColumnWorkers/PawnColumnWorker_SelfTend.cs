@@ -20,5 +20,9 @@ namespace Numbers
 
             pawn.playerSettings.selfTend = value;
         }
+
+        protected override string GetHeaderTip(PawnTable table) => "SelfTend".Translate();
+
+        protected override string GetTip(Pawn pawn) => "SelfTendTip".Translate(Faction.OfPlayer.def.pawnsPlural, TendUtility.SelfTendQualityFactor.ToStringPercent()).CapitalizeFirst();
     }
 }
