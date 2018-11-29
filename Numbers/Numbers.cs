@@ -12,6 +12,7 @@ using UnityEngine;
 namespace Numbers
 {
     using JetBrains.Annotations;
+    using RimWorld.Planet;
 
     public class Numbers : Mod
     {
@@ -48,8 +49,140 @@ namespace Numbers
                         new HarmonyMethod(typeof(Numbers), nameof(RightClickToRemoveHeader)));
             }
 
+            //we meet Uuugggg again too. Credit where it's due:
+            //  https://github.com/alextd/RimWorld-EnhancementPack/blob/master/Source/PawnTableHighlightSelected.cs
+            harmony.Patch(AccessTools.Method(typeof(PawnColumnWorker_Label), nameof(PawnColumnWorker_Label.DoCell)),
+                postfix: new HarmonyMethod(typeof(Numbers), nameof(AddHighlightToLabel_PostFix)), transpiler: new HarmonyMethod(typeof(Numbers), nameof(AddHighlightToLabel_Transpiler)));
+
             this.settings = this.GetSettings<Numbers_Settings>();
         }
+
+        private static void Columndefs()
+        {
+            foreach (PawnColumnDef pawnColumnDef in ImpliedPawnColumnDefs())
+            {
+                DefGenerator.AddImpliedDef(pawnColumnDef);
+            }
+            //yeah I will set an icon for it because I can. 
+            var pcd = DefDatabase<PawnColumnDef>.GetNamedSilentFail("ManhunterOnDamageChance");
+            pcd.headerIcon = "UI/Icons/Animal/Predator";
+            pcd.headerAlwaysInteractable = true;
+            var pred = DefDatabase<PawnColumnDef>.GetNamedSilentFail("Predator");
+            pred.sortable = true;
+        }
+
+        private static bool RightClickToRemoveHeader(PawnColumnWorker __instance, Rect headerRect, PawnTable table)
+        {
+            if (Event.current.shift)
+                return true;
+
+            if (!(table is PawnTable_NumbersMain numbersTable))
+                return true;
+
+            if (Event.current.button == 1)
+            {
+                numbersTable.ColumnsListForReading.RemoveAll(x => x == __instance.def);
+
+                if (Find.WindowStack.currentlyDrawnWindow is MainTabWindow_Numbers numbers)
+                    numbers.RefreshAndStoreSessionInWorldComp();
+
+                return false;
+            }
+            return true;
+        }
+
+        private static IEnumerable<CodeInstruction> MakeHeadersReOrderable(IEnumerable<CodeInstruction> instructions)
+        {
+            MethodInfo recacheIfDirty = AccessTools.Method(typeof(PawnTable), "RecacheIfDirty");
+            MethodInfo reorderableGroup = AccessTools.Method(typeof(Numbers), nameof(Numbers.ReorderableGroup));
+            MethodInfo reorderableWidget = AccessTools.Method(typeof(Numbers), nameof(Numbers.CallReorderableWidget));
+
+            CodeInstruction[] codeInstructions = instructions.ToArray();
+
+            for (int i = 0; i < codeInstructions.Length; i++)
+            {
+                CodeInstruction instruction = codeInstructions[i];
+                if (i > 2 && codeInstructions[i - 1].operand != null && codeInstructions[i - 1].operand == recacheIfDirty)
+                {
+                    yield return new CodeInstruction(OpCodes.Ldarg_0);
+                    yield return new CodeInstruction(OpCodes.Call, reorderableGroup);
+                    yield return new CodeInstruction(OpCodes.Stloc, 7);
+                }
+
+                if (instruction.opcode == OpCodes.Ldloc_S && ((LocalBuilder)instruction.operand).LocalIndex == 4)
+                {
+                    yield return new CodeInstruction(OpCodes.Ldloc, 7);
+                    yield return instruction;
+                    yield return new CodeInstruction(OpCodes.Call, reorderableWidget);
+                }
+                yield return instruction;
+            }
+        }
+
+        private static int ReorderableGroup(PawnTable pawnTable)
+        {
+            if (!(pawnTable is PawnTable_NumbersMain numbersPawnTable))
+                return int.MinValue;
+
+            return ReorderableWidget.NewGroup(delegate (int from, int to)
+            {
+                PawnColumnDef pawnColumnDef = numbersPawnTable.PawnTableDef.columns[from];
+                numbersPawnTable.PawnTableDef.columns.Insert(to, pawnColumnDef);
+                //if it got inserted at a lower number, the index shifted up 1. If not, stick to the old.
+                numbersPawnTable.PawnTableDef.columns.RemoveAt(from >= to ? from + 1 : from);
+                numbersPawnTable.SetDirty();
+                if (Find.WindowStack.currentlyDrawnWindow is MainTabWindow_Numbers numbers)
+                    numbers.RefreshAndStoreSessionInWorldComp();
+            }, ReorderableDirection.Horizontal);
+        }
+
+        private static void CallReorderableWidget(int groupId, Rect rect)
+        {
+            if (groupId == int.MinValue)
+                return;
+
+            if (ReorderableWidget.Reorderable(groupId, rect))
+                Widgets.DrawRectFast(rect, Widgets.WindowBGFillColor * new Color(1f, 1f, 1f, 0.5f));
+        }
+
+        private static IEnumerable<CodeInstruction> UseWordWrapOnHeaders(IEnumerable<CodeInstruction> instructions)
+        {
+            MethodInfo Truncate = AccessTools.Method(typeof(GenText), nameof(GenText.Truncate));
+            MethodInfo WordWrap = AccessTools.Method(typeof(Numbers_Utility), nameof(Numbers_Utility.WordWrapAt));
+
+            var instructionList = instructions.ToList();
+            for (int i = 0; i < instructionList.Count; i++)
+            {
+                if (instructionList[i].opcode == OpCodes.Ldnull && instructionList[i + 1].operand == Truncate)
+                {
+                    instructionList[i].opcode = OpCodes.Ldarg_2;
+                    instructionList[i + 1].operand = WordWrap;
+                }
+                yield return instructionList[i];
+            }
+        }
+
+        private static IEnumerable<CodeInstruction> CentreCell(IEnumerable<CodeInstruction> instructions)
+        {
+            List<CodeInstruction> instructionList = instructions.ToList();
+
+            MethodInfo anchorSetter = AccessTools.Property(typeof(Text), nameof(Text.Anchor)).GetSetMethod();
+            MethodInfo transpilerHelper = AccessTools.Method(typeof(Numbers), nameof(TranspilerHelper));
+
+            for (int i = 0; i < instructionList.Count; i++)
+            {
+                CodeInstruction instruction = instructionList[i];
+                if (instruction.opcode == OpCodes.Ldc_I4_3 && instructionList[i + 1].operand == anchorSetter)
+                {
+                    yield return new CodeInstruction(OpCodes.Ldarg_3); //put Table on stack
+                    instruction = new CodeInstruction(OpCodes.Call, transpilerHelper);
+                }
+                yield return instruction;
+            }
+        }
+
+        //slight issue with job strings. Meh.
+        private static TextAnchor TranspilerHelper(PawnTable table) => table is PawnTable_NumbersMain ? TextAnchor.MiddleCenter : TextAnchor.MiddleLeft;
 
         /// <summary>
         /// TOO MUCH OF A MESS TO EXPLAIN
@@ -121,131 +254,77 @@ namespace Numbers
                 useRightButton && Input.GetMouseButtonDown(1)
             || !useRightButton && Input.GetMouseButtonDown(0);
 
-        private static IEnumerable<CodeInstruction> MakeHeadersReOrderable(IEnumerable<CodeInstruction> instructions)
+        private static void AddHighlightToLabel_PostFix(Rect rect, Pawn pawn)
         {
-            MethodInfo recacheIfDirty = AccessTools.Method(typeof(PawnTable), "RecacheIfDirty");
-            MethodInfo reorderableGroup = AccessTools.Method(typeof(Numbers), nameof(Numbers.ReorderableGroup));
-            MethodInfo reorderableWidget = AccessTools.Method(typeof(Numbers), nameof(Numbers.CallReorderableWidget));
+            if (!Numbers_Settings.pawnTableHighlightSelected) return;
 
-            CodeInstruction[] codeInstructions = instructions.ToArray();
+            if (Find.Selector.IsSelected(pawn))
+                Widgets.DrawHighlightSelected(rect);
+        }
 
-            for (int i = 0; i < codeInstructions.Length; i++)
+        //again, copied from https://github.com/alextd/RimWorld-EnhancementPack/blob/master/Source/PawnTableHighlightSelected.cs
+        private static IEnumerable<CodeInstruction> AddHighlightToLabel_Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            MethodInfo TryJumpAndSelectInfo = AccessTools.Method(typeof(CameraJumper), nameof(CameraJumper.TryJumpAndSelect));
+            MethodInfo EscapeCurrentTabInfo = AccessTools.Method(typeof(MainTabsRoot), nameof(MainTabsRoot.EscapeCurrentTab));
+
+            foreach (CodeInstruction i in instructions)
             {
-                CodeInstruction instruction = codeInstructions[i];
-                if (i > 2 && codeInstructions[i - 1].operand != null && codeInstructions[i - 1].operand == recacheIfDirty)
-                {
-                    yield return new CodeInstruction(OpCodes.Ldarg_0);
-                    yield return new CodeInstruction(OpCodes.Call, reorderableGroup);
-                    yield return new CodeInstruction(OpCodes.Stloc, 7);
-                }
+                if (i.opcode == OpCodes.Call && i.operand == TryJumpAndSelectInfo)
+                    i.operand = AccessTools.Method(typeof(Numbers), nameof(ClickPawn));
+                if (i.opcode == OpCodes.Callvirt && i.operand == EscapeCurrentTabInfo)
+                    i.operand = AccessTools.Method(typeof(Numbers), nameof(SodThisImOut));
 
-                if (instruction.opcode == OpCodes.Ldloc_S && ((LocalBuilder)instruction.operand).LocalIndex == 4)
-                {
-                    yield return new CodeInstruction(OpCodes.Ldloc, 7);
-                    yield return instruction;
-                    yield return new CodeInstruction(OpCodes.Call, reorderableWidget);
-                }
-                yield return instruction;
+                yield return i;
             }
         }
 
-        private static int ReorderableGroup(PawnTable pawnTable)
+        public static void ClickPawn(GlobalTargetInfo target)
         {
-            if (!(pawnTable is PawnTable_NumbersMain numbersPawnTable))
-                return int.MinValue;
-
-            return ReorderableWidget.NewGroup(delegate (int from, int to)
+            if (Numbers_Settings.pawnTableClickSelect)
             {
-                PawnColumnDef pawnColumnDef = numbersPawnTable.PawnTableDef.columns[from];
-                numbersPawnTable.PawnTableDef.columns.Insert(to, pawnColumnDef);
-                //if it got inserted at a lower number, the index shifted up 1. If not, stick to the old.
-                numbersPawnTable.PawnTableDef.columns.RemoveAt(from >= to ? from + 1 : from);
-                numbersPawnTable.SetDirty();
-                if (Find.WindowStack.currentlyDrawnWindow is MainTabWindow_Numbers numbers)
-                    numbers.RefreshAndStoreSessionInWorldComp();
-            }, ReorderableDirection.Horizontal);
-        }
+                CameraJumper.TryJumpAndSelect(target);
+                return;
+            }
 
-        private static void CallReorderableWidget(int groupId, Rect rect)
-        {
-            if (groupId == int.MinValue)
+            if (Current.ProgramState != ProgramState.Playing)
                 return;
 
-            if (ReorderableWidget.Reorderable(groupId, rect))
-                Widgets.DrawRectFast(rect, Widgets.WindowBGFillColor * new Color(1f, 1f, 1f, 0.5f));
-        }
-
-        private static IEnumerable<CodeInstruction> CentreCell(IEnumerable<CodeInstruction> instructions)
-        {
-            List<CodeInstruction> instructionList = instructions.ToList();
-
-            MethodInfo anchorSetter = AccessTools.Property(typeof(Text), nameof(Text.Anchor)).GetSetMethod();
-            MethodInfo transpilerHelper = AccessTools.Method(typeof(Numbers), nameof(TranspilerHelper));
-
-            for (int i = 0; i < instructionList.Count; i++)
+            if (target.Thing is Pawn pawn && pawn.Spawned)
             {
-                CodeInstruction instruction = instructionList[i];
-                if (instruction.opcode == OpCodes.Ldc_I4_3 && instructionList[i + 1].operand == anchorSetter)
+                if (Event.current.shift)
                 {
-                    yield return new CodeInstruction(OpCodes.Ldarg_3); //put Table on stack
-                    instruction = new CodeInstruction(OpCodes.Call, transpilerHelper);
+                    if (Find.Selector.IsSelected(pawn))
+                        Find.Selector.Deselect(pawn);
+                    else
+                        Find.Selector.Select(pawn);
                 }
-                yield return instruction;
-            }
-        }
-
-        //slight issue with job strings. Meh.
-        private static TextAnchor TranspilerHelper(PawnTable table) => table is PawnTable_NumbersMain ? TextAnchor.MiddleCenter : TextAnchor.MiddleLeft;
-
-        private static IEnumerable<CodeInstruction> UseWordWrapOnHeaders(IEnumerable<CodeInstruction> instructions)
-        {
-            MethodInfo Truncate = AccessTools.Method(typeof(GenText), nameof(GenText.Truncate));
-            MethodInfo WordWrap = AccessTools.Method(typeof(Numbers_Utility), nameof(Numbers_Utility.WordWrapAt));
-
-            var instructionList = instructions.ToList();
-            for (int i = 0; i < instructionList.Count; i++)
-            {
-                if (instructionList[i].opcode == OpCodes.Ldnull && instructionList[i + 1].operand == Truncate)
+                else if (Event.current.alt)
                 {
-                    instructionList[i].opcode = OpCodes.Ldarg_2;
-                    instructionList[i + 1].operand = WordWrap;
+                    Find.MainTabsRoot.EscapeCurrentTab(false);
+                    CameraJumper.TryJumpAndSelect(target);
                 }
-                yield return instructionList[i];
+                else
+                {
+                    if (Find.Selector.IsSelected(pawn))
+                        CameraJumper.TryJump(target);
+                    if (!Find.Selector.IsSelected(pawn) || Find.Selector.NumSelected > 1 && Event.current.button == 1)
+                    {
+                        Find.Selector.ClearSelection();
+                        Find.Selector.Select(pawn);
+                    }
+                }
+            }
+            else //default
+            {
+                CameraJumper.TryJumpAndSelect(target);
             }
         }
 
-        private static bool RightClickToRemoveHeader(PawnColumnWorker __instance, Rect headerRect, PawnTable table)
+        public static void SodThisImOut(MainTabsRoot o1, bool o2)
         {
-            if (Event.current.shift)
-                return true;
-
-            if (!(table is PawnTable_NumbersMain numbersTable))
-                return true;
-
-            if (Event.current.button == 1)
-            {
-                numbersTable.ColumnsListForReading.RemoveAll(x => x == __instance.def);
-
-                if (Find.WindowStack.currentlyDrawnWindow is MainTabWindow_Numbers numbers)
-                    numbers.RefreshAndStoreSessionInWorldComp();
-
-                return false;
-            }
-            return true;
-        }
-
-        private static void Columndefs()
-        {
-            foreach (PawnColumnDef pawnColumnDef in ImpliedPawnColumnDefs())
-            {
-                DefGenerator.AddImpliedDef(pawnColumnDef);
-            }
-            //yeah I will set an icon for it because I can. 
-            var pcd = DefDatabase<PawnColumnDef>.GetNamedSilentFail("ManhunterOnDamageChance");
-            pcd.headerIcon = "UI/Icons/Animal/Predator";
-            pcd.headerAlwaysInteractable = true;
-            var pred = DefDatabase<PawnColumnDef>.GetNamedSilentFail("Predator");
-            pred.sortable = true;
+            if (Numbers_Settings.pawnTableClickSelect)
+                o1.EscapeCurrentTab(o2);
         }
 
         private static IEnumerable<PawnColumnDef> ImpliedPawnColumnDefs()
@@ -348,6 +427,8 @@ namespace Numbers
             listingStandard.Begin(inRect);
             listingStandard.CheckboxLabeled("Numbers_ShowMoreInfoThanVanilla".Translate(), ref Numbers_Settings.showMoreInfoThanVanilla);
             listingStandard.CheckboxLabeled("Numbers_coolerThanTheWildlifeTab".Translate(), ref Numbers_Settings.coolerThanTheWildlifeTab);
+            listingStandard.CheckboxLabeled("Numbers_pawnTableClickSelect".Translate(), ref Numbers_Settings.pawnTableClickSelect);
+            listingStandard.CheckboxLabeled("Numbers_pawnTableHighSelected".Translate(), ref Numbers_Settings.pawnTableHighlightSelected);
             listingStandard.SliderLabeled("Numbers_MaxTableHeight".Translate(), ref Numbers_Settings.maxHeight, Numbers_Settings.maxHeight.ToStringPercent(), 0.3f, 1);
             listingStandard.End();
 

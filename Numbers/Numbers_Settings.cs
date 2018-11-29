@@ -15,6 +15,9 @@ namespace Numbers
         public static bool showMoreInfoThanVanilla = true;
         public static bool coolerThanTheWildlifeTab = true; // don't deny it.
 
+        public static bool pawnTableHighlightSelected = true;
+        public static bool pawnTableClickSelect = true;
+
         public List<string> storedPawnTableDefs = new List<string>();
         private readonly List<string> workingList = new List<string>();
 

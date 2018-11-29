@@ -21,6 +21,10 @@
 	<Numbers_ShowMoreInfoThanVanilla>Show needs and jobs even where it would normally be hidden.</Numbers_ShowMoreInfoThanVanilla>
 	<Numbers_coolerThanTheWildlifeTab>Numbers is everything I ever wanted from the Wildlife tab and I want it to take over.</Numbers_coolerThanTheWildlifeTab>
 	<Numbers_MaxTableHeight>Max amount of vertical screen space Numbers is allowed to use.</Numbers_MaxTableHeight>
+	<Numbers_pawnTableClickSelect>Mouse clicks in pawn tables select them. (Alt-click to work as before)</Numbers_pawnTableClickSelect>
+	<Numbers_pawnTableHighSelected>Should behave intuitively like any other selection. Press Esc to close the tab window.\n\nShift-click to select/deselect multiple. Double click to center camera. Right-click to select a single pawn. Alt-click to close window, select and go to that one pawn.</Numbers_pawnTableHighSelected>
+
+
 
 	<Numbers_LoadSavedLayout>Load saved layout</Numbers_LoadSavedLayout>
 	<Numbers_NothingSaved>Nothing saved</Numbers_NothingSaved>
