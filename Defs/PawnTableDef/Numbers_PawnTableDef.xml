@@ -150,6 +150,8 @@
       <li>GapTiny</li>
       <li>ManhunterOnDamageChance</li>
       <li>Numbers_ManhunterOnTameFailChance</li>
+      <li>Numbers_Wildness</li>
+      <li>Numbers_TameChance</li>
       <li>Predator</li>
       <li>Info</li>
       <li>Numbers_RimWorld_StatDef_MeatAmount</li>

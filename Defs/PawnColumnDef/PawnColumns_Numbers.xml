@@ -160,6 +160,20 @@
     <width>45</width>
   </PawnColumnDef>
 
+  <PawnColumnDef>
+    <defName>Numbers_Wildness</defName>
+    <workerClass>Numbers.PawnColumnWorker_AnimalWildness</workerClass>
+    <sortable>true</sortable>
+    <label>Wildness</label>
+    <width>45</width>
+  </PawnColumnDef>
 
+  <PawnColumnDef>
+    <defName>Numbers_TameChance</defName>
+    <workerClass>Numbers.PawnColumnWorker_AnimalWildness</workerClass>
+    <sortable>true</sortable>
+    <label>Tame chance</label>
+    <width>45</width>
+  </PawnColumnDef>
 
 </Defs>

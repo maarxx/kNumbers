@@ -117,8 +117,8 @@ namespace Numbers
         public static bool NoMouseButtonsPressed() => !Input.GetMouseButton(0) && !Input.GetMouseButton(1);
 
         [UsedImplicitly]
-        public static bool WasClicked(bool useRightButton) => 
-                useRightButton && Input.GetMouseButtonDown(1) 
+        public static bool WasClicked(bool useRightButton) =>
+                useRightButton && Input.GetMouseButtonDown(1)
             || !useRightButton && Input.GetMouseButtonDown(0);
 
         private static IEnumerable<CodeInstruction> MakeHeadersReOrderable(IEnumerable<CodeInstruction> instructions)
@@ -243,6 +243,7 @@ namespace Numbers
             //yeah I will set an icon for it because I can. 
             var pcd = DefDatabase<PawnColumnDef>.GetNamedSilentFail("ManhunterOnDamageChance");
             pcd.headerIcon = "UI/Icons/Animal/Predator";
+            pcd.headerAlwaysInteractable = true;
             var pred = DefDatabase<PawnColumnDef>.GetNamedSilentFail("Predator");
             pred.sortable = true;
         }
@@ -413,7 +414,7 @@ namespace Numbers
             {
                 if (storedPawnTableDef.Split(',')[1] == "Default")
                     this.cachedList.Add(storedPawnTableDef.Split(',')[0].Split('_')[1] + " (" + storedPawnTableDef.Split(',')[1] + ")");
-                    //Numbers_MainTable,Default => MainTable (Default)
+                //Numbers_MainTable,Default => MainTable (Default)
                 else
                     this.cachedList.Add(storedPawnTableDef.Split(',')[1]);
             }

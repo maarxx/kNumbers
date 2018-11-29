@@ -507,6 +507,8 @@ namespace Numbers
                     DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Milkfullness"),
                     DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_AnimalWoolGrowth"),
                     DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_AnimalEggProgress"),
+                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Wildness"),
+                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_TameChance"),
                     DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inventory"),
                 };
 
@@ -538,9 +540,14 @@ namespace Numbers
 
             if (PawnTableDef == NumbersDefOf.Numbers_WildAnimals)
             {
-                foreach (var pcd in DefDatabase<PawnTableDef>.GetNamedSilentFail("Wildlife").columns.Where(x => pcdValidator(x)))
+                List<PawnColumnDef> pcdList = new List<PawnColumnDef>
                 {
-                    list.Add(new FloatMenuOption(pcd.defName, 
+                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Wildness"),
+                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_TameChance"),
+                };
+                foreach (var pcd in DefDatabase<PawnTableDef>.GetNamedSilentFail("Wildlife").columns.Where(x => pcdValidator(x)).Concat(pcdList))
+                {
+                    list.Add(new FloatMenuOption(pcd.defName,
                             () => AddPawnColumnAtBestPositionAndRefresh(pcd)));
                 }
             }
