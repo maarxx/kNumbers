@@ -176,4 +176,12 @@
     <width>45</width>
   </PawnColumnDef>
 
+  <PawnColumnDef>
+    <defName>Numbers_SelfTend</defName>
+    <workerClass>Numbers.PawnColumnWorker_SelfTend</workerClass>
+    <sortable>true</sortable>
+    <label>Self-tend</label>
+    <width>45</width>
+  </PawnColumnDef>
+
 </Defs>

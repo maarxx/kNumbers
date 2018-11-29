@@ -25,6 +25,9 @@ namespace Numbers
         private readonly List<StatDef> corpseStatDef;
         private readonly List<NeedDef> pawnHumanlikeNeedDef;
         private readonly List<NeedDef> pawnAnimalNeedDef;
+
+        //Code style: GetNamedSilentFail in cases where there is null-handling, so any columns that get run through TryGetBestPawnColumnDefLabel() or AddPawnColumnAtBestPositionAndRefresh() can silently fail.
+        //GetNamed anywhere a null column would through a null ref.
         private static readonly string workTabName = DefDatabase<MainButtonDef>.GetNamed("Work").ShortenedLabelCap;
 
         private List<StatDef> StatDefs => PawnTableDef.Ext().Corpse ? corpseStatDef :
@@ -169,14 +172,17 @@ namespace Numbers
 
                     if (new[] { NumbersDefOf.Numbers_MainTable, NumbersDefOf.Numbers_Prisoners, NumbersDefOf.Numbers_Animals, }.Contains(PawnTableDef))
                     {
-                        optionalList.Add(DefDatabase<PawnColumnDef>.GetNamed("MedicalCare"));
-                        optionalList.Add(DefDatabase<PawnColumnDef>.GetNamed("Numbers_Operations"));
+                        optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("MedicalCare"));
+                        optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Operations"));
+
+                        if (PawnTableDef == NumbersDefOf.Numbers_MainTable)
+                            optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_SelfTend"));
                     }
 
-                    optionalList.Add(DefDatabase<PawnColumnDef>.GetNamed("Numbers_Pain"));
-                    optionalList.Add(DefDatabase<PawnColumnDef>.GetNamed("Numbers_Bleedrate"));
-                    optionalList.Add(DefDatabase<PawnColumnDef>.GetNamed("Numbers_NeedsTreatment"));
-                    optionalList.Add(DefDatabase<PawnColumnDef>.GetNamed("Numbers_DiseaseProgress"));
+                    optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Pain"));
+                    optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Bleedrate"));
+                    optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_NeedsTreatment"));
+                    optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_DiseaseProgress"));
 
                     OptionsMakerFloatMenu(DefDatabase<PawnCapacityDef>.AllDefsListForReading, optionalList);
                 }
@@ -223,28 +229,6 @@ namespace Numbers
             Find.World.renderer.wantedMode = RimWorld.Planet.WorldRenderMode.None;
         }
 
-        //public override void Notify_ResolutionChanged()
-        //{
-
-        //    //bool shouldBeShuffled = false;
-        //    //foreach (PawnColumnDef column in PawnTableDef.columns)
-        //    //{
-        //    //    if (column.Worker is PawnColumnWorker_WorkPriority pawnColumnWorker_Work)
-        //    //    {
-        //    //        shouldBeShuffled = !pawnColumnWorker_Work.def.moveWorkTypeLabelDown;
-        //    //        continue;
-        //    //    }
-
-        //    //    if (column.Worker is PawnColumnWorker_Icon)
-        //    //        shouldBeShuffled = true;
-
-        //    //    column.moveWorkTypeLabelDown = shouldBeShuffled;
-
-        //    //    shouldBeShuffled = !shouldBeShuffled;
-        //    //}
-        //    base.Notify_ResolutionChanged();
-        //}
-
         public void PawnSelectOptionsMaker()
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
@@ -289,7 +273,7 @@ namespace Numbers
                     }
                     else
                     {
-                        PawnColumnDef pcd = DefDatabase<PawnColumnDef>.GetNamed("Numbers_" + defCurrent.GetType().ToString().Replace('.', '_') + "_" + defCurrent.defName);
+                        PawnColumnDef pcd = DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_" + defCurrent.GetType().ToString().Replace('.', '_') + "_" + defCurrent.defName);
                         AddPawnColumnAtBestPositionAndRefresh(pcd);
                     }
                 }
@@ -353,6 +337,7 @@ namespace Numbers
                                        {
                                            DefDatabase<PawnColumnDef>.GetNamed("Label"),
                                            DefDatabase<PawnColumnDef>.GetNamed("MedicalCare"),
+                                           DefDatabase<PawnColumnDef>.GetNamed("Numbers_SelfTend"),
                                            DefDatabase<PawnColumnDef>.GetNamed("Numbers_RimWorld_StatDef_MedicalSurgerySuccessChance"),
                                            DefDatabase<PawnColumnDef>.GetNamed("Numbers_RimWorld_StatDef_MedicalTendQuality"),
                                            DefDatabase<PawnColumnDef>.GetNamed("Numbers_RimWorld_StatDef_MedicalTendSpeed"),
@@ -527,10 +512,11 @@ namespace Numbers
                 {
                     DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inspiration"),
                     DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inventory"),
+                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_SelfTend"),
                 };
                 // (assign + restrict).Where(validator) + pcdList
-                foreach (var pcd in DefDatabase<PawnTableDef>.GetNamedSilentFail("Assign").columns
-                    .Concat(DefDatabase<PawnTableDef>.GetNamedSilentFail("Restrict").columns).Where(x => pcdValidator(x))
+                foreach (var pcd in DefDatabase<PawnTableDef>.GetNamed("Assign").columns
+                    .Concat(DefDatabase<PawnTableDef>.GetNamed("Restrict").columns).Where(x => pcdValidator(x))
                     .Concat(pcdList))
                 {
                     list.Add(new FloatMenuOption(TryGetBestPawnColumnDefLabel(pcd),
@@ -545,7 +531,7 @@ namespace Numbers
                     DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Wildness"),
                     DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_TameChance"),
                 };
-                foreach (var pcd in DefDatabase<PawnTableDef>.GetNamedSilentFail("Wildlife").columns.Where(x => pcdValidator(x)).Concat(pcdList))
+                foreach (var pcd in DefDatabase<PawnTableDef>.GetNamed("Wildlife").columns.Where(x => pcdValidator(x)).Concat(pcdList))
                 {
                     list.Add(new FloatMenuOption(pcd.defName,
                             () => AddPawnColumnAtBestPositionAndRefresh(pcd)));
