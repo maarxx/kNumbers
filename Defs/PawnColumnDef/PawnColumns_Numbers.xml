@@ -170,7 +170,7 @@
 
   <PawnColumnDef>
     <defName>Numbers_TameChance</defName>
-    <workerClass>Numbers.PawnColumnWorker_AnimalWildness</workerClass>
+    <workerClass>Numbers.PawnColumnWorker_TameChance</workerClass>
     <sortable>true</sortable>
     <label>Tame chance</label>
     <width>45</width>
