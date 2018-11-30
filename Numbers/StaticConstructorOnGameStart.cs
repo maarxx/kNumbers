@@ -16,6 +16,8 @@ namespace Numbers
         public static readonly Texture2D Info = ContentFinder<Texture2D>.Get("UI/Buttons/InfoButton", true);
         public static readonly Texture2D Predator = ContentFinder<Texture2D>.Get("UI/Icons/Animal/Predator");
         public static readonly Texture2D Tame = ContentFinder<Texture2D>.Get("UI/Icons/Animal/Tame");
+        public static readonly Texture2D List = ContentFinder<Texture2D>.Get("UI/Buttons/DevRoot/ToggleTweak");
+        public static readonly Texture2D Plus = ContentFinder<Texture2D>.Get("UI/Icons/Trainables/Rescue");
         public static List<PawnColumnDef> combatPreset = new List<PawnColumnDef>();
         public static List<PawnColumnDef> workTabPlusPreset = new List<PawnColumnDef>();
 

@@ -178,7 +178,18 @@
     <defName>Numbers_SelfTend</defName>
     <workerClass>Numbers.PawnColumnWorker_SelfTend</workerClass>
     <sortable>true</sortable>
+    <paintable>true</paintable>
+    <headerTip>Self-tend</headerTip>
     <headerIcon>UI/Icons/Trainables/Rescue</headerIcon>
+    <width>45</width>
+  </PawnColumnDef>
+
+  <PawnColumnDef>
+    <defName>Numbers_HediffList</defName>
+    <workerClass>Numbers.PawnColumnWorker_AllHediffs</workerClass>
+    <sortable>true</sortable>
+    <headerIcon>UI/Buttons/DevRoot/ToggleTweak</headerIcon>
+    <headerTip>Hediffs</headerTip>
     <width>45</width>
   </PawnColumnDef>
 

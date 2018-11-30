@@ -24,8 +24,6 @@
 	<Numbers_pawnTableClickSelect>Mouse clicks in pawn tables select them. (Alt-click to work as before)</Numbers_pawnTableClickSelect>
 	<Numbers_pawnTableHighSelected>Should behave intuitively like any other selection. Press Esc to close the tab window.\n\nShift-click to select/deselect multiple. Double click to center camera. Right-click to select a single pawn. Alt-click to close window, select and go to that one pawn.</Numbers_pawnTableHighSelected>
 
-
-
 	<Numbers_LoadSavedLayout>Load saved layout</Numbers_LoadSavedLayout>
 	<Numbers_NothingSaved>Nothing saved</Numbers_NothingSaved>
 	<Numbers_SaveCurrentLayout>Save current layout</Numbers_SaveCurrentLayout>

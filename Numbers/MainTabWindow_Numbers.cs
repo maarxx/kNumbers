@@ -178,7 +178,7 @@ namespace Numbers
                         if (PawnTableDef == NumbersDefOf.Numbers_MainTable)
                             optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_SelfTend"));
                     }
-
+                    optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_HediffList"));
                     optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Pain"));
                     optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Bleedrate"));
                     optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_NeedsTreatment"));
@@ -338,6 +338,7 @@ namespace Numbers
                                            DefDatabase<PawnColumnDef>.GetNamed("Label"),
                                            DefDatabase<PawnColumnDef>.GetNamed("MedicalCare"),
                                            DefDatabase<PawnColumnDef>.GetNamed("Numbers_SelfTend"),
+                                           DefDatabase<PawnColumnDef>.GetNamed("Numbers_HediffList"),
                                            DefDatabase<PawnColumnDef>.GetNamed("Numbers_RimWorld_StatDef_MedicalSurgerySuccessChance"),
                                            DefDatabase<PawnColumnDef>.GetNamed("Numbers_RimWorld_StatDef_MedicalTendQuality"),
                                            DefDatabase<PawnColumnDef>.GetNamed("Numbers_RimWorld_StatDef_MedicalTendSpeed"),
@@ -458,6 +459,7 @@ namespace Numbers
                     DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_MentalState"),
                     DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_JobCurrent"),
                     DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_JobQueued"),
+                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_HediffList")
                 };
 
                 foreach (PawnColumnDef pcd in pcdList)
