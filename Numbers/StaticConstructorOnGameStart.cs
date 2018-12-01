@@ -20,6 +20,7 @@ namespace Numbers
         public static readonly Texture2D Plus = ContentFinder<Texture2D>.Get("UI/Icons/Trainables/Rescue");
         public static List<PawnColumnDef> combatPreset = new List<PawnColumnDef>();
         public static List<PawnColumnDef> workTabPlusPreset = new List<PawnColumnDef>();
+        public static List<PawnColumnDef> colonistNeedsPreset = new List<PawnColumnDef>();
 
         static StaticConstructorOnGameStart()
         {
@@ -51,6 +52,11 @@ namespace Numbers
             foreach (PawnColumnDef pcd in DefDatabase<PawnTableDef>.GetNamedSilentFail("Numbers_WorkTabPlusPreset").columns)
             {
                 workTabPlusPreset.Add(pcd);
+            }
+
+            foreach (PawnColumnDef pcd in DefDatabase<PawnTableDef>.GetNamedSilentFail("Numbers_ColonistNeedsPreset").columns)
+            {
+                colonistNeedsPreset.Add(pcd);
             }
         }
     }

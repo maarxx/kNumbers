@@ -12,6 +12,7 @@
 	<Numbers_Presets.Medical>medical</Numbers_Presets.Medical>
 	<Numbers_Presets.Combat>combat</Numbers_Presets.Combat>
 	<Numbers_Presets.WorkTabPlus>worktab plus</Numbers_Presets.WorkTabPlus>
+	<Numbers_Presets.ColonistNeeds>colonist needs</Numbers_Presets.ColonistNeeds>
 	
 	<Numbers_SetAsDefault>Set as default</Numbers_SetAsDefault>
 	<Numbers_SetAsDefaultExplanation>Sets the currently viewed layout as the default for this type of view ({0}). This layout will then be used for new colonies. Can be deleted in the mod settings (Menu => Options => Mod settings => Numbers).</Numbers_SetAsDefaultExplanation>

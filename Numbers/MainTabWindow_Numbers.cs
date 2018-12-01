@@ -388,6 +388,16 @@ namespace Numbers
             }
             list.Add(new FloatMenuOption("Numbers_Presets.Load".Translate("Numbers_Presets.WorkTabPlus".Translate()), MakeThisWorkTabPlus));
 
+            void MakeThisColonistNeeds()
+            {
+                this.pawnTableDef = NumbersDefOf.Numbers_MainTable;
+                PawnTableDef.columns = new List<PawnColumnDef>();
+                PawnTableDef.columns.AddRange(StaticConstructorOnGameStart.colonistNeedsPreset);
+                this.UpdateFilter();
+                Notify_ResolutionChanged();
+            }
+            list.Add(new FloatMenuOption("Numbers_Presets.Load".Translate("Numbers_Presets.ColonistNeeds".Translate()), MakeThisColonistNeeds));
+
             void setAsDefault()
             {
                 string pawnTableDeftoSave = HorribleStringParsersForSaving.TurnPawnTableDefIntoCommaDelimitedString(PawnTableDef, true);
