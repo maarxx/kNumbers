@@ -251,4 +251,24 @@
     </modExtensions>
   </PawnTableDef>
 
+  <PawnTableDef>
+    <defName>Numbers_ColonistNeedsPreset</defName>
+    <label>colonist needs</label>
+    <workerClass>Numbers.PawnTable_NumbersMain</workerClass>
+    <columns>
+      <li>Label</li>
+      <li>Numbers_RimWorld_NeedDef_Mood</li>
+      <li>Numbers_RimWorld_NeedDef_Food</li>
+      <li>Numbers_RimWorld_NeedDef_Rest</li>
+      <li>Numbers_RimWorld_NeedDef_Beauty</li>
+      <li>Numbers_RimWorld_NeedDef_Comfort</li>
+      <li>Numbers_RimWorld_NeedDef_Outdoors</li>
+    </columns>
+    <modExtensions>
+      <li Class="Numbers.DefModExtension_PawnTableDefs">
+        <Humanlike>true</Humanlike>
+      </li>
+    </modExtensions>
+  </PawnTableDef>
+
 </Defs>
