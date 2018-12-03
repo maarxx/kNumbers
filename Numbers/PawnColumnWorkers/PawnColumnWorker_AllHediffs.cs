@@ -21,11 +21,11 @@
             {
                 foreach (IGrouping<int, Hediff> current in diffs.GroupBy(x => x.UIGroupKey))
                 {
-                    int    num4 = current.Count();
+                    int count = current.Count();
                     string text = current.First().LabelCap;
-                    if (num4 != 1)
+                    if (count != 1)
                     {
-                        text = text + " x" + num4;
+                        text = text + " x" + count;
                     }
                     icontipBuilder.AppendWithComma(text);
                 }
@@ -42,10 +42,10 @@
         {
             base.DoHeader(rect, table);
             GUI.color = Color.cyan;
-            float   scale          = 0.7f;
+            float scale = 0.7f;
             Vector2 headerIconSize = new Vector2(StaticConstructorOnGameStart.Plus.width * scale, StaticConstructorOnGameStart.Plus.height * scale);
-            int     num            = (int)((rect.width - headerIconSize.x) / 4f);
-            Rect    position       = new Rect(rect.x + num, rect.yMin + StaticConstructorOnGameStart.Tame.height, headerIconSize.x, headerIconSize.y);
+            int num = (int)((rect.width - headerIconSize.x) / 4f);
+            Rect position = new Rect(rect.x + num, rect.yMin + StaticConstructorOnGameStart.Tame.height, headerIconSize.x, headerIconSize.y);
             GUI.DrawTexture(position, StaticConstructorOnGameStart.Plus);
             GUI.color = Color.white;
         }
@@ -69,6 +69,6 @@
         private static IEnumerable<IGrouping<BodyPartRecord, Hediff>> VisibleHediffGroupsInOrder(Pawn pawn) =>
             VisibleHediffs(pawn).GroupBy(x => x.Part).OrderByDescending(x => GetListPriority(x.First().Part));
 
-        private static float GetListPriority(BodyPartRecord rec) => rec == null ? 9999999f : (int) rec.height * 10000 + rec.coverageAbsWithChildren;
+        private static float GetListPriority(BodyPartRecord rec) => rec == null ? 9999999f : (int)rec.height * 10000 + rec.coverageAbsWithChildren;
     }
 }

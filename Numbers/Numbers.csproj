@@ -62,6 +62,7 @@
     <Compile Include="Numbers_SettingsHelper.cs" />
     <Compile Include="Numbers_Utility.cs" />
     <Compile Include="PawnColumnWorkers\PawnColumnWorker_Age.cs" />
+    <Compile Include="PawnColumnWorkers\PawnColumnWorker_AllHediffs.cs" />
     <Compile Include="PawnColumnWorkers\PawnColumnWorker_AnimalMilkFullness.cs" />
     <Compile Include="PawnColumnWorkers\PawnColumnWorker_AnimalWildness.cs" />
     <Compile Include="PawnColumnWorkers\PawnColumnWorker_AnimalWoolGrowth.cs" />

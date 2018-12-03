@@ -281,7 +281,7 @@ namespace Numbers
 
         public static void ClickPawn(GlobalTargetInfo target)
         {
-            if (Numbers_Settings.pawnTableClickSelect)
+            if (!Numbers_Settings.pawnTableClickSelect)
             {
                 CameraJumper.TryJumpAndSelect(target);
                 return;
@@ -323,7 +323,7 @@ namespace Numbers
 
         public static void SodThisImOut(MainTabsRoot o1, bool o2)
         {
-            if (Numbers_Settings.pawnTableClickSelect)
+            if (!Numbers_Settings.pawnTableClickSelect)
                 o1.EscapeCurrentTab(o2);
         }
 
@@ -425,11 +425,11 @@ namespace Numbers
 
             Listing_Standard listingStandard = new Listing_Standard();
             listingStandard.Begin(inRect);
-            listingStandard.CheckboxLabeled("Numbers_ShowMoreInfoThanVanilla".Translate(), ref Numbers_Settings.showMoreInfoThanVanilla);
+            listingStandard.CheckboxLabeled("Numbers_showMoreInfoThanVanilla".Translate(), ref Numbers_Settings.showMoreInfoThanVanilla);
             listingStandard.CheckboxLabeled("Numbers_coolerThanTheWildlifeTab".Translate(), ref Numbers_Settings.coolerThanTheWildlifeTab);
-            listingStandard.CheckboxLabeled("Numbers_pawnTableClickSelect".Translate(), ref Numbers_Settings.pawnTableClickSelect);
-            listingStandard.CheckboxLabeled("Numbers_pawnTableHighSelected".Translate(), ref Numbers_Settings.pawnTableHighlightSelected);
-            listingStandard.SliderLabeled("Numbers_MaxTableHeight".Translate(), ref Numbers_Settings.maxHeight, Numbers_Settings.maxHeight.ToStringPercent(), 0.3f, 1);
+            listingStandard.CheckboxLabeled("Numbers_pawnTableClickSelect".Translate(), ref Numbers_Settings.pawnTableClickSelect, "Numbers_pawnTableClickSelect_Desc".Translate());
+            listingStandard.CheckboxLabeled("Numbers_pawnTableHighSelected".Translate(), ref Numbers_Settings.pawnTableHighlightSelected, "Numbers_pawnTableHighSelected_Desc".Translate());
+            listingStandard.SliderLabeled("Numbers_maxTableHeight".Translate(), ref Numbers_Settings.maxHeight, Numbers_Settings.maxHeight.ToStringPercent(), 0.3f, 1);
             listingStandard.End();
 
             float rowHeight = 20f;

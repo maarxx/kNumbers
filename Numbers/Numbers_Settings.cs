@@ -39,7 +39,7 @@ namespace Numbers
             else
                 storedPawnTableDefs.Add(pawnTableDeftoSave);
 
-            Write();
+            base.Write();
         }
 
         public override void ExposeData()
