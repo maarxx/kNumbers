@@ -151,7 +151,7 @@
     <sortable>true</sortable>
     <label>Disease immunity margin</label>
     <headerTip>Disease immunity margin</headerTip>
-    <width>120</width>
+    <width>80</width>
   </PawnColumnDef>
 
   <PawnColumnDef>

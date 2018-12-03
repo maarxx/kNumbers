@@ -337,7 +337,8 @@ namespace Numbers
                     defName = "Numbers_" + record.GetType().ToString().Replace('.', '_') + "_" + record.defName,
                     workerClass = typeof(PawnColumnWorker_Record),
                     sortable = true,
-                    headerTip = record.description,
+                    headerTip = record.description + "\n\n" + "Numbers_ColumnHeader_Tooltip".Translate(),
+                    generated = true,
                     label = record.LabelCap,
                     modContentPack = record.modContentPack,
                     modExtensions = new List<DefModExtension> { new DefModExtension_PawnColumnDefs() }
@@ -354,6 +355,8 @@ namespace Numbers
                     defName = "Numbers_" + capacityDef.GetType().ToString().Replace('.', '_') + "_" + capacityDef.defName,
                     workerClass = typeof(PawnColumnWorker_Capacity),
                     sortable = true,
+                    headerTip = "Numbers_ColumnHeader_Tooltip".Translate(),
+                    generated = true,
                     label = capacityDef.LabelCap,
                     modContentPack = capacityDef.modContentPack,
                     modExtensions = new List<DefModExtension> { new DefModExtension_PawnColumnDefs() }
@@ -371,7 +374,8 @@ namespace Numbers
                     defName = "Numbers_" + need.GetType().ToString().Replace('.', '_') + "_" + need.defName,
                     workerClass = typeof(PawnColumnWorker_Need),
                     sortable = true,
-                    headerTip = need.description,
+                    headerTip = need.description + "\n\n" + "Numbers_ColumnHeader_Tooltip".Translate(),
+                    generated = true,
                     label = need.LabelCap,
                     modContentPack = need.modContentPack,
                     modExtensions = new List<DefModExtension> { new DefModExtension_PawnColumnDefs() }
@@ -389,7 +393,8 @@ namespace Numbers
                     defName = "Numbers_" + stat.GetType().ToString().Replace('.', '_') + "_" + stat.defName,
                     workerClass = typeof(PawnColumnWorker_Stat),
                     sortable = true,
-                    headerTip = stat.description,
+                    headerTip = stat.description + "\n\n" + "Numbers_ColumnHeader_Tooltip".Translate(),
+                    generated = true,
                     label = stat.LabelCap,
                     modContentPack = stat.modContentPack,
                     modExtensions = new List<DefModExtension> { new DefModExtension_PawnColumnDefs() }
@@ -406,7 +411,8 @@ namespace Numbers
                     defName = "Numbers_" + skill.GetType().ToString().Replace('.', '_') + "_" + skill.defName,
                     workerClass = typeof(PawnColumnWorker_Skill),
                     sortable = true,
-                    headerTip = skill.description,
+                    headerTip = skill.description + "\n\n" + "Numbers_ColumnHeader_Tooltip".Translate(),
+                    generated = true,
                     label = skill.LabelCap,
                     modContentPack = skill.modContentPack,
                     modExtensions = new List<DefModExtension> { new DefModExtension_PawnColumnDefs() }

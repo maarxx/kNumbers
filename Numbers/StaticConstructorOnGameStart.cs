@@ -47,6 +47,11 @@ namespace Numbers
                 PTSDfromPTDs.columns.Insert(PTSDfromPTDs.columns.Count, remainingspace);
             }
 
+            foreach (PawnColumnDef pawnColumnDef in DefDatabase<PawnColumnDef>.AllDefsListForReading.Where(x => !x.generated && x.defName.StartsWith("Numbers_")))
+            {
+                pawnColumnDef.headerTip += (pawnColumnDef.headerTip.NullOrEmpty() ? "" : "\n\n") + "Numbers_ColumnHeader_Tooltip".Translate();
+            }
+
             foreach (PawnColumnDef pcd in DefDatabase<PawnTableDef>.GetNamed("Numbers_CombatPreset").columns)
             {
                 combatPreset.Add(pcd);

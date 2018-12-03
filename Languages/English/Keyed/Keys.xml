@@ -4,7 +4,7 @@
 	<koisama.Numbers.Title>Numbers overview</koisama.Numbers.Title>
 	<koisama.Numbers.Count>Row Count</koisama.Numbers.Count>
 	<koisama.Numbers.ClickToToggle>Click to select pawn type.</koisama.Numbers.ClickToToggle>
-	<koisama.Numbers.RemoveTooltip>Right click to remove column.</koisama.Numbers.RemoveTooltip>
+	<Numbers_ColumnHeader_Tooltip>Right click to remove column. Click and drag to move.</Numbers_ColumnHeader_Tooltip>
 	<koisama.Numbers.SetPresetLabel>Presets</koisama.Numbers.SetPresetLabel>
 	
 	<!--- becomes Load {medical/combat} preset -->

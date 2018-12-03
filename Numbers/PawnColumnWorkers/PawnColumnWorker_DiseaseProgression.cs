@@ -79,16 +79,16 @@
             Texture2D immune = StaticConstructorOnGameStart.IconImmune;
 
             //[   [x]   |   []   ]
-            float oneFourthLeftCenteredOnIconWidth = (rect.width / 4) - MaxIconSize / 2;
+            float oneFourthLeftCenteredOnIconWidth = (rect.width / 6) - MaxIconSize / 2;
             //[   []   |   [x]   ]
-            float oneFourthRightCenteredOnIconWidth = (rect.width - (rect.width / 4)) - MaxIconSize / 2; 
+            float oneFourthRightCenteredOnIconWidth = (rect.width - (rect.width / 6)) - MaxIconSize / 2; 
 
             //skull vs immunity icon. One left, one right.
             Rect skullPosition = new Rect(rect.x + oneFourthLeftCenteredOnIconWidth, rect.yMax - MaxIconSize, MaxIconSize, MaxIconSize);
             GUI.DrawTexture(skullPosition, skull);
 
             Rect immunePosition = new Rect(rect.x + oneFourthRightCenteredOnIconWidth, rect.yMax - MaxIconSize, MaxIconSize, MaxIconSize);
-            GUI.DrawTexture(immunePosition, immune);
+            GUI.DrawTexture(immunePosition.ScaledBy(0.9f), immune);
 
             Rect rect2 = rect;
             rect2.y += 3f;
