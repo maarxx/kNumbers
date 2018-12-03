@@ -150,6 +150,8 @@
     <workerClass>Numbers.PawnColumnWorker_DiseaseProgression</workerClass>
     <sortable>true</sortable>
     <label>Disease immunity margin</label>
+    <headerTip>Disease immunity margin</headerTip>
+    <width>120</width>
   </PawnColumnDef>
 
   <PawnColumnDef>

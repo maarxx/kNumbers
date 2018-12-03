@@ -14,6 +14,9 @@
         private static readonly Texture2D SortingDescendingIcon = ContentFinder<Texture2D>.Get("UI/Icons/SortingDescending");
         private static readonly Color SeverePainColor = new Color(0.9f, 0.5f, 0f);
 
+        [TweakValue("AAAADiseaseProgression")] //assumes a perfectly square icon.
+        public static float MaxIconSize = 22f;
+
         public override void DoCell(Rect rect, Pawn pawn, PawnTable table)
         {
             if (pawn.Dead || pawn.health?.hediffSet == null || !pawn.health.hediffSet.HasImmunizableNotImmuneHediff())
@@ -69,6 +72,57 @@
             GUI.DrawTexture(position2, texture2D);
             GUI.color = Color.white;
         }
+
+        public override void DoHeader(Rect rect, PawnTable table)
+        {
+            Texture2D skull = StaticConstructorOnGameStart.IconDead;
+            Texture2D immune = StaticConstructorOnGameStart.IconImmune;
+
+            //[   [x]   |   []   ]
+            float oneFourthLeftCenteredOnIconWidth = (rect.width / 4) - MaxIconSize / 2;
+            //[   []   |   [x]   ]
+            float oneFourthRightCenteredOnIconWidth = (rect.width - (rect.width / 4)) - MaxIconSize / 2; 
+
+            //skull vs immunity icon. One left, one right.
+            Rect skullPosition = new Rect(rect.x + oneFourthLeftCenteredOnIconWidth, rect.yMax - MaxIconSize, MaxIconSize, MaxIconSize);
+            GUI.DrawTexture(skullPosition, skull);
+
+            Rect immunePosition = new Rect(rect.x + oneFourthRightCenteredOnIconWidth, rect.yMax - MaxIconSize, MaxIconSize, MaxIconSize);
+            GUI.DrawTexture(immunePosition, immune);
+
+            Rect rect2 = rect;
+            rect2.y += 3f;
+            Text.Anchor = TextAnchor.LowerCenter;
+            Widgets.Label(rect2, "vs");
+            Text.Anchor = TextAnchor.UpperLeft;
+
+            //rest is copypasta
+            if (table.SortingBy == this.def)
+            {
+                Texture2D texture2D = (!table.SortingDescending) ? SortingIcon : SortingDescendingIcon;
+                Rect position2 = new Rect(rect.xMax - (float)texture2D.width - 1f, rect.yMax - (float)texture2D.height - 1f, (float)texture2D.width, (float)texture2D.height);
+                GUI.DrawTexture(position2, texture2D);
+            }
+            if (this.def.HeaderInteractable)
+            {
+                Rect interactableHeaderRect = this.GetInteractableHeaderRect(rect, table);
+                Widgets.DrawHighlightIfMouseover(interactableHeaderRect);
+                if (interactableHeaderRect.Contains(Event.current.mousePosition))
+                {
+                    string headerTip = this.GetHeaderTip(table);
+                    if (!headerTip.NullOrEmpty())
+                    {
+                        TooltipHandler.TipRegion(interactableHeaderRect, headerTip);
+                    }
+                }
+                if (Widgets.ButtonInvisible(interactableHeaderRect, false))
+                {
+                    this.HeaderClicked(rect, table);
+                }
+            }
+        }
+
+        public override int GetMinWidth(PawnTable table) => this.def.width;
 
         private string GetTip(Pawn pawn, HediffWithComps severe) => severe.LabelCap + ": " + severe.SeverityLabel + "\n" + severe.TipStringExtra;
 

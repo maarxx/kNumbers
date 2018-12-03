@@ -18,6 +18,9 @@ namespace Numbers
         public static readonly Texture2D Tame = ContentFinder<Texture2D>.Get("UI/Icons/Animal/Tame");
         public static readonly Texture2D List = ContentFinder<Texture2D>.Get("UI/Buttons/DevRoot/ToggleTweak");
         public static readonly Texture2D Plus = ContentFinder<Texture2D>.Get("UI/Icons/Trainables/Rescue");
+        public static readonly Texture2D IconImmune = ContentFinder<Texture2D>.Get("UI/Icons/Medical/IconImmune");
+        public static readonly Texture2D IconDead = ContentFinder<Texture2D>.Get("Things/Mote/BattleSymbols/Skull");
+
         public static List<PawnColumnDef> combatPreset = new List<PawnColumnDef>();
         public static List<PawnColumnDef> workTabPlusPreset = new List<PawnColumnDef>();
         public static List<PawnColumnDef> colonistNeedsPreset = new List<PawnColumnDef>();
@@ -44,17 +47,17 @@ namespace Numbers
                 PTSDfromPTDs.columns.Insert(PTSDfromPTDs.columns.Count, remainingspace);
             }
 
-            foreach (PawnColumnDef pcd in DefDatabase<PawnTableDef>.GetNamedSilentFail("Numbers_CombatPreset").columns)
+            foreach (PawnColumnDef pcd in DefDatabase<PawnTableDef>.GetNamed("Numbers_CombatPreset").columns)
             {
                 combatPreset.Add(pcd);
             }
 
-            foreach (PawnColumnDef pcd in DefDatabase<PawnTableDef>.GetNamedSilentFail("Numbers_WorkTabPlusPreset").columns)
+            foreach (PawnColumnDef pcd in DefDatabase<PawnTableDef>.GetNamed("Numbers_WorkTabPlusPreset").columns)
             {
                 workTabPlusPreset.Add(pcd);
             }
 
-            foreach (PawnColumnDef pcd in DefDatabase<PawnTableDef>.GetNamedSilentFail("Numbers_ColonistNeedsPreset").columns)
+            foreach (PawnColumnDef pcd in DefDatabase<PawnTableDef>.GetNamed("Numbers_ColonistNeedsPreset").columns)
             {
                 colonistNeedsPreset.Add(pcd);
             }
