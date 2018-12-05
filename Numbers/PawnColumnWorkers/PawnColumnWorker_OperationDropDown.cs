@@ -1,23 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using RimWorld;
 using UnityEngine;
 using Verse;
 using System.Reflection;
-using Harmony;
 
 namespace Numbers
 {
     public class PawnColumnWorker_OperationDropDown : PawnColumnWorker
     {
+        public delegate TResult Func<in T1, in T2, in T3, in T4, in T5, out TResult>
+            (T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5);
+
+        public static Func<Pawn, Thing, RecipeDef, IEnumerable<ThingDef>, BodyPartRecord, FloatMenuOption>
+            GenerateSurgeryOptionFunc =
+                (Func<Pawn, Thing, RecipeDef, IEnumerable<ThingDef>, BodyPartRecord, FloatMenuOption>) Delegate
+                    .CreateDelegate(
+                        typeof(Func<Pawn, Thing, RecipeDef, IEnumerable<ThingDef>, BodyPartRecord, FloatMenuOption>),
+                        null,
+                        typeof(HealthCardUtility).GetMethod("GenerateSurgeryOption",
+                            BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.InvokeMethod));
+
         public override void DoCell(Rect rect, Pawn pawn, PawnTable table)
         {
             if (Widgets.ButtonText(rect, "AddBill".Translate(), true, false, true))
             {
-                Find.WindowStack.Add(new FloatMenu(RecipeOptionsMaker(pawn, pawn)));
+                Find.WindowStack.Add(new FloatMenu(RecipeOptionsMaker(pawn)));
             }
+
             UIHighlighter.HighlightOpportunity(rect, "AddBill");
         }
 
@@ -31,44 +42,28 @@ namespace Numbers
             return 150;
         }
 
-        //COPY PASTA AHOOOOY
-
-        private static List<FloatMenuOption> RecipeOptionsMaker(Pawn pawn, Thing thingForMedBills)
+        private static List<FloatMenuOption> RecipeOptionsMaker(Pawn pawn)
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
-            MethodInfo genSurgOp = typeof(HealthCardUtility).GetMethod("GenerateSurgeryOption", BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.InvokeMethod);
-
-            foreach (RecipeDef current in thingForMedBills.def.AllRecipes)
+            foreach (RecipeDef current in pawn.def.AllRecipes.Where(x => x.AvailableNow))
             {
-                if (current.AvailableNow)
+                List<ThingDef> missingIngredientsList =
+                    current.PotentiallyMissingIngredients(null, pawn.Map).ToList();
+                if (missingIngredientsList.Count == 0 || (!current.dontShowIfAnyIngredientMissing &&
+                                                          !missingIngredientsList.Any(x => x.isTechHediff || x.IsDrug)))
                 {
-                    IEnumerable<ThingDef> enumerable = current.PotentiallyMissingIngredients(null, thingForMedBills.Map);
-                    if (!enumerable.Any((ThingDef x) => x.isTechHediff))
+                    if (current.targetsBodyPart)
                     {
-                        if (!enumerable.Any((ThingDef x) => x.IsDrug))
-                        {
-                            if (!enumerable.Any<ThingDef>() || !current.dontShowIfAnyIngredientMissing)
-                            {
-                                if (current.targetsBodyPart)
-                                {
-                                    foreach (BodyPartRecord current2 in current.Worker.GetPartsToApplyOn(pawn, current))
-                                    {
-                                        list.Add((FloatMenuOption)genSurgOp.Invoke(null, new object[] { pawn, thingForMedBills, current, enumerable, current2 }));
-
-                                        //HealthCardUtility.GenerateSurgeryOption(pawn, thingForMedBills, current, enumerable, current2));
-                                    }
-                                }
-                                else
-                                {
-                                    list.Add( (FloatMenuOption)genSurgOp.Invoke(null, new object[] { pawn, thingForMedBills, current, enumerable, null }));
-
-                                    //HealthCardUtility.GenerateSurgeryOption(pawn, thingForMedBills, current, enumerable, null));
-                                }
-                            }
-                        }
+                        list.AddRange(current.Worker.GetPartsToApplyOn(pawn, current).Select(current2 =>
+                            GenerateSurgeryOptionFunc(pawn, pawn, current, missingIngredientsList, current2)));
+                    }
+                    else
+                    {
+                        list.Add(GenerateSurgeryOptionFunc(pawn, pawn, current, missingIngredientsList, null));
                     }
                 }
             }
+
             return list;
         }
     }
