@@ -4,26 +4,31 @@ using System.Linq;
 using System.Text;
 using RimWorld;
 using Verse;
+using UnityEngine;
 
 namespace Numbers
 {
-    using UnityEngine;
 
     [StaticConstructorOnStartup]
     static class StaticConstructorOnGameStart
     {
-        public static readonly Texture2D DeleteX = ContentFinder<Texture2D>.Get("UI/Buttons/Delete", true);
-        public static readonly Texture2D Info = ContentFinder<Texture2D>.Get("UI/Buttons/InfoButton", true);
-        public static readonly Texture2D Predator = ContentFinder<Texture2D>.Get("UI/Icons/Animal/Predator");
-        public static readonly Texture2D Tame = ContentFinder<Texture2D>.Get("UI/Icons/Animal/Tame");
-        public static readonly Texture2D List = ContentFinder<Texture2D>.Get("UI/Buttons/DevRoot/ToggleTweak");
-        public static readonly Texture2D Plus = ContentFinder<Texture2D>.Get("UI/Icons/Trainables/Rescue");
-        public static readonly Texture2D IconImmune = ContentFinder<Texture2D>.Get("UI/Icons/Medical/IconImmune");
-        public static readonly Texture2D IconDead = ContentFinder<Texture2D>.Get("Things/Mote/BattleSymbols/Skull");
+        public static readonly Texture2D    DeleteX = ContentFinder<Texture2D>.Get("UI/Buttons/Delete"),
+                                            Info = ContentFinder<Texture2D>.Get("UI/Buttons/InfoButton"),
+                                            Predator = ContentFinder<Texture2D>.Get("UI/Icons/Animal/Predator"),
+                                            Tame = ContentFinder<Texture2D>.Get("UI/Icons/Animal/Tame"),
+                                            List = ContentFinder<Texture2D>.Get("UI/Buttons/DevRoot/ToggleTweak"),
+                                            Plus = ContentFinder<Texture2D>.Get("UI/Icons/Trainables/Rescue"),
+                                            IconImmune = ContentFinder<Texture2D>.Get("UI/Icons/Medical/IconImmune"),
+                                            IconDead = ContentFinder<Texture2D>.Get("Things/Mote/BattleSymbols/Skull"),
+                                            IconTendedWell = ContentFinder<Texture2D>.Get("UI/Icons/Medical/TendedWell"),
+                                            IconTendedNeed = ContentFinder<Texture2D>.Get("UI/Icons/Medical/TendedNeed"),
+                                            SortingIcon = ContentFinder<Texture2D>.Get("UI/Icons/Sorting"),
+                                            SortingDescendingIcon = ContentFinder<Texture2D>.Get("UI/Icons/SortingDescending"),
+                                            BarInstantMarkerTex = ContentFinder<Texture2D>.Get("UI/Misc/BarInstantMarker");
 
-        public static List<PawnColumnDef> combatPreset = new List<PawnColumnDef>();
-        public static List<PawnColumnDef> workTabPlusPreset = new List<PawnColumnDef>();
-        public static List<PawnColumnDef> colonistNeedsPreset = new List<PawnColumnDef>();
+        public static List<PawnColumnDef> combatPreset = new List<PawnColumnDef>(),
+                                          workTabPlusPreset = new List<PawnColumnDef>(),
+                                          colonistNeedsPreset = new List<PawnColumnDef>();
 
         static StaticConstructorOnGameStart()
         {
@@ -47,7 +52,7 @@ namespace Numbers
                 PTSDfromPTDs.columns.Insert(PTSDfromPTDs.columns.Count, remainingspace);
             }
 
-            foreach (PawnColumnDef pawnColumnDef in DefDatabase<PawnColumnDef>.AllDefsListForReading.Where(x => !x.generated && x.defName.StartsWith("Numbers_")))
+            foreach (PawnColumnDef pawnColumnDef in DefDatabase<PawnColumnDef>.AllDefsListForReading.Where(x => !x.generated && x.defName.StartsWith("Numbers_") && !(x.Worker is PawnColumnWorker_AllHediffs || x.Worker is PawnColumnWorker_SelfTend))) //special treatment for those.
             {
                 pawnColumnDef.headerTip += (pawnColumnDef.headerTip.NullOrEmpty() ? "" : "\n\n") + "Numbers_ColumnHeader_Tooltip".Translate();
             }

@@ -10,11 +10,10 @@
     [StaticConstructorOnStartup]
     public class PawnColumnWorker_DiseaseProgression : PawnColumnWorker
     {
-        private static readonly Texture2D SortingIcon = ContentFinder<Texture2D>.Get("UI/Icons/Sorting");
-        private static readonly Texture2D SortingDescendingIcon = ContentFinder<Texture2D>.Get("UI/Icons/SortingDescending");
+
         private static readonly Color SeverePainColor = new Color(0.9f, 0.5f, 0f);
 
-        [TweakValue("AAAADiseaseProgression")] //assumes a perfectly square icon.
+        //[TweakValue("AAAADiseaseProgression")] //assumes a perfectly square icon.
         public static float MaxIconSize = 22f;
 
         public override void DoCell(Rect rect, Pawn pawn, PawnTable table)
@@ -66,7 +65,7 @@
 
             bool redFlag = !(severityChangePerDayFromTendD + severityChangePerDayFromImmu > immunityPerDay);
 
-            Texture2D texture2D = redFlag ? SortingIcon : SortingDescendingIcon;
+            Texture2D texture2D = redFlag ? StaticConstructorOnGameStart.SortingIcon : StaticConstructorOnGameStart.SortingDescendingIcon;
             GUI.color = redFlag ? HealthUtility.GoodConditionColor : HealthUtility.DarkRedColor;
             Rect position2 = new Rect(rect.xMax - texture2D.width - 1f, rect.yMax - texture2D.height - 1f, texture2D.width, texture2D.height);
             GUI.DrawTexture(position2, texture2D);
@@ -88,7 +87,7 @@
             GUI.DrawTexture(skullPosition, skull);
 
             Rect immunePosition = new Rect(rect.x + oneFourthRightCenteredOnIconWidth, rect.yMax - MaxIconSize, MaxIconSize, MaxIconSize);
-            GUI.DrawTexture(immunePosition.ScaledBy(0.9f), immune);
+            GUI.DrawTexture(immunePosition.ScaledBy(0.8f), immune);
 
             Rect rect2 = rect;
             rect2.y += 3f;
@@ -99,7 +98,7 @@
             //rest is copypasta
             if (table.SortingBy == this.def)
             {
-                Texture2D texture2D = (!table.SortingDescending) ? SortingIcon : SortingDescendingIcon;
+                Texture2D texture2D = (!table.SortingDescending) ? StaticConstructorOnGameStart.SortingIcon : StaticConstructorOnGameStart.SortingDescendingIcon;
                 Rect position2 = new Rect(rect.xMax - (float)texture2D.width - 1f, rect.yMax - (float)texture2D.height - 1f, (float)texture2D.width, (float)texture2D.height);
                 GUI.DrawTexture(position2, texture2D);
             }

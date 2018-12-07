@@ -13,7 +13,7 @@ namespace Numbers
     public class PawnColumnWorker_Need : PawnColumnWorker
     {
         private static FieldInfo needThreshPercent = typeof(Need).GetField("threshPercents", BindingFlags.NonPublic | BindingFlags.Instance);
-        private static Texture2D BarInstantMarkerTex = BarInstantMarkerTex = ContentFinder<Texture2D>.Get("UI/Misc/BarInstantMarker", true);
+
 
         //mostly from Koisama
         public override void DoCell(Rect rect, Pawn pawn, PawnTable table)
@@ -92,7 +92,7 @@ namespace Numbers
             }
             Vector2 vector = new Vector2(barRect.x + barRect.width * pct, barRect.y + barRect.height);
             Rect position = new Rect(vector.x - seekerSize / 2f, vector.y, seekerSize, seekerSize);
-            GUI.DrawTexture(position, BarInstantMarkerTex);
+            GUI.DrawTexture(position, StaticConstructorOnGameStart.BarInstantMarkerTex);
         }
 
         public override int GetMinWidth(PawnTable table) => Mathf.Max(base.GetMinWidth(table), 110);

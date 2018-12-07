@@ -1,18 +1,18 @@
-﻿namespace Numbers
-{
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using RimWorld;
-    using UnityEngine;
-    using Verse;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using RimWorld;
+using UnityEngine;
+using Verse;
 
-    [StaticConstructorOnStartup]
+
+namespace Numbers
+{
+
     public class PawnColumnWorker_AllHediffs : PawnColumnWorker_Icon
     {
-        private static readonly Texture2D IconTendedWell = ContentFinder<Texture2D>.Get("UI/Icons/Trainables/Rescue");
 
-        protected override Texture2D GetIconFor(Pawn pawn) => VisibleHediffs(pawn).Any() ? IconTendedWell : null;
+        protected override Texture2D GetIconFor(Pawn pawn) => VisibleHediffs(pawn).Any() ? StaticConstructorOnGameStart.Plus : null;
 
         protected override string GetIconTip(Pawn pawn)
         {
@@ -33,10 +33,9 @@
             return icontipBuilder.ToString();
         }
 
-        public override int Compare(Pawn a, Pawn b)
-        {
-            return VisibleHediffs(a).Count().CompareTo(VisibleHediffs(b).Count());
-        }
+        public override int Compare(Pawn a, Pawn b) => VisibleHediffs(a).Count().CompareTo(VisibleHediffs(b).Count());
+
+        protected override string GetHeaderTip(PawnTable table) => base.GetHeaderTip(table) + "\n\n" + "Numbers_ColumnHeader_Tooltip".Translate();
 
         public override void DoHeader(Rect rect, PawnTable table)
         {
@@ -45,7 +44,7 @@
             float scale = 0.7f;
             Vector2 headerIconSize = new Vector2(StaticConstructorOnGameStart.Plus.width * scale, StaticConstructorOnGameStart.Plus.height * scale);
             int num = (int)((rect.width - headerIconSize.x) / 4f);
-            Rect position = new Rect(rect.x + num, rect.yMin + StaticConstructorOnGameStart.Tame.height, headerIconSize.x, headerIconSize.y);
+            Rect position = new Rect(rect.x + num, rect.yMin + StaticConstructorOnGameStart.Plus.height, headerIconSize.x, headerIconSize.y);
             GUI.DrawTexture(position, StaticConstructorOnGameStart.Plus);
             GUI.color = Color.white;
         }

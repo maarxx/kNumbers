@@ -8,13 +8,10 @@ using Verse;
 
 namespace Numbers
 {
-    [StaticConstructorOnStartup]
     public class PawnColumnWorker_NeedsTreatment : PawnColumnWorker_Icon
     {
-        private static readonly Texture2D IconTendedNeed = ContentFinder<Texture2D>.Get("UI/Icons/Medical/TendedNeed", true);
-        private static readonly Texture2D IconTendedWell = ContentFinder<Texture2D>.Get("UI/Icons/Medical/TendedWell", true);
 
-        protected override Texture2D GetIconFor(Pawn pawn) => pawn.health.HasHediffsNeedingTendByPlayer() ? IconTendedNeed : IconTendedWell;
+        protected override Texture2D GetIconFor(Pawn pawn) => pawn.health.HasHediffsNeedingTendByPlayer() ? StaticConstructorOnGameStart.IconTendedNeed : StaticConstructorOnGameStart.IconTendedWell;
 
         public override int Compare(Pawn a, Pawn b) =>
             a.health.hediffSet.GetHediffsTendable().Count().CompareTo(b.health.hediffSet.GetHediffsTendable().Count());

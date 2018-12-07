@@ -36,16 +36,25 @@ namespace Numbers
 
         public KeyValuePair<PawnTableDef, Func<Pawn, bool>> primaryFilter;
 
+        private List<PawnColumnDef> loadList;
+
         public Dictionary<PawnTableDef, List<PawnColumnDef>> sessionTable = new Dictionary<PawnTableDef, List<PawnColumnDef>>();
 
         public override void ExposeData()
         {
             foreach (PawnTableDef type in DefDatabase<PawnTableDef>.AllDefsListForReading.Where(x => x.HasModExtension<DefModExtension_PawnTableDefs>()))
             {
-                if (sessionTable.TryGetValue(type, out List<PawnColumnDef> workList))
+                if (Scribe.mode == LoadSaveMode.Saving)
+                    if (sessionTable.TryGetValue(type, out List<PawnColumnDef> workList))
+                    {
+                        Scribe_Collections.Look(ref workList, "Numbers_" + type, LookMode.Def);
+                        sessionTable[type] = workList;
+                    }
+
+                if (Scribe.mode == LoadSaveMode.LoadingVars)
                 {
-                    Scribe_Collections.Look(ref workList, "Numbers_" + type, LookMode.Def);
-                    sessionTable[type] = workList;
+                    Scribe_Collections.Look(ref loadList, "Numbers_" + type, LookMode.Def);
+                    sessionTable[type] = loadList;
                 }
             }
         }
