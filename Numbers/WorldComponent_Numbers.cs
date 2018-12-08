@@ -45,16 +45,18 @@ namespace Numbers
             foreach (PawnTableDef type in DefDatabase<PawnTableDef>.AllDefsListForReading.Where(x => x.HasModExtension<DefModExtension_PawnTableDefs>()))
             {
                 if (Scribe.mode == LoadSaveMode.Saving)
-                    if (sessionTable.TryGetValue(type, out List<PawnColumnDef> workList))
+                {
+                    if (this.sessionTable.TryGetValue(type, out List<PawnColumnDef> workList))
                     {
                         Scribe_Collections.Look(ref workList, "Numbers_" + type, LookMode.Def);
-                        sessionTable[type] = workList;
+                        this.sessionTable[type] = workList;
                     }
-
-                if (Scribe.mode == LoadSaveMode.LoadingVars)
+                }
+                else if (Scribe.mode == LoadSaveMode.LoadingVars)
                 {
-                    Scribe_Collections.Look(ref loadList, "Numbers_" + type, LookMode.Def);
-                    sessionTable[type] = loadList;
+                    Scribe_Collections.Look(ref this.loadList, "Numbers_" + type, LookMode.Def);
+                    if (!this.loadList.NullOrEmpty())
+                        this.sessionTable[type] = this.loadList;
                 }
             }
         }

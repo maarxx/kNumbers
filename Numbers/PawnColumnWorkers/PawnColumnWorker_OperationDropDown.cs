@@ -20,7 +20,7 @@ namespace Numbers
                         typeof(Func<Pawn, Thing, RecipeDef, IEnumerable<ThingDef>, BodyPartRecord, FloatMenuOption>),
                         null,
                         typeof(HealthCardUtility).GetMethod("GenerateSurgeryOption",
-                            BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.InvokeMethod));
+                                                            BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.InvokeMethod) ?? throw new InvalidOperationException("GenerateSurgeryOption is null."));
 
         public override void DoCell(Rect rect, Pawn pawn, PawnTable table)
         {

@@ -44,7 +44,7 @@ namespace Numbers
             float scale = 0.7f;
             Vector2 headerIconSize = new Vector2(StaticConstructorOnGameStart.Plus.width * scale, StaticConstructorOnGameStart.Plus.height * scale);
             int num = (int)((rect.width - headerIconSize.x) / 4f);
-            Rect position = new Rect(rect.x + num, rect.yMin + StaticConstructorOnGameStart.Plus.height, headerIconSize.x, headerIconSize.y);
+            Rect position = new Rect(rect.x + num, rect.yMax - StaticConstructorOnGameStart.Plus.height, headerIconSize.x, headerIconSize.y);
             GUI.DrawTexture(position, StaticConstructorOnGameStart.Plus);
             GUI.color = Color.white;
         }
