@@ -14,10 +14,10 @@
 	<Numbers_Presets.WorkTabPlus>worktab plus</Numbers_Presets.WorkTabPlus>
 	<Numbers_Presets.ColonistNeeds>colonist needs</Numbers_Presets.ColonistNeeds>
 	
-	<Numbers_SetAsDefault>Set as default</Numbers_SetAsDefault>
-	<Numbers_SetAsDefaultExplanation>Sets the currently viewed layout as the default for this type of view ({0}). This layout will then be used for new colonies. Can be deleted in the mod settings (Menu => Options => Mod settings => Numbers).</Numbers_SetAsDefaultExplanation>
+	<Numbers_SetAsDefault>Set current view as default</Numbers_SetAsDefault>
+	<Numbers_SetAsDefaultExplanation>Set the current view as the default for this type of view ({0}).\n\nThis view will then be used for new colonies.\n\nCan be deleted in the mod settings:\n  [Menu] => [Options] => [Mod settings] => [Numbers].</Numbers_SetAsDefaultExplanation>
 	<Numbers_NoDefaultStoredForThisView>There are no defaults stored for the currently viewed pawn type.</Numbers_NoDefaultStoredForThisView>
-	<Numbers_LoadDefault>Load default</Numbers_LoadDefault>
+	<Numbers_LoadDefault>Load default view</Numbers_LoadDefault>
 
 	<Numbers_showMoreInfoThanVanilla>Show needs and jobs even where it would normally be hidden.</Numbers_showMoreInfoThanVanilla>
 	<Numbers_coolerThanTheWildlifeTab>Numbers is everything I ever wanted from the Wildlife tab and I want it to take over.</Numbers_coolerThanTheWildlifeTab>
@@ -27,8 +27,8 @@
 	<Numbers_pawnTableHighSelected>Highlight selected pawns.</Numbers_pawnTableHighSelected>
 	<Numbers_pawnTableHighSelected_Desc>Note: Applies to *all* PawnTables, not just Numbers.</Numbers_pawnTableHighSelected_Desc>
 
-	<Numbers_LoadSavedLayout>Load saved layout</Numbers_LoadSavedLayout>
+	<Numbers_LoadSavedLayout>Load saved view</Numbers_LoadSavedLayout>
 	<Numbers_NothingSaved>Nothing saved</Numbers_NothingSaved>
-	<Numbers_SaveCurrentLayout>Save current layout</Numbers_SaveCurrentLayout>
+	<Numbers_SaveCurrentLayout>Save current view</Numbers_SaveCurrentLayout>
 
 </LanguageData>
