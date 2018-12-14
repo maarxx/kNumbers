@@ -45,8 +45,11 @@ namespace Numbers
         public override void ExposeData()
         {
             Scribe_Values.Look(ref showMoreInfoThanVanilla, "showMoreInfoThanVanilla", true);
-            Scribe_Collections.Look(ref storedPawnTableDefs, "numbersPawnTableDefs");
+            Scribe_Values.Look(ref coolerThanTheWildlifeTab, "coolerThanTheWildlifeTab", true);
+            Scribe_Values.Look(ref pawnTableHighlightSelected, "pawnTableHighlightSelected", true);
+            Scribe_Values.Look(ref pawnTableClickSelect, "pawnTableClickSelect", true);
             Scribe_Values.Look(ref maxHeight, "maxHeight", 1f);
+            Scribe_Collections.Look(ref storedPawnTableDefs, "numbersPawnTableDefs");
         }
     }
 }

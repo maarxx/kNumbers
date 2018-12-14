@@ -9,17 +9,14 @@
     public static class Numbers_Utility
     {
         public static bool IsEnemy(this Pawn p) => p.HostileTo(Faction.OfPlayer);
-            //!p.IsPrisoner 
-            //            && (p.Faction != null && p.Faction.HostileTo(Faction.OfPlayer)
-            //                || !p.RaceProps.Animal && (!p.RaceProps.Humanlike || p.RaceProps.IsMechanoid))
-            //            && !p.Position.Fogged(p.MapHeld) && p.Position != IntVec3.Invalid;
 
-        public static bool IsGuest(this Pawn p) => p.guest != null && !p.guest.IsPrisoner 
-                        && p.Faction != null && !p.Faction.HostileTo(Faction.OfPlayer) 
-                        && p.Faction != Faction.OfPlayer && !p.Position.Fogged(p.MapHeld) && p.Position != IntVec3.Invalid;
+        public static bool IsGuest(this Pawn p) => p.guest != null && !p.guest.IsPrisoner
+                        && p.Faction != null && !p.Faction.HostileTo(Faction.OfPlayer)
+                        && p.Faction != Faction.OfPlayer;
 
-        public static bool IsWildAnimal(this Pawn p) => p.Spawned && p.Faction == null
-                        && !p.Position.Fogged(p.MapHeld) && p.AnimalOrWildMan();
+        public static bool IsVisible(this Pawn p) => p.SpawnedOrAnyParentSpawned && p.PositionHeld != IntVec3.Invalid                && !p.PositionHeld.Fogged(p.MapHeld);
+
+        public static bool IsWildAnimal(this Pawn p) => p.Faction == null && p.AnimalOrWildMan();
 
         public static DefModExtension_PawnColumnDefs Ext(this PawnColumnDef def)
         {

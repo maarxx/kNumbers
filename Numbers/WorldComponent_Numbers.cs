@@ -64,14 +64,14 @@ namespace Numbers
         public static readonly Dictionary<PawnTableDef, Func<Pawn, bool>> PrimaryFilter = new Dictionary<PawnTableDef, Func<Pawn, bool>>
         {
             //{ "All",            (pawn) => true },
-            { NumbersDefOf.Numbers_MainTable,      pawn => !pawn.Dead && pawn.IsColonist },
-            { NumbersDefOf.Numbers_Enemies,        pawn => !pawn.Dead && pawn.IsEnemy() },
-            { NumbersDefOf.Numbers_Prisoners,      pawn => !pawn.Dead && pawn.IsPrisoner },
-            { NumbersDefOf.Numbers_Guests,         pawn => !pawn.Dead && pawn.IsGuest() },
-            { NumbersDefOf.Numbers_Animals,        pawn => !pawn.Dead && pawn.RaceProps.Animal && pawn.Faction == Faction.OfPlayer },
-            { NumbersDefOf.Numbers_WildAnimals,    pawn => !pawn.Dead && pawn.IsWildAnimal() },
-            { NumbersDefOf.Numbers_Corpses,        pawn => pawn.Dead && !pawn.RaceProps.Animal },
-            { NumbersDefOf.Numbers_AnimalCorpses,  pawn => pawn.Dead && pawn.RaceProps.Animal }
+            { NumbersDefOf.Numbers_MainTable,      pawn => pawn.IsVisible() && !pawn.Dead && pawn.IsColonist },
+            { NumbersDefOf.Numbers_Enemies,        pawn => pawn.IsVisible() && !pawn.Dead && pawn.IsEnemy() },
+            { NumbersDefOf.Numbers_Prisoners,      pawn => pawn.IsVisible() && !pawn.Dead && pawn.IsPrisoner },
+            { NumbersDefOf.Numbers_Guests,         pawn => pawn.IsVisible() && !pawn.Dead && pawn.IsGuest() },
+            { NumbersDefOf.Numbers_Animals,        pawn => pawn.IsVisible() && !pawn.Dead && pawn.RaceProps.Animal && pawn.Faction == Faction.OfPlayer },
+            { NumbersDefOf.Numbers_WildAnimals,    pawn => pawn.IsVisible() && !pawn.Dead && pawn.IsWildAnimal() },
+            { NumbersDefOf.Numbers_Corpses,        pawn => pawn.IsVisible() && pawn.Dead && !pawn.RaceProps.Animal },
+            { NumbersDefOf.Numbers_AnimalCorpses,  pawn => pawn.IsVisible() && pawn.Dead && pawn.RaceProps.Animal }
         };
 
         internal void NotifySettingsChanged()
