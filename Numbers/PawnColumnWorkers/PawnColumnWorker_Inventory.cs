@@ -23,7 +23,7 @@ namespace Numbers
             float gWidth = 28f;
             float gHeight = 28f;
 
-            foreach (ThingWithComps thing in pawn.inventory.innerContainer)
+            foreach (Thing thing in pawn.inventory.innerContainer)
             {
                 Rect rect2 = new Rect(x, 0, gWidth, gHeight);
                 DrawThing(rect2, thing, pawn);
@@ -48,7 +48,6 @@ namespace Numbers
                 if (selPawn.IsColonistPlayerControlled)
                 {
                     Action action = null;
-                    ThingWithComps eq = thing as ThingWithComps;
 
                     if (!thing.def.destroyOnDrop)
                     {
