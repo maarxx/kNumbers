@@ -42,14 +42,23 @@ namespace Numbers
             base.DoHeader(rect, table);
             GUI.color = Color.cyan;
             float scale = 0.7f;
-            Vector2 headerIconSize = new Vector2(StaticConstructorOnGameStart.Plus.width * scale, StaticConstructorOnGameStart.Plus.height * scale);
-            int num = (int)((rect.width - headerIconSize.x) / 4f);
-            Rect position = new Rect(rect.x + num, rect.yMax - StaticConstructorOnGameStart.Plus.height, headerIconSize.x, headerIconSize.y);
+            int sizeOfVanillaRescueTex = 24;
+
+            Vector2 headerIconSize = new Vector2(
+                Mathf.Min(sizeOfVanillaRescueTex, StaticConstructorOnGameStart.Plus.width) * scale,
+                Mathf.Min(sizeOfVanillaRescueTex, StaticConstructorOnGameStart.Plus.height) * scale);
+
+            int xOffSet = (int)((rect.width - headerIconSize.x) / 4f);
+            Rect position = new Rect(
+                x: rect.x + xOffSet,
+                y: rect.yMax - Mathf.Min(sizeOfVanillaRescueTex, StaticConstructorOnGameStart.Plus.height),
+                width: headerIconSize.x,
+                height: headerIconSize.y);
+
             GUI.DrawTexture(position, StaticConstructorOnGameStart.Plus);
             GUI.color = Color.white;
         }
 
-        //COPYYYYYY PASTE! Yum decompiler spaghetti.
         private static IEnumerable<Hediff> VisibleHediffs(Pawn pawn)
         {
             List<Hediff_MissingPart> mpca = pawn.health.hediffSet.GetMissingPartsCommonAncestors();
