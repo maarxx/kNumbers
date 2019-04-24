@@ -24,35 +24,36 @@ namespace Numbers
             //HarmonyInstance.DEBUG = true;
 
             harmony.Patch(AccessTools.Method(typeof(DefGenerator), nameof(DefGenerator.GenerateImpliedDefs_PreResolve)),
-                          null, new HarmonyMethod(typeof(Numbers), nameof(Columndefs)));
+                postfix: new HarmonyMethod(typeof(Numbers), nameof(Columndefs)));
 
             harmony.Patch(AccessTools.Method(typeof(PawnColumnWorker), "HeaderClicked"),
-                          new HarmonyMethod(typeof(Numbers), nameof(RightClickToRemoveHeader)));
+                prefix: new HarmonyMethod(typeof(Numbers), nameof(RightClickToRemoveHeader)));
 
             harmony.Patch(AccessTools.Method(typeof(PawnTable), nameof(PawnTable.PawnTableOnGUI)),
-                          transpiler: new HarmonyMethod(typeof(Numbers), nameof(MakeHeadersReOrderable)));
+                transpiler: new HarmonyMethod(typeof(Numbers), nameof(MakeHeadersReOrderable)));
 
             harmony.Patch(AccessTools.Method(typeof(PawnColumnWorker), nameof(PawnColumnWorker.DoHeader)),
-                          transpiler: new HarmonyMethod(typeof(Numbers), nameof(UseWordWrapOnHeaders)));
+                transpiler: new HarmonyMethod(typeof(Numbers), nameof(UseWordWrapOnHeaders)));
 
             harmony.Patch(AccessTools.Method(typeof(PawnColumnWorker_Text), nameof(PawnColumnWorker_Text.DoCell)),
-                          transpiler: new HarmonyMethod(typeof(Numbers), nameof(CentreCell)));
+                transpiler: new HarmonyMethod(typeof(Numbers), nameof(CentreCell)));
 
             harmony.Patch(AccessTools.Method(typeof(ReorderableWidget), nameof(ReorderableWidget.Reorderable)),
-                          transpiler: new HarmonyMethod(typeof(Numbers), nameof(ReorderWidgetFromEventToInputTranspiler)));
+                transpiler: new HarmonyMethod(typeof(Numbers), nameof(ReorderWidgetFromEventToInputTranspiler)));
 
             //we meet again, Fluffy.
             Type pawnColumWorkerType = GenTypes.GetTypeInAnyAssembly("WorkTab.PawnColumnWorker_WorkType");
             if (pawnColumWorkerType != null && typeof(PawnColumnWorker).IsAssignableFrom(pawnColumWorkerType))
             {
                 harmony.Patch(AccessTools.Method(pawnColumWorkerType, "HeaderInteractions"),
-                        new HarmonyMethod(typeof(Numbers), nameof(RightClickToRemoveHeader)));
+                    prefix: new HarmonyMethod(typeof(Numbers), nameof(RightClickToRemoveHeader)));
             }
 
             //we meet Uuugggg again too. Credit where it's due:
             //  https://github.com/alextd/RimWorld-EnhancementPack/blob/master/Source/PawnTableHighlightSelected.cs
             harmony.Patch(AccessTools.Method(typeof(PawnColumnWorker_Label), nameof(PawnColumnWorker_Label.DoCell)),
-                postfix: new HarmonyMethod(typeof(Numbers), nameof(AddHighlightToLabel_PostFix)), transpiler: new HarmonyMethod(typeof(Numbers), nameof(AddHighlightToLabel_Transpiler)));
+                postfix: new HarmonyMethod(typeof(Numbers), nameof(AddHighlightToLabel_PostFix)),
+                transpiler: new HarmonyMethod(typeof(Numbers), nameof(AddHighlightToLabel_Transpiler)));
 
             this.settings = this.GetSettings<Numbers_Settings>();
         }
@@ -247,11 +248,13 @@ namespace Numbers
         }
 
         [UsedImplicitly]
-        public static bool NoMouseButtonsPressed() => !Input.GetMouseButton(0) && !Input.GetMouseButton(1);
+        public static bool NoMouseButtonsPressed()
+            => !Input.GetMouseButton(0)
+            && !Input.GetMouseButton(1);
 
         [UsedImplicitly]
-        public static bool WasClicked(bool useRightButton) =>
-                useRightButton && Input.GetMouseButtonDown(1)
+        public static bool WasClicked(bool useRightButton)
+            => useRightButton && Input.GetMouseButtonDown(1)
             || !useRightButton && Input.GetMouseButtonDown(0);
 
         private static void AddHighlightToLabel_PostFix(Rect rect, Pawn pawn)
@@ -331,18 +334,8 @@ namespace Numbers
         {
             foreach (RecordDef record in DefDatabase<RecordDef>.AllDefsListForReading)
             {
-                PawnColumnDef columnDefRecord = new PawnColumnDef
-                {
-                    ////can't have . inside defNames, but GetType() returns NameSpace.Class 
-                    defName = "Numbers_" + record.GetType().ToString().Replace('.', '_') + "_" + record.defName,
-                    workerClass = typeof(PawnColumnWorker_Record),
-                    sortable = true,
-                    headerTip = record.description + "\n\n" + "Numbers_ColumnHeader_Tooltip".Translate(),
-                    generated = true,
-                    label = record.LabelCap,
-                    modContentPack = record.modContentPack,
-                    modExtensions = new List<DefModExtension> { new DefModExtension_PawnColumnDefs() }
-                };
+                PawnColumnDef columnDefRecord = GenerateNewPawnColumnDefFor(record, true);
+                columnDefRecord.workerClass = typeof(PawnColumnWorker_Record);
                 columnDefRecord.GetModExtension<DefModExtension_PawnColumnDefs>().record = record;
 
                 yield return columnDefRecord;
@@ -350,17 +343,8 @@ namespace Numbers
 
             foreach (PawnCapacityDef capacityDef in DefDatabase<PawnCapacityDef>.AllDefsListForReading)
             {
-                PawnColumnDef columnDefCapacity = new PawnColumnDef
-                {
-                    defName = "Numbers_" + capacityDef.GetType().ToString().Replace('.', '_') + "_" + capacityDef.defName,
-                    workerClass = typeof(PawnColumnWorker_Capacity),
-                    sortable = true,
-                    headerTip = "Numbers_ColumnHeader_Tooltip".Translate(),
-                    generated = true,
-                    label = capacityDef.LabelCap,
-                    modContentPack = capacityDef.modContentPack,
-                    modExtensions = new List<DefModExtension> { new DefModExtension_PawnColumnDefs() }
-                };
+                PawnColumnDef columnDefCapacity = GenerateNewPawnColumnDefFor(capacityDef, false);
+                columnDefCapacity.workerClass = typeof(PawnColumnWorker_Capacity);
                 columnDefCapacity.GetModExtension<DefModExtension_PawnColumnDefs>().capacity = capacityDef;
 
                 yield return columnDefCapacity;
@@ -368,18 +352,8 @@ namespace Numbers
 
             foreach (NeedDef need in DefDatabase<NeedDef>.AllDefsListForReading)
             {
-
-                PawnColumnDef columnDefNeed = new PawnColumnDef
-                {
-                    defName = "Numbers_" + need.GetType().ToString().Replace('.', '_') + "_" + need.defName,
-                    workerClass = typeof(PawnColumnWorker_Need),
-                    sortable = true,
-                    headerTip = need.description + "\n\n" + "Numbers_ColumnHeader_Tooltip".Translate(),
-                    generated = true,
-                    label = need.LabelCap,
-                    modContentPack = need.modContentPack,
-                    modExtensions = new List<DefModExtension> { new DefModExtension_PawnColumnDefs() }
-                };
+                PawnColumnDef columnDefNeed = GenerateNewPawnColumnDefFor(need, true);
+                columnDefNeed.workerClass = typeof(PawnColumnWorker_Need);
                 columnDefNeed.GetModExtension<DefModExtension_PawnColumnDefs>().need = need;
 
                 yield return columnDefNeed;
@@ -388,17 +362,8 @@ namespace Numbers
             foreach (StatDef stat in DefDatabase<StatDef>.AllDefsListForReading
                                                          .Where(x => x.showOnPawns && !x.alwaysHide))
             {
-                PawnColumnDef columnDefStat = new PawnColumnDef
-                {
-                    defName = "Numbers_" + stat.GetType().ToString().Replace('.', '_') + "_" + stat.defName,
-                    workerClass = typeof(PawnColumnWorker_Stat),
-                    sortable = true,
-                    headerTip = stat.description + "\n\n" + "Numbers_ColumnHeader_Tooltip".Translate(),
-                    generated = true,
-                    label = stat.LabelCap,
-                    modContentPack = stat.modContentPack,
-                    modExtensions = new List<DefModExtension> { new DefModExtension_PawnColumnDefs() }
-                };
+                PawnColumnDef columnDefStat = GenerateNewPawnColumnDefFor(stat, true);
+                columnDefStat.workerClass = typeof(PawnColumnWorker_Stat);
                 columnDefStat.GetModExtension<DefModExtension_PawnColumnDefs>().stat = stat;
 
                 yield return columnDefStat;
@@ -406,22 +371,30 @@ namespace Numbers
 
             foreach (SkillDef skill in DefDatabase<SkillDef>.AllDefsListForReading)
             {
-                PawnColumnDef columnDefSkill = new PawnColumnDef
-                {
-                    defName = "Numbers_" + skill.GetType().ToString().Replace('.', '_') + "_" + skill.defName,
-                    workerClass = typeof(PawnColumnWorker_Skill),
-                    sortable = true,
-                    headerTip = skill.description + "\n\n" + "Numbers_ColumnHeader_Tooltip".Translate(),
-                    generated = true,
-                    label = skill.LabelCap,
-                    modContentPack = skill.modContentPack,
-                    modExtensions = new List<DefModExtension> { new DefModExtension_PawnColumnDefs() }
-                };
+                PawnColumnDef columnDefSkill = GenerateNewPawnColumnDefFor(skill, true);
+                columnDefSkill.workerClass = typeof(PawnColumnWorker_Skill);
                 columnDefSkill.GetModExtension<DefModExtension_PawnColumnDefs>().skill = skill;
 
                 yield return columnDefSkill;
             }
         }
+
+        private static PawnColumnDef GenerateNewPawnColumnDefFor(Def def, bool prependDescription)
+        {
+            return new PawnColumnDef
+            {
+                ////can't have . inside defNames, but GetType() returns NameSpace.Class 
+                defName = "Numbers_" + def.GetType().ToString().Replace('.', '_') + "_" + def.defName,
+                workerClass = typeof(PawnColumnWorker_Record),
+                sortable = true,
+                headerTip = (prependDescription ? def.description + "\n\n" : "") + "Numbers_ColumnHeader_Tooltip".Translate(),
+                generated = true,
+                label = def.LabelCap,
+                modContentPack = def.modContentPack,
+                modExtensions = new List<DefModExtension> { new DefModExtension_PawnColumnDefs() }
+            };
+        }
+
 
         private static Vector2 scrollPosition;
 
@@ -487,8 +460,7 @@ namespace Numbers
         public override void WriteSettings()
         {
             base.WriteSettings();
-            if (Find.World?.GetComponent<WorldComponent_Numbers>() != null)
-                Find.World.GetComponent<WorldComponent_Numbers>().NotifySettingsChanged();
+            Find.World?.GetComponent<WorldComponent_Numbers>()?.NotifySettingsChanged();
         }
 
         private readonly List<string> cachedList = new List<string>();
