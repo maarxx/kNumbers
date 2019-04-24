@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
+﻿using RimWorld;
 using UnityEngine;
 using Verse;
 
@@ -27,10 +23,13 @@ namespace Numbers
 
         protected override string GetTip(Pawn pawn) => this.GetTextFor(pawn);
 
-        public override int Compare(Pawn a, Pawn b) => (a.jobs?.curDriver.GetReport()[0] ?? 0).CompareTo(b.jobs?.curDriver.GetReport()[0] ?? 0);
+        public override int Compare(Pawn a, Pawn b)
+            => (a.jobs?.curDriver.GetReport()).CompareTo(b.jobs?.curDriver.GetReport());
 
-        public override int GetMinWidth(PawnTable table) => Mathf.Max(base.GetMinWidth(table), 200);
+        public override int GetMinWidth(PawnTable table)
+            => Mathf.Max(base.GetMinWidth(table), 200);
 
-        public override int GetMinHeaderHeight(PawnTable table) => Mathf.CeilToInt(Text.CalcSize(this.def.LabelCap.WordWrapAt(this.GetMinWidth(table))).y);
+        public override int GetMinHeaderHeight(PawnTable table)
+            => Mathf.CeilToInt(Text.CalcSize(this.def.LabelCap.WordWrapAt(this.GetMinWidth(table))).y);
     }
 }

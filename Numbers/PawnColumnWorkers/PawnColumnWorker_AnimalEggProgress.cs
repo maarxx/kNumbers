@@ -22,7 +22,8 @@ namespace Numbers
             return null;
         }
 
-        public override int Compare(Pawn a, Pawn b) => GetScoreFor(a).CompareTo(GetScoreFor(b));
+        public override int Compare(Pawn a, Pawn b)
+            => GetScoreFor(a).CompareTo(GetScoreFor(b));
 
         private float GetScoreFor(Pawn pawn)
         {

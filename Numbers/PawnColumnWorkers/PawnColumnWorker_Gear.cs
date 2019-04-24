@@ -46,7 +46,8 @@ namespace Numbers
             }
         }
 
-        public override int GetMinWidth(PawnTable table) => Mathf.Max(this.width, baseWidth);
+        public override int GetMinWidth(PawnTable table)
+            => Mathf.Max(this.width, baseWidth);
 
         private void DrawThing(Rect rect, Thing thing, Pawn selPawn)
         {
@@ -98,8 +99,7 @@ namespace Numbers
         }
 
         public override int Compare(Pawn a, Pawn b)
-        {
-            return (a.equipment.HasAnything() ? a.equipment.AllEquipmentListForReading.First().LabelCap[0] : 0).CompareTo           (b.equipment.HasAnything() ? b.equipment.AllEquipmentListForReading.First().LabelCap[0] : 0);
-        }
+            => (a.equipment.HasAnything() ? a.equipment.AllEquipmentListForReading.First().LabelCap : string.Empty)
+                .CompareTo(b.equipment.HasAnything() ? b.equipment.AllEquipmentListForReading.First().LabelCap : string.Empty);
     }
 }

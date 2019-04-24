@@ -10,7 +10,6 @@
     [StaticConstructorOnStartup]
     public class PawnColumnWorker_DiseaseProgression : PawnColumnWorker
     {
-
         private static readonly Color SeverePainColor = new Color(0.9f, 0.5f, 0f);
 
         //[TweakValue("AAAADiseaseProgression")] //assumes a perfectly square icon.
@@ -121,11 +120,14 @@
             }
         }
 
-        public override int GetMinWidth(PawnTable table) => this.def.width;
+        public override int GetMinWidth(PawnTable table)
+            => this.def.width;
 
-        private string GetTip(Pawn pawn, HediffWithComps severe) => severe.LabelCap + ": " + severe.SeverityLabel + "\n" + severe.TipStringExtra;
+        private string GetTip(Pawn pawn, HediffWithComps severe)
+            => severe.LabelCap + ": " + severe.SeverityLabel + "\n" + severe.TipStringExtra;
 
-        private float GetTextFor(HediffWithComps hediff) => hediff?.TryGetComp<HediffComp_Immunizable>().Immunity - hediff?.Severity ?? -1f; //nullcheck for Comparer.
+        private float GetTextFor(HediffWithComps hediff)
+            => hediff?.TryGetComp<HediffComp_Immunizable>().Immunity - hediff?.Severity ?? -1f; //nullcheck for Comparer.
 
         private Color GetPrettyColorFor(float deltaSeverity)
         {
@@ -172,9 +174,10 @@
             return mostSevereHediff;
         }
 
-        public override int GetMinHeaderHeight(PawnTable table) => Mathf.CeilToInt(Text.CalcSize(this.def.LabelCap.WordWrapAt(this.GetMinWidth(table))).y);
+        public override int GetMinHeaderHeight(PawnTable table)
+            => Mathf.CeilToInt(Text.CalcSize(this.def.LabelCap.WordWrapAt(this.GetMinWidth(table))).y);
 
-        public override int Compare(Pawn a, Pawn b) =>
-            GetTextFor(FindMostSevereHediff(a)).CompareTo(GetTextFor(FindMostSevereHediff(b)));
+        public override int Compare(Pawn a, Pawn b)
+            => GetTextFor(FindMostSevereHediff(a)).CompareTo(GetTextFor(FindMostSevereHediff(b)));
     }
 }

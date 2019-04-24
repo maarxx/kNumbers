@@ -71,7 +71,9 @@ namespace Numbers
             TooltipHandler.TipRegion(rect, new TipSignal(thing.LabelCap));
         }
 
-        public override int Compare(Pawn a, Pawn b) => (a.inventory?.innerContainer?.Count() ?? -1).CompareTo(b.inventory?.innerContainer?.Count() ?? -1);
+        public override int Compare(Pawn a, Pawn b)
+            => (a.inventory?.innerContainer?.Count() ?? -1)
+                .CompareTo(b.inventory?.innerContainer?.Count() ?? -1);
     }
 }
 

@@ -19,6 +19,6 @@ namespace Numbers
             return UnityEngine.Mathf.Max(base.GetMinWidth(table), 80);
         }
 
-        public override int Compare(Pawn a, Pawn b) => a.kindDef.race.LabelCap[0].CompareTo(b.kindDef.race.LabelCap[0]);
+        public override int Compare(Pawn a, Pawn b) => a.kindDef.race.LabelCap.CompareTo(b.kindDef.race.LabelCap);
     }
 }

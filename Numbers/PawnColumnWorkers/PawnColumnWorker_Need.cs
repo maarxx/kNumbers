@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -13,7 +10,6 @@ namespace Numbers
     public class PawnColumnWorker_Need : PawnColumnWorker
     {
         private static FieldInfo needThreshPercent = typeof(Need).GetField("threshPercents", BindingFlags.NonPublic | BindingFlags.Instance);
-
 
         //mostly from Koisama
         public override void DoCell(Rect rect, Pawn pawn, PawnTable table)
@@ -95,11 +91,11 @@ namespace Numbers
             GUI.DrawTexture(position, StaticConstructorOnGameStart.BarInstantMarkerTex);
         }
 
-        public override int GetMinWidth(PawnTable table) => Mathf.Max(base.GetMinWidth(table), 110);
+        public override int GetMinWidth(PawnTable table)
+            => Mathf.Max(base.GetMinWidth(table), 110);
 
         public override int Compare(Pawn a, Pawn b)
-        {
-            return (a.needs?.TryGetNeed(this.def.Ext().need)?.CurLevel ?? 0).CompareTo(b.needs?.TryGetNeed(this.def.Ext().need)?.CurLevel ?? 0);
-        }
+            => (a.needs?.TryGetNeed(this.def.Ext().need)?.CurLevel ?? 0)
+                .CompareTo(b.needs?.TryGetNeed(this.def.Ext().need)?.CurLevel ?? 0);
     }
 }

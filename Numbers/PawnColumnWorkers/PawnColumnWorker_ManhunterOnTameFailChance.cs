@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
+﻿using RimWorld;
 using Verse;
 using UnityEngine;
 
@@ -10,7 +6,8 @@ namespace Numbers
 {
     public class PawnColumnWorker_ManhunterOnTameFailChance : PawnColumnWorker_Text
     {
-        public override int Compare(Pawn a, Pawn b) => GetValue(a).CompareTo(GetValue(b));
+        public override int Compare(Pawn a, Pawn b)
+            => GetValue(a).CompareTo(GetValue(b));
 
         protected override string GetTextFor(Pawn pawn) => GetValue(pawn).ToStringPercent();
 
@@ -18,9 +15,11 @@ namespace Numbers
             "MessageAnimalManhuntsOnTameFailed".Translate(pawn.kindDef.GetLabelPlural().CapitalizeFirst(),
                                                           GetValue(pawn).ToStringPercent(), pawn.Named("ANIMAL"));
 
-        private float GetValue(Pawn pawn) => pawn.RaceProps.manhunterOnTameFailChance;
+        private float GetValue(Pawn pawn)
+            => pawn.RaceProps.manhunterOnTameFailChance;
 
-        protected override string GetHeaderTip(PawnTable table) => "TameFailedRevengeChance".Translate();
+        protected override string GetHeaderTip(PawnTable table)
+            => "TameFailedRevengeChance".Translate();
 
         public override void DoHeader(Rect rect, PawnTable table)
         {

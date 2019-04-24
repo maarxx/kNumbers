@@ -8,11 +8,12 @@ using Verse;
 
 namespace Numbers
 {
-
     public class PawnColumnWorker_AllHediffs : PawnColumnWorker_Icon
     {
-
-        protected override Texture2D GetIconFor(Pawn pawn) => VisibleHediffs(pawn).Any() ? StaticConstructorOnGameStart.Plus : null;
+        protected override Texture2D GetIconFor(Pawn pawn)
+            => VisibleHediffs(pawn).Any()
+                ? StaticConstructorOnGameStart.Plus
+                : null;
 
         protected override string GetIconTip(Pawn pawn)
         {
@@ -33,9 +34,11 @@ namespace Numbers
             return icontipBuilder.ToString();
         }
 
-        public override int Compare(Pawn a, Pawn b) => VisibleHediffs(a).Count().CompareTo(VisibleHediffs(b).Count());
+        public override int Compare(Pawn a, Pawn b)
+            => VisibleHediffs(a).Count().CompareTo(VisibleHediffs(b).Count());
 
-        protected override string GetHeaderTip(PawnTable table) => base.GetHeaderTip(table) + "\n\n" + "Numbers_ColumnHeader_Tooltip".Translate();
+        protected override string GetHeaderTip(PawnTable table)
+            => base.GetHeaderTip(table) + "\n\n" + "Numbers_ColumnHeader_Tooltip".Translate();
 
         public override void DoHeader(Rect rect, PawnTable table)
         {
@@ -66,17 +69,22 @@ namespace Numbers
             {
                 yield return t;
             }
-            IEnumerable<Hediff> visibleDiffs = pawn.health.hediffSet.hediffs.Where(d => !(d is Hediff_MissingPart) && d.Visible);
 
+            IEnumerable<Hediff> visibleDiffs = pawn.health.hediffSet.hediffs.Where(d => !(d is Hediff_MissingPart) && d.Visible);
             foreach (Hediff diff in visibleDiffs)
             {
                 yield return diff;
             }
         }
 
-        private static IEnumerable<IGrouping<BodyPartRecord, Hediff>> VisibleHediffGroupsInOrder(Pawn pawn) =>
-            VisibleHediffs(pawn).GroupBy(x => x.Part).OrderByDescending(x => GetListPriority(x.First().Part));
+        private static IEnumerable<IGrouping<BodyPartRecord, Hediff>> VisibleHediffGroupsInOrder(Pawn pawn)
+            => VisibleHediffs(pawn)
+                .GroupBy(x => x.Part)
+                .OrderByDescending(x => GetListPriority(x.First().Part));
 
-        private static float GetListPriority(BodyPartRecord rec) => rec == null ? 9999999f : (int)rec.height * 10000 + rec.coverageAbsWithChildren;
+        private static float GetListPriority(BodyPartRecord rec)
+            => rec == null
+                ? 9999999f
+                : (int)rec.height * 10000 + rec.coverageAbsWithChildren;
     }
 }

@@ -13,14 +13,14 @@ namespace Numbers
     public class PawnColumnWorker_PrisonerInteraction : PawnColumnWorker
     {
         //for mods, like Prison Labour, that add more interactinodefs.
-        private readonly int width = DefDatabase<PrisonerInteractionModeDef>.DefCount * 30;//AllDefsListForReading.Count * 30;
+        private readonly int width = DefDatabase<PrisonerInteractionModeDef>.DefCount * 30;
         private bool dragging;
 
         public override void DoCell(Rect rect, Pawn pawn, PawnTable table)
         {
             if (pawn.guest == null)
                 return;
-            
+
             GUI.BeginGroup(rect);
             float x = 0f;
 
@@ -64,10 +64,13 @@ namespace Numbers
             }
         }
 
-        public override int Compare(Pawn a, Pawn b) => (a.guest?.interactionMode?.listOrder ?? 0).CompareTo(b.guest?.interactionMode?.listOrder ?? 0);
+        public override int Compare(Pawn a, Pawn b)
+            => (a.guest?.interactionMode?.listOrder ?? 0).CompareTo(b.guest?.interactionMode?.listOrder ?? 0);
 
-        public override int GetMinWidth(PawnTable table) => width; //Mathf.Max(base.GetMinWidth(table), 160);
+        public override int GetMinWidth(PawnTable table)
+            => width;
 
-        public override int GetMinHeaderHeight(PawnTable table) => Mathf.CeilToInt(Text.CalcSize(this.def.LabelCap.WordWrapAt(this.GetMinWidth(table))).y);
+        public override int GetMinHeaderHeight(PawnTable table)
+            => Mathf.CeilToInt(Text.CalcSize(this.def.LabelCap.WordWrapAt(this.GetMinWidth(table))).y);
     }
 }

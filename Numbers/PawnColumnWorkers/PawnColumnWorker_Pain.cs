@@ -11,9 +11,11 @@ namespace Numbers
 
     public class PawnColumnWorker_Pain : PawnColumnWorker_Text
     {
-        protected override string GetTextFor(Pawn pawn) => pawn.health.hediffSet.PainTotal.ToStringPercent();
+        protected override string GetTextFor(Pawn pawn)
+            => pawn.health.hediffSet.PainTotal.ToStringPercent();
 
-        protected override string GetTip(Pawn pawn) => GetPainTip(pawn);
+        protected override string GetTip(Pawn pawn)
+            => GetPainTip(pawn);
 
         public override void DoCell(Rect rect, Pawn pawn, PawnTable table)
         {
@@ -22,12 +24,18 @@ namespace Numbers
             GUI.color = Color.white;
         }
 
-        private static string GetPainTip(Pawn pawn) => PainCausingHediffs(pawn).ToCommaList();
+        private static string GetPainTip(Pawn pawn)
+            => PainCausingHediffs(pawn).ToCommaList();
 
-        private static IEnumerable<string> PainCausingHediffs(Pawn pawn) => (from t in pawn.health.hediffSet.hediffs where t.PainFactor != 1f || t.PainOffset != 0f select t.Part?.LabelCap + ": " + t.LabelCap).ToList();
+        private static IEnumerable<string> PainCausingHediffs(Pawn pawn)
+            => pawn.health.hediffSet.hediffs
+                .Where(t => t.PainFactor != 1f || t.PainOffset != 0f)
+                .Select(t => t.Part?.LabelCap + ": " + t.LabelCap);
 
-        public override int GetMinWidth(PawnTable table) => base.GetMinWidth(table) + 12;
+        public override int GetMinWidth(PawnTable table)
+            => base.GetMinWidth(table) + 12;
 
-        public override int Compare(Pawn a, Pawn b) => a.health.hediffSet.PainTotal.CompareTo(b.health.hediffSet.PainTotal);
+        public override int Compare(Pawn a, Pawn b)
+            => a.health.hediffSet.PainTotal.CompareTo(b.health.hediffSet.PainTotal);
     }
 }

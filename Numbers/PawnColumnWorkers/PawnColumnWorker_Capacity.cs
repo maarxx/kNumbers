@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
+﻿using RimWorld;
 using UnityEngine;
 using Verse;
 
@@ -26,10 +22,11 @@ namespace Numbers
         public override int GetMinWidth(PawnTable table)
             => base.GetMinWidth(table) + 8; //based on Sight column.
 
-        public override int Compare(Pawn a, Pawn b) => 
-            a.health.capacities.GetLevel(this.def.Ext().capacity)
+        public override int Compare(Pawn a, Pawn b)
+            => a.health.capacities.GetLevel(this.def.Ext().capacity)
             .CompareTo(b.health.capacities.GetLevel(this.def.Ext().capacity));
 
-        public override int GetMinHeaderHeight(PawnTable table) => Mathf.CeilToInt(Text.CalcSize(this.def.LabelCap.WordWrapAt(this.GetMinWidth(table))).y);
+        public override int GetMinHeaderHeight(PawnTable table)
+            => Mathf.CeilToInt(Text.CalcSize(this.def.LabelCap.WordWrapAt(this.GetMinWidth(table))).y);
     }
 }
