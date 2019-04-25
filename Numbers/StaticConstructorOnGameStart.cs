@@ -12,7 +12,7 @@ namespace Numbers
     [StaticConstructorOnStartup]
     static class StaticConstructorOnGameStart
     {
-        public static readonly Texture2D    DeleteX = ContentFinder<Texture2D>.Get("UI/Buttons/Delete"),
+        public static readonly Texture2D DeleteX = ContentFinder<Texture2D>.Get("UI/Buttons/Delete"),
                                             Info = ContentFinder<Texture2D>.Get("UI/Buttons/InfoButton"),
                                             Predator = ContentFinder<Texture2D>.Get("UI/Icons/Animal/Predator"),
                                             Tame = ContentFinder<Texture2D>.Get("UI/Icons/Animal/Tame"),
@@ -28,7 +28,8 @@ namespace Numbers
 
         public static List<PawnColumnDef> combatPreset = new List<PawnColumnDef>(),
                                           workTabPlusPreset = new List<PawnColumnDef>(),
-                                          colonistNeedsPreset = new List<PawnColumnDef>();
+                                          colonistNeedsPreset = new List<PawnColumnDef>(),
+                                          medicalPreset = new List<PawnColumnDef>();
 
         static StaticConstructorOnGameStart()
         {
@@ -52,25 +53,52 @@ namespace Numbers
                 PTSDfromPTDs.columns.Insert(PTSDfromPTDs.columns.Count, remainingspace);
             }
 
-            foreach (PawnColumnDef pawnColumnDef in DefDatabase<PawnColumnDef>.AllDefsListForReading.Where(x => !x.generated && x.defName.StartsWith("Numbers_") && !(x.Worker is PawnColumnWorker_AllHediffs || x.Worker is PawnColumnWorker_SelfTend))) //special treatment for those.
+            foreach (PawnColumnDef pawnColumnDef in DefDatabase<PawnColumnDef>
+                .AllDefsListForReading
+                .Where(x => !x.generated
+                        && x.defName.StartsWith("Numbers_")
+                        && !(x.Worker is PawnColumnWorker_AllHediffs
+                        || x.Worker is PawnColumnWorker_SelfTend))) //special treatment for those.
             {
                 pawnColumnDef.headerTip += (pawnColumnDef.headerTip.NullOrEmpty() ? "" : "\n\n") + "Numbers_ColumnHeader_Tooltip".Translate();
             }
 
-            foreach (PawnColumnDef pcd in DefDatabase<PawnTableDef>.GetNamed("Numbers_CombatPreset").columns)
-            {
-                combatPreset.Add(pcd);
-            }
+            combatPreset.AddRange(DefDatabase<PawnTableDef>.GetNamed("Numbers_CombatPreset").columns);
+            workTabPlusPreset.AddRange(DefDatabase<PawnTableDef>.GetNamed("Numbers_WorkTabPlusPreset").columns);
+            colonistNeedsPreset.AddRange(DefDatabase<PawnTableDef>.GetNamed("Numbers_ColonistNeedsPreset").columns);
 
-            foreach (PawnColumnDef pcd in DefDatabase<PawnTableDef>.GetNamed("Numbers_WorkTabPlusPreset").columns)
-            {
-                workTabPlusPreset.Add(pcd);
-            }
+            medicalPreset.AddRange(new List<PawnColumnDef>
+                                       {
+                                           DefDatabase<PawnColumnDef>.GetNamed("Label"),
+                                           DefDatabase<PawnColumnDef>.GetNamed("MedicalCare"),
+                                           DefDatabase<PawnColumnDef>.GetNamed("Numbers_SelfTend"),
+                                           DefDatabase<PawnColumnDef>.GetNamed("Numbers_HediffList"),
+                                           DefDatabase<PawnColumnDef>.GetNamed("Numbers_RimWorld_StatDef_MedicalSurgerySuccessChance"),
+                                           DefDatabase<PawnColumnDef>.GetNamed("Numbers_RimWorld_StatDef_MedicalTendQuality"),
+                                           DefDatabase<PawnColumnDef>.GetNamed("Numbers_RimWorld_StatDef_MedicalTendSpeed"),
+                                           DefDatabase<PawnColumnDef>.GetNamed("Numbers_Bleedrate"),
+                                           DefDatabase<PawnColumnDef>.GetNamed("Numbers_Pain"),
+                                       });
+            medicalPreset.AddRange(DefDatabase<PawnColumnDef>.AllDefsListForReading
+                                                                    .Where(pcd => pcd.workType != null)
+                                                                    .Where(x => x.workType.defName == "Patient" ||
+                                                                                x.workType.defName == "Doctor" ||
+                                                                                x.workType.defName == "PatientBedRest").Reverse());
 
-            foreach (PawnColumnDef pcd in DefDatabase<PawnTableDef>.GetNamed("Numbers_ColonistNeedsPreset").columns)
+            medicalPreset
+                .AddRange(DefDatabase<PawnCapacityDef>
+                .AllDefsListForReading
+                .Select(x => DefDatabase<PawnColumnDef>
+                .GetNamed("Numbers_" + x.GetType().ToString().Replace('.', '_') + "_" + x.defName)));
+
+            medicalPreset.RemoveAll(x => x.defName == "Numbers_Verse_PawnCapacityDef_Metabolism"); //I need space
+            medicalPreset.AddRange(new List<PawnColumnDef>
             {
-                colonistNeedsPreset.Add(pcd);
-            }
+                DefDatabase<PawnColumnDef>.GetNamed("Numbers_NeedsTreatment"),
+                DefDatabase<PawnColumnDef>.GetNamed("Numbers_Operations"),
+                DefDatabase<PawnColumnDef>.GetNamed("Numbers_DiseaseProgress"),
+                DefDatabase<PawnColumnDef>.GetNamed("RemainingSpace"),
+            });
         }
     }
 }

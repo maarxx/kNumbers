@@ -61,6 +61,7 @@
     <Compile Include="Numbers_Settings.cs" />
     <Compile Include="Numbers_SettingsHelper.cs" />
     <Compile Include="Numbers_Utility.cs" />
+    <Compile Include="OptionsMaker.cs" />
     <Compile Include="PawnColumnWorkers\PawnColumnWorker_Age.cs" />
     <Compile Include="PawnColumnWorkers\PawnColumnWorker_AllHediffs.cs" />
     <Compile Include="PawnColumnWorkers\PawnColumnWorker_AnimalMilkFullness.cs" />

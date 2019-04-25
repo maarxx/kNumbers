@@ -26,6 +26,8 @@ namespace Numbers
         private readonly List<NeedDef> pawnHumanlikeNeedDef;
         private readonly List<NeedDef> pawnAnimalNeedDef;
 
+        private readonly OptionsMaker optionsMaker;
+
         //Code style: GetNamedSilentFail in cases where there is null-handling, so any columns that get run through TryGetBestPawnColumnDefLabel() or AddPawnColumnAtBestPositionAndRefresh() can silently fail.
         //GetNamed anywhere a null column would through a null ref.
         private static readonly string workTabName = DefDatabase<MainButtonDef>.GetNamed("Work").ShortenedLabelCap;
@@ -38,6 +40,8 @@ namespace Numbers
         //ctor to populate lists.
         public MainTabWindow_Numbers()
         {
+            optionsMaker = new OptionsMaker(this);
+
             MethodInfo statsToDraw = typeof(StatsReportUtility).GetMethod("StatsToDraw",
                                                                           BindingFlags.NonPublic | BindingFlags.Static |
                                                                           BindingFlags.InvokeMethod, null,
@@ -209,7 +213,8 @@ namespace Numbers
             Rect addPresetBtn = new Rect(startPositionOfPresetsButton, 0f, buttonWidth, buttonHeight);
             if (Widgets.ButtonText(addPresetBtn, "koisama.Numbers.SetPresetLabel".Translate()))
             {
-                PresetOptionsMaker();
+                Find.WindowStack.Add(
+                    new FloatMenu(optionsMaker.PresetOptionsMaker(pawnTableDef)));
             }
 
             // row count:
@@ -279,154 +284,6 @@ namespace Numbers
                 string label = defCurrent is PawnColumnDef worker ? worker.workType?.labelShort ?? worker.defName : defCurrent.LabelCap;
                 list.Add(new FloatMenuOption(label, Action));
             }
-
-            Find.WindowStack.Add(new FloatMenu(list));
-        }
-
-        private void PresetOptionsMaker()
-        {
-            List<FloatMenuOption> list = new List<FloatMenuOption>();
-
-            void Save()
-            {
-                string name = "NumbersTable";
-                //not actually saved like this, just the easiest way to pass it around
-                PawnTableDef ptdPawnTableDef = new PawnTableDef
-                {
-                    columns = PawnTableDef.columns,
-                    modContentPack = PawnTableDef.modContentPack,
-                    workerClass = PawnTableDef.workerClass,
-                    defName = PawnTableDef.defName,
-                    label = name + Rand.Range(0, 10000),
-                };
-                Find.WindowStack.Add(new Dialog_IHaveToCreateAnEntireFuckingDialogForAGODDAMNOKAYBUTTONFFS(ref ptdPawnTableDef));
-            }
-
-            list.Add(new FloatMenuOption("Numbers_SaveCurrentLayout".Translate(), Save));
-
-            void Load()
-            {
-                List<FloatMenuOption> loadOptions = new List<FloatMenuOption>();
-                foreach (string tableDefToBe in settings.storedPawnTableDefs)
-                {
-                    void ApplySetting()
-                    {
-                        PawnTableDef ptD = HorribleStringParsersForSaving.TurnCommaDelimitedStringIntoPawnTableDef(tableDefToBe);
-
-                        pawnTableDef = DefDatabase<PawnTableDef>.GetNamed(ptD.defName);
-                        pawnTableDef.columns = ptD.columns;
-                        this.UpdateFilter();
-                        RefreshAndStoreSessionInWorldComp();
-                    }
-                    string label = tableDefToBe.Split(',')[1] == "Default" ? tableDefToBe.Split(',')[0].Split('_')[1] + " (" + tableDefToBe.Split(',')[1] + ")" : tableDefToBe.Split(',')[1];
-                    loadOptions.Add(new FloatMenuOption(label, ApplySetting));
-                }
-
-                if (loadOptions.NullOrEmpty())
-                    loadOptions.Add(new FloatMenuOption("Numbers_NothingSaved".Translate(), null));
-
-                Find.WindowStack.Add(new FloatMenu(loadOptions));
-            }
-            list.Add(new FloatMenuOption("Numbers_LoadSavedLayout".Translate(), Load));
-
-            void MakeThisMedical()
-            {
-                this.pawnTableDef = NumbersDefOf.Numbers_MainTable;
-                PawnTableDef.columns = new List<PawnColumnDef>
-                                       {
-                                           DefDatabase<PawnColumnDef>.GetNamed("Label"),
-                                           DefDatabase<PawnColumnDef>.GetNamed("MedicalCare"),
-                                           DefDatabase<PawnColumnDef>.GetNamed("Numbers_SelfTend"),
-                                           DefDatabase<PawnColumnDef>.GetNamed("Numbers_HediffList"),
-                                           DefDatabase<PawnColumnDef>.GetNamed("Numbers_RimWorld_StatDef_MedicalSurgerySuccessChance"),
-                                           DefDatabase<PawnColumnDef>.GetNamed("Numbers_RimWorld_StatDef_MedicalTendQuality"),
-                                           DefDatabase<PawnColumnDef>.GetNamed("Numbers_RimWorld_StatDef_MedicalTendSpeed"),
-                                           DefDatabase<PawnColumnDef>.GetNamed("Numbers_Bleedrate"),
-                                           DefDatabase<PawnColumnDef>.GetNamed("Numbers_Pain"),
-                                       };
-                PawnTableDef.columns.AddRange(DefDatabase<PawnColumnDef>.AllDefsListForReading
-                                                                        //.Where(pcd => pcd.workerClass == typeof(PawnColumnWorker_WorkPriority)) //disabled for Fluffy Compat.
-                                                                        .Where(pcd => pcd.workType != null)
-                                                                        .Where(x => x.workType.defName == "Patient" ||
-                                                                                    x.workType.defName == "Doctor" ||
-                                                                                    x.workType.defName == "PatientBedRest").Reverse());
-
-                foreach (PawnCapacityDef defCurrent in DefDatabase<PawnCapacityDef>.AllDefsListForReading)
-                {
-                    PawnColumnDef pcd = DefDatabase<PawnColumnDef>.GetNamed("Numbers_" + defCurrent.GetType().ToString().Replace('.', '_') + "_" + defCurrent.defName);
-                    PawnTableDef.columns.Add(pcd);
-                }
-                PawnTableDef.columns.RemoveAll(x => x.defName == "Numbers_Verse_PawnCapacityDef_Metabolism"); //I need space
-                PawnTableDef.columns.Add(DefDatabase<PawnColumnDef>.GetNamed("Numbers_NeedsTreatment"));
-                PawnTableDef.columns.Add(DefDatabase<PawnColumnDef>.GetNamed("Numbers_Operations"));
-                PawnTableDef.columns.Add(DefDatabase<PawnColumnDef>.GetNamed("Numbers_DiseaseProgress"));
-
-                PawnTableDef.columns.Add(DefDatabase<PawnColumnDef>.GetNamed("RemainingSpace"));
-                this.UpdateFilter();
-                Notify_ResolutionChanged();
-            }
-            list.Add(new FloatMenuOption("Numbers_Presets.Load".Translate("Numbers_Presets.Medical".Translate()), MakeThisMedical));
-
-            void MakeThisCombat()
-            {
-                this.pawnTableDef = NumbersDefOf.Numbers_MainTable;
-                PawnTableDef.columns = new List<PawnColumnDef>();
-                PawnTableDef.columns.AddRange(StaticConstructorOnGameStart.combatPreset);
-                this.UpdateFilter();
-                Notify_ResolutionChanged();
-            }
-            list.Add(new FloatMenuOption("Numbers_Presets.Load".Translate("Numbers_Presets.Combat".Translate()), MakeThisCombat));
-
-            void MakeThisWorkTabPlus()
-            {
-                this.pawnTableDef = NumbersDefOf.Numbers_MainTable;
-                PawnTableDef.columns = new List<PawnColumnDef>();
-                PawnTableDef.columns.AddRange(StaticConstructorOnGameStart.workTabPlusPreset);
-                this.UpdateFilter();
-                Notify_ResolutionChanged();
-            }
-            list.Add(new FloatMenuOption("Numbers_Presets.Load".Translate("Numbers_Presets.WorkTabPlus".Translate()), MakeThisWorkTabPlus));
-
-            void MakeThisColonistNeeds()
-            {
-                this.pawnTableDef = NumbersDefOf.Numbers_MainTable;
-                PawnTableDef.columns = new List<PawnColumnDef>();
-                PawnTableDef.columns.AddRange(StaticConstructorOnGameStart.colonistNeedsPreset);
-                this.UpdateFilter();
-                Notify_ResolutionChanged();
-            }
-            list.Add(new FloatMenuOption("Numbers_Presets.Load".Translate("Numbers_Presets.ColonistNeeds".Translate()), MakeThisColonistNeeds));
-
-            void setAsDefault()
-            {
-                string pawnTableDeftoSave = HorribleStringParsersForSaving.TurnPawnTableDefIntoCommaDelimitedString(PawnTableDef, true);
-
-                settings.StoreNewPawnTableDef(pawnTableDeftoSave);
-            }
-            list.Add(new FloatMenuOption("Numbers_SetAsDefault".Translate(), setAsDefault, extraPartWidth: 29f, extraPartOnGUI: (Rect rect) => Numbers_Utility.InfoCardButton(rect.x + 5f, rect.y + (rect.height - 24f) / 2, "Numbers_SetAsDefaultExplanation".Translate(PawnTableDef.LabelCap))));
-
-            void loadDefault()
-            {
-                bool foundSomething = false;
-                foreach (string tableDefToBe in settings.storedPawnTableDefs)
-                {
-                    string[] ptdToBe = tableDefToBe.Split(',');
-                    if (ptdToBe[1] == "Default" && PawnTableDef.defName == ptdToBe[0])
-                    {
-                        foundSomething = true;
-                        PawnTableDef ptD = HorribleStringParsersForSaving.TurnCommaDelimitedStringIntoPawnTableDef(tableDefToBe);
-
-                        pawnTableDef = DefDatabase<PawnTableDef>.GetNamed(ptD.defName);
-                        pawnTableDef.columns = ptD.columns;
-                        this.UpdateFilter();
-                        RefreshAndStoreSessionInWorldComp();
-                        break; //there's only one default anyway.
-                    }
-                }
-                if (!foundSomething)
-                    Messages.Message("Numbers_NoDefaultStoredForThisView".Translate(), MessageTypeDefOf.RejectInput);
-            }
-            list.Add(new FloatMenuOption("Numbers_LoadDefault".Translate(), loadDefault));
 
             Find.WindowStack.Add(new FloatMenu(list));
         }
