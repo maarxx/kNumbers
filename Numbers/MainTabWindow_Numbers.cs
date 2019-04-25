@@ -41,7 +41,7 @@ namespace Numbers
             MethodInfo statsToDraw = typeof(StatsReportUtility).GetMethod("StatsToDraw",
                                                                           BindingFlags.NonPublic | BindingFlags.Static |
                                                                           BindingFlags.InvokeMethod, null,
-                                                                          new [] { typeof(Thing) }, null);
+                                                                          new[] { typeof(Thing) }, null);
 
             Pawn tmpPawn = PawnGenerator.GeneratePawn(PawnKindDefOf.AncientSoldier, Faction.OfPlayerSilentFail);
 
@@ -198,15 +198,12 @@ namespace Numbers
             x += buttonWidth + buttonGap;
 
             //other btn
-            if (PawnTableDef != NumbersDefOf.Numbers_AnimalCorpses)
+            Rect otherColumnBtn = new Rect(x, 0f, buttonWidth, buttonHeight);
+            if (Widgets.ButtonText(otherColumnBtn, "MiscRecordsCategory".Translate()))
             {
-                Rect otherColumnBtn = new Rect(x, 0f, buttonWidth, buttonHeight);
-                if (Widgets.ButtonText(otherColumnBtn, "MiscRecordsCategory".Translate()))
-                {
-                    OtherOptionsMaker();
-                }
-                x += buttonWidth + buttonGap;
+                OtherOptionsMaker();
             }
+            x += buttonWidth + buttonGap;
 
             float startPositionOfPresetsButton = Mathf.Max(rect.xMax - buttonWidth - Margin, x);
             Rect addPresetBtn = new Rect(startPositionOfPresetsButton, 0f, buttonWidth, buttonHeight);
@@ -254,6 +251,7 @@ namespace Numbers
             List<FloatMenuOption> list = new List<FloatMenuOption>();
 
             if (optionalList != null)
+            {
                 foreach (PawnColumnDef pawnColumnDef in optionalList)
                 {
                     void Action()
@@ -262,6 +260,7 @@ namespace Numbers
                     }
                     list.Add(new FloatMenuOption(TryGetBestPawnColumnDefLabel(pawnColumnDef), Action));
                 }
+            }
 
             foreach (var defCurrent in listOfDefs)
             {
@@ -584,9 +583,9 @@ namespace Numbers
             filterValidator.Insert(0, WorldComponent_Numbers.PrimaryFilter[PawnTableDef]);
         }
 
-        private static readonly Func<PawnColumnDef, bool> pcdValidator = pcd => !(pcd.Worker is PawnColumnWorker_Gap) 
-                                        && !(pcd.Worker is PawnColumnWorker_Label)     && !(pcd.Worker is PawnColumnWorker_RemainingSpace)
-                                        && !(pcd.Worker is PawnColumnWorker_CopyPaste) && !(pcd.Worker is PawnColumnWorker_MedicalCare) 
+        private static readonly Func<PawnColumnDef, bool> pcdValidator = pcd => !(pcd.Worker is PawnColumnWorker_Gap)
+                                        && !(pcd.Worker is PawnColumnWorker_Label) && !(pcd.Worker is PawnColumnWorker_RemainingSpace)
+                                        && !(pcd.Worker is PawnColumnWorker_CopyPaste) && !(pcd.Worker is PawnColumnWorker_MedicalCare)
                                         && !(pcd.Worker is PawnColumnWorker_Timetable) || (!(pcd.label.NullOrEmpty() && pcd.HeaderIcon == null)
                                         && !pcd.HeaderInteractable);
         //basically all that are already present, don't have an interactable header, and uh
