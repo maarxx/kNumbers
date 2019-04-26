@@ -21,7 +21,7 @@ namespace Numbers
             pawnTable = mainTabWindow.pawnTableDef;
         }
 
-        public List<FloatMenuOption> PresetOptionsMaker(PawnTableDef pawnTable)
+        public List<FloatMenuOption> PresetOptionsMaker()
         {
             return new List<FloatMenuOption>
             {

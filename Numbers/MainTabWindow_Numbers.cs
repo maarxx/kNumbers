@@ -14,6 +14,7 @@ namespace Numbers
         public const float buttonWidth = 110f;
         public const float buttonHeight = 35f;
         public const float buttonGap = 4f;
+        public const float extraTopSpace = 83f;
 
         private readonly Numbers_Settings settings;
 
@@ -28,8 +29,8 @@ namespace Numbers
 
         private readonly OptionsMaker optionsMaker;
 
-        //Code style: GetNamedSilentFail in cases where there is null-handling, so any columns that get run through TryGetBestPawnColumnDefLabel() or AddPawnColumnAtBestPositionAndRefresh() can silently fail.
-        //GetNamed anywhere a null column would through a null ref.
+        //Code style: Use GetNamedSilentFail in cases where there is null-handling, so any columns that get run through TryGetBestPawnColumnDefLabel() or AddPawnColumnAtBestPositionAndRefresh() can silently fail.
+        //Use GetNamed anywhere a null column would throw a null ref.
         private static readonly string workTabName = DefDatabase<MainButtonDef>.GetNamed("Work").ShortenedLabelCap;
 
         private List<StatDef> StatDefs => PawnTableDef.Ext().Corpse ? corpseStatDef :
@@ -55,14 +56,18 @@ namespace Numbers
                     ((IEnumerable<StatDrawEntry>)statsToDraw.Invoke(null, new[] { tmpPawn }))
                    .Concat(tmpPawn.def.SpecialDisplayStats(StatRequest.For(tmpPawn)))
                    .Where(s => s.ShouldDisplay && s.stat != null)
-                   .Select(s => s.stat).OrderBy(stat => stat.LabelCap).ToList();
+                   .Select(s => s.stat)
+                   .OrderBy(stat => stat.LabelCap).ToList();
 
                 tmpPawn = PawnGenerator.GeneratePawn(PawnKindDefOf.Thrumbo);
+
+                pawnAnimalNeedDef = tmpPawn.needs.AllNeeds.Where(x => x.def.showOnNeedList).Select(x => x.def).ToList();
 
                 pawnAnimalStatDef =
                     ((IEnumerable<StatDrawEntry>)statsToDraw.Invoke(null, new[] { tmpPawn }))
                    .Where(s => s.ShouldDisplay && s.stat != null)
-                   .Select(s => s.stat).OrderBy(stat => stat.LabelCap).ToList();
+                   .Select(s => s.stat)
+                   .OrderBy(stat => stat.LabelCap).ToList();
 
                 Corpse corpse = (Corpse)ThingMaker.MakeThing(tmpPawn.RaceProps.corpseDef);
                 corpse.InnerPawn = tmpPawn;
@@ -70,11 +75,13 @@ namespace Numbers
                 corpseStatDef = ((IEnumerable<StatDrawEntry>)statsToDraw.Invoke(null, new[] { corpse }))
                                .Concat(tmpPawn.def.SpecialDisplayStats(StatRequest.For(tmpPawn)))
                                .Where(s => s.ShouldDisplay && s.stat != null)
-                               .Select(s => s.stat).OrderBy(stat => stat.LabelCap).ToList();
+                               .Select(s => s.stat)
+                               .OrderBy(stat => stat.LabelCap).ToList();
             }
+            else
+                Log.Error("ReflectionTypeLoadException in Numbers: statsToDraw was null. Please contact mod author.");
 
             pawnHumanlikeNeedDef = DefDatabase<NeedDef>.AllDefsListForReading;
-            pawnAnimalNeedDef = tmpPawn.needs.AllNeeds.Where(x => x.def.showOnNeedList).Select(x => x.def).ToList();
 
             PawnTableDef defaultTable = WorldComponent_Numbers.PrimaryFilter.First().Key;
             if (Find.World.GetComponent<WorldComponent_Numbers>().sessionTable.TryGetValue(defaultTable, out List<PawnColumnDef> list))
@@ -108,7 +115,7 @@ namespace Numbers
             }
         }
 
-        protected override float ExtraTopSpace => 83f;
+        protected override float ExtraTopSpace => extraTopSpace;
 
         public override void DoWindowContents(Rect rect)
         {
@@ -213,8 +220,7 @@ namespace Numbers
             Rect addPresetBtn = new Rect(startPositionOfPresetsButton, 0f, buttonWidth, buttonHeight);
             if (Widgets.ButtonText(addPresetBtn, "koisama.Numbers.SetPresetLabel".Translate()))
             {
-                Find.WindowStack.Add(
-                    new FloatMenu(optionsMaker.PresetOptionsMaker(pawnTableDef)));
+                Find.WindowStack.Add(new FloatMenu(optionsMaker.PresetOptionsMaker()));
             }
 
             // row count:
@@ -240,7 +246,11 @@ namespace Numbers
                 {
                     if (filter.Value != filterValidator.First())
                     {
-                        pawnTableDef = filter.Key;
+                        if (Find.World.GetComponent<WorldComponent_Numbers>().sessionTable.TryGetValue(filter.Key, out List<PawnColumnDef> listPawnColumDef))
+                            pawnTableDef.columns = listPawnColumDef;
+                        else
+                            pawnTableDef = filter.Key;
+
                         UpdateFilter();
                         Notify_ResolutionChanged();
                     }
@@ -421,7 +431,8 @@ namespace Numbers
 
         private void AddPawnColumnAtBestPositionAndRefresh(PawnColumnDef pcd)
         {
-            if (pcd == null) return;
+            if (pcd == null)
+                return;
             int lastIndex = PawnTableDef.columns.FindLastIndex(x => x.Worker is PawnColumnWorker_RemainingSpace);
             PawnTableDef.columns.Insert(Mathf.Max(1, lastIndex), pcd);
             RefreshAndStoreSessionInWorldComp();
