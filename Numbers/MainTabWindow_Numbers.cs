@@ -195,7 +195,7 @@ namespace Numbers
                     optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_NeedsTreatment"));
                     optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_DiseaseProgress"));
 
-                    optionsMaker.OptionsMakerFloatMenu(DefDatabase<PawnCapacityDef>.AllDefsListForReading, optionalList);
+                    Find.WindowStack.Add(new FloatMenu(optionsMaker.OptionsMakerFloatMenu(DefDatabase<PawnCapacityDef>.AllDefsListForReading, optionalList)));
                 }
                 x += buttonWidth + buttonGap;
             }
@@ -212,7 +212,7 @@ namespace Numbers
             Rect otherColumnBtn = new Rect(x, 0f, buttonWidth, buttonHeight);
             if (Widgets.ButtonText(otherColumnBtn, "MiscRecordsCategory".Translate()))
             {
-                Find.WindowStack.Add(new FloatMenu(optionsMaker.OtherOptionsMaker()));
+                Find.WindowStack.Add(optionsMaker.OtherOptionsMaker());
             }
             x += buttonWidth + buttonGap;
 
@@ -220,7 +220,7 @@ namespace Numbers
             Rect addPresetBtn = new Rect(startPositionOfPresetsButton, 0f, buttonWidth, buttonHeight);
             if (Widgets.ButtonText(addPresetBtn, "koisama.Numbers.SetPresetLabel".Translate()))
             {
-                Find.WindowStack.Add(new FloatMenu(optionsMaker.PresetOptionsMaker()));
+                Find.WindowStack.Add(optionsMaker.PresetOptionsMaker());
             }
 
             // row count:
