@@ -126,7 +126,7 @@ namespace Numbers
             Rect sourceButton = new Rect(x, 0f, buttonWidth, buttonHeight);
             if (Widgets.ButtonText(sourceButton, PawnTableDef.label))
             {
-                PawnSelectOptionsMaker();
+                Find.WindowStack.Add(optionsMaker.PawnSelectOptionsMaker());
             }
             x += buttonWidth + buttonGap;
 
@@ -136,7 +136,7 @@ namespace Numbers
             Rect addColumnButton = new Rect(x, 0f, buttonWidth, buttonHeight);
             if (Widgets.ButtonText(addColumnButton, "TabStats".Translate()))
             {
-                OptionsMakerFloatMenu(StatDefs);
+                Find.WindowStack.Add(new FloatMenu(optionsMaker.OptionsMakerFloatMenu(StatDefs)));
             }
             x += buttonWidth + buttonGap;
 
@@ -146,7 +146,7 @@ namespace Numbers
                 Rect workTypeColumnButton = new Rect(x, 0f, buttonWidth, buttonHeight);
                 if (Widgets.ButtonText(workTypeColumnButton, workTabName))
                 {
-                    OptionsMakerFloatMenu(DefDatabase<PawnColumnDef>.AllDefsListForReading.Where(pcd => pcd.workType != null).Reverse().ToList());
+                    Find.WindowStack.Add(new FloatMenu(optionsMaker.OptionsMakerFloatMenu(DefDatabase<PawnColumnDef>.AllDefsListForReading.Where(pcd => pcd.workType != null).Reverse().ToList())));
                 }
                 x += buttonWidth + buttonGap;
             }
@@ -157,7 +157,7 @@ namespace Numbers
                 Rect skillColumnButton = new Rect(x, 0f, buttonWidth, buttonHeight);
                 if (Widgets.ButtonText(skillColumnButton, "Skills".Translate()))
                 {
-                    OptionsMakerFloatMenu(DefDatabase<SkillDef>.AllDefsListForReading);
+                    Find.WindowStack.Add(new FloatMenu(optionsMaker.OptionsMakerFloatMenu(DefDatabase<SkillDef>.AllDefsListForReading)));
                 }
                 x += buttonWidth + buttonGap;
             }
@@ -168,7 +168,7 @@ namespace Numbers
                 Rect needsColumnButton = new Rect(x, 0f, buttonWidth, buttonHeight);
                 if (Widgets.ButtonText(needsColumnButton, "TabNeeds".Translate()))
                 {
-                    OptionsMakerFloatMenu(NeedDefs);
+                    Find.WindowStack.Add(new FloatMenu(optionsMaker.OptionsMakerFloatMenu(NeedDefs)));
                 }
                 x += buttonWidth + buttonGap;
             }
@@ -195,7 +195,7 @@ namespace Numbers
                     optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_NeedsTreatment"));
                     optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_DiseaseProgress"));
 
-                    OptionsMakerFloatMenu(DefDatabase<PawnCapacityDef>.AllDefsListForReading, optionalList);
+                    optionsMaker.OptionsMakerFloatMenu(DefDatabase<PawnCapacityDef>.AllDefsListForReading, optionalList);
                 }
                 x += buttonWidth + buttonGap;
             }
@@ -204,7 +204,7 @@ namespace Numbers
             Rect recordsColumnBtn = new Rect(x, 0f, buttonWidth, buttonHeight);
             if (Widgets.ButtonText(recordsColumnBtn, "TabRecords".Translate()))
             {
-                OptionsMakerFloatMenu(DefDatabase<RecordDef>.AllDefsListForReading);
+                Find.WindowStack.Add(new FloatMenu(optionsMaker.OptionsMakerFloatMenu(DefDatabase<RecordDef>.AllDefsListForReading)));
             }
             x += buttonWidth + buttonGap;
 
@@ -212,7 +212,7 @@ namespace Numbers
             Rect otherColumnBtn = new Rect(x, 0f, buttonWidth, buttonHeight);
             if (Widgets.ButtonText(otherColumnBtn, "MiscRecordsCategory".Translate()))
             {
-                OtherOptionsMaker();
+                Find.WindowStack.Add(new FloatMenu(optionsMaker.OtherOptionsMaker()));
             }
             x += buttonWidth + buttonGap;
 
@@ -237,206 +237,6 @@ namespace Numbers
             Find.World.renderer.wantedMode = RimWorld.Planet.WorldRenderMode.None;
         }
 
-        public void PawnSelectOptionsMaker()
-        {
-            List<FloatMenuOption> list = new List<FloatMenuOption>();
-            foreach (KeyValuePair<PawnTableDef, Func<Pawn, bool>> filter in WorldComponent_Numbers.PrimaryFilter)
-            {
-                void Action()
-                {
-                    if (filter.Value != filterValidator.First())
-                    {
-                        if (Find.World.GetComponent<WorldComponent_Numbers>().sessionTable.TryGetValue(filter.Key, out List<PawnColumnDef> listPawnColumDef))
-                            pawnTableDef.columns = listPawnColumDef;
-                        else
-                            pawnTableDef = filter.Key;
-
-                        UpdateFilter();
-                        Notify_ResolutionChanged();
-                    }
-                }
-                list.Add(new FloatMenuOption(filter.Key.label, Action));
-            }
-            Find.WindowStack.Add(new FloatMenu(list));
-        }
-
-        //generic that takes any List with type of Def.
-        private void OptionsMakerFloatMenu<T>(List<T> listOfDefs, List<PawnColumnDef> optionalList = null) where T : Def
-        {
-            List<FloatMenuOption> list = new List<FloatMenuOption>();
-
-            if (optionalList != null)
-            {
-                foreach (PawnColumnDef pawnColumnDef in optionalList)
-                {
-                    void Action()
-                    {
-                        this.AddPawnColumnAtBestPositionAndRefresh(pawnColumnDef);
-                    }
-                    list.Add(new FloatMenuOption(TryGetBestPawnColumnDefLabel(pawnColumnDef), Action));
-                }
-            }
-
-            foreach (var defCurrent in listOfDefs)
-            {
-                void Action()
-                {
-                    if (defCurrent is PawnColumnDef columnDef)
-                    {
-                        AddPawnColumnAtBestPositionAndRefresh(columnDef);
-                    }
-                    else
-                    {
-                        PawnColumnDef pcd = DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_" + defCurrent.GetType().ToString().Replace('.', '_') + "_" + defCurrent.defName);
-                        AddPawnColumnAtBestPositionAndRefresh(pcd);
-                    }
-                }
-                string label = defCurrent is PawnColumnDef worker ? worker.workType?.labelShort ?? worker.defName : defCurrent.LabelCap;
-                list.Add(new FloatMenuOption(label, Action));
-            }
-
-            Find.WindowStack.Add(new FloatMenu(list));
-        }
-
-        //other hardcoded options
-        public void OtherOptionsMaker()
-        {
-            List<FloatMenuOption> list = new List<FloatMenuOption>();
-
-            void AddRace()
-            {
-                PawnColumnDef pcd = DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Race");
-                AddPawnColumnAtBestPositionAndRefresh(pcd);
-            }
-            list.Add(new FloatMenuOption("Race".Translate(), AddRace));
-
-            //equipment bearers
-            //array search is easier to type than if (PawnTableDef == X || PawnTableDef == Y etc etc)
-            if (new[] { NumbersDefOf.Numbers_MainTable, NumbersDefOf.Numbers_Prisoners, NumbersDefOf.Numbers_Enemies, NumbersDefOf.Numbers_Corpses }.Contains(PawnTableDef))
-            {
-                List<PawnColumnDef> pcdList = new List<PawnColumnDef>
-                {
-                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Equipment"),
-                };
-
-                foreach (PawnColumnDef pcd in pcdList)
-                {
-                    list.Add(new FloatMenuOption(TryGetBestPawnColumnDefLabel(pcd),
-                                () => AddPawnColumnAtBestPositionAndRefresh(pcd)));
-                }
-            }
-
-            //all living things
-            if (!new[] { NumbersDefOf.Numbers_AnimalCorpses, NumbersDefOf.Numbers_Corpses, }.Contains(PawnTableDef))
-            {
-                List<PawnColumnDef> pcdList = new List<PawnColumnDef>
-                {
-                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Age"),
-                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_MentalState"),
-                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_JobCurrent"),
-                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_JobQueued"),
-                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_HediffList")
-                };
-
-                foreach (PawnColumnDef pcd in pcdList)
-                {
-                    list.Add(new FloatMenuOption(TryGetBestPawnColumnDefLabel(pcd),
-                                () => AddPawnColumnAtBestPositionAndRefresh(pcd)));
-                }
-            }
-
-            if (PawnTableDef == NumbersDefOf.Numbers_Prisoners)
-            {
-                List<PawnColumnDef> pcdList = new List<PawnColumnDef>
-                {
-                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_PrisonerInteraction"),
-                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_PrisonerRecruitmentDifficulty"),
-                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_PrisonerResistance"),
-                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("FoodRestriction"),
-                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inventory"),
-                };
-
-                foreach (PawnColumnDef pcd in pcdList)
-                {
-                    list.Add(new FloatMenuOption(TryGetBestPawnColumnDefLabel(pcd),
-                                () => AddPawnColumnAtBestPositionAndRefresh(pcd)));
-                }
-            }
-
-            if (PawnTableDef == NumbersDefOf.Numbers_Animals)
-            {
-                List<PawnColumnDef> pcdList = new List<PawnColumnDef>
-                {
-                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Milkfullness"),
-                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_AnimalWoolGrowth"),
-                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_AnimalEggProgress"),
-                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Wildness"),
-                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_TameChance"),
-                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inventory"),
-                };
-
-                IEnumerable<PawnColumnDef> pawnColumnDefs = pcdList.Concat(DefDatabase<PawnTableDef>.GetNamed("Animals").columns.Where(x => pcdValidator(x)));
-
-                foreach (PawnColumnDef pcd in pawnColumnDefs)
-                {
-                    list.Add(new FloatMenuOption(TryGetBestPawnColumnDefLabel(pcd),
-                                () => AddPawnColumnAtBestPositionAndRefresh(pcd)));
-                }
-            }
-
-            if (PawnTableDef == NumbersDefOf.Numbers_MainTable)
-            {
-                List<PawnColumnDef> pcdList = new List<PawnColumnDef>
-                {
-                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inspiration"),
-                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inventory"),
-                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_SelfTend"),
-                };
-                // (assign + restrict).Where(validator) + pcdList
-                foreach (var pcd in DefDatabase<PawnTableDef>.GetNamed("Assign").columns
-                    .Concat(DefDatabase<PawnTableDef>.GetNamed("Restrict").columns).Where(x => pcdValidator(x))
-                    .Concat(pcdList))
-                {
-                    list.Add(new FloatMenuOption(TryGetBestPawnColumnDefLabel(pcd),
-                                () => AddPawnColumnAtBestPositionAndRefresh(pcd)));
-                }
-            }
-
-            if (PawnTableDef == NumbersDefOf.Numbers_WildAnimals)
-            {
-                List<PawnColumnDef> pcdList = new List<PawnColumnDef>
-                {
-                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Wildness"),
-                    DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_TameChance"),
-                };
-                foreach (var pcd in DefDatabase<PawnTableDef>.GetNamed("Wildlife").columns.Where(x => pcdValidator(x)).Concat(pcdList))
-                {
-                    list.Add(new FloatMenuOption(pcd.defName,
-                            () => AddPawnColumnAtBestPositionAndRefresh(pcd)));
-                }
-            }
-
-            //all dead things
-            if (new[] { NumbersDefOf.Numbers_AnimalCorpses, NumbersDefOf.Numbers_Corpses, }.Contains(PawnTableDef))
-            {
-                PawnColumnDef pcd = DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Forbidden");
-                list.Add(new FloatMenuOption(TryGetBestPawnColumnDefLabel(pcd),
-                            () => AddPawnColumnAtBestPositionAndRefresh(pcd)));
-            }
-            Find.WindowStack.Add(new FloatMenu(list));
-        }
-
-        private static string TryGetBestPawnColumnDefLabel(PawnColumnDef pcd) =>
-            pcd == null ? string.Empty : pcd.label.NullOrEmpty() ? pcd.headerTip.NullOrEmpty() ? pcd.defName : pcd.headerTip : pcd.LabelCap; //return labelcap if available, headertip if not, defName as last resort.
-
-        private void AddPawnColumnAtBestPositionAndRefresh(PawnColumnDef pcd)
-        {
-            if (pcd == null)
-                return;
-            int lastIndex = PawnTableDef.columns.FindLastIndex(x => x.Worker is PawnColumnWorker_RemainingSpace);
-            PawnTableDef.columns.Insert(Mathf.Max(1, lastIndex), pcd);
-            RefreshAndStoreSessionInWorldComp();
-        }
 
         public void RefreshAndStoreSessionInWorldComp()
         {
@@ -450,12 +250,5 @@ namespace Numbers
             filterValidator.Clear();
             filterValidator.Insert(0, WorldComponent_Numbers.PrimaryFilter[PawnTableDef]);
         }
-
-        private static readonly Func<PawnColumnDef, bool> pcdValidator = pcd => !(pcd.Worker is PawnColumnWorker_Gap)
-                                        && !(pcd.Worker is PawnColumnWorker_Label) && !(pcd.Worker is PawnColumnWorker_RemainingSpace)
-                                        && !(pcd.Worker is PawnColumnWorker_CopyPaste) && !(pcd.Worker is PawnColumnWorker_MedicalCare)
-                                        && !(pcd.Worker is PawnColumnWorker_Timetable) || (!(pcd.label.NullOrEmpty() && pcd.HeaderIcon == null)
-                                        && !pcd.HeaderInteractable);
-        //basically all that are already present, don't have an interactable header, and uh
     }
 }
