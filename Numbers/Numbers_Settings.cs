@@ -10,6 +10,7 @@
 
         public static bool showMoreInfoThanVanilla = true;
         public static bool coolerThanTheWildlifeTab = true; // don't deny it.
+        public static bool coolerThanTheAnimalTab = false; // you flatter me.
 
         public static bool pawnTableHighlightSelected = true;
         public static bool pawnTableClickSelect = true;
@@ -42,6 +43,7 @@
         {
             Scribe_Values.Look(ref showMoreInfoThanVanilla, "showMoreInfoThanVanilla", true);
             Scribe_Values.Look(ref coolerThanTheWildlifeTab, "coolerThanTheWildlifeTab", true);
+            Scribe_Values.Look(ref coolerThanTheAnimalTab, "coolerThanTheAnimalTab");
             Scribe_Values.Look(ref pawnTableHighlightSelected, "pawnTableHighlightSelected", true);
             Scribe_Values.Look(ref pawnTableClickSelect, "pawnTableClickSelect", true);
             Scribe_Values.Look(ref maxHeight, "maxHeight", 1f);

@@ -58,6 +58,7 @@
     <Compile Include="MainTabWindow_Numbers.cs" />
     <Compile Include="DefModExtension_PawnColumnDefs.cs" />
     <Compile Include="HorribleStringParsersForSaving.cs" />
+    <Compile Include="MainTabWindow_NumbersAnimals.cs" />
     <Compile Include="Numbers_Settings.cs" />
     <Compile Include="Numbers_SettingsHelper.cs" />
     <Compile Include="Numbers_Utility.cs" />

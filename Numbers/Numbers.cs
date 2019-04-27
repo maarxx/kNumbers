@@ -392,6 +392,7 @@
             listingStandard.Begin(inRect);
             listingStandard.CheckboxLabeled("Numbers_showMoreInfoThanVanilla".Translate(), ref Numbers_Settings.showMoreInfoThanVanilla);
             listingStandard.CheckboxLabeled("Numbers_coolerThanTheWildlifeTab".Translate(), ref Numbers_Settings.coolerThanTheWildlifeTab);
+            listingStandard.CheckboxLabeled("Numbers_coolerThanTheAnimalTab".Translate(), ref Numbers_Settings.coolerThanTheAnimalTab);
             listingStandard.CheckboxLabeled("Numbers_pawnTableClickSelect".Translate(), ref Numbers_Settings.pawnTableClickSelect, "Numbers_pawnTableClickSelect_Desc".Translate());
             listingStandard.CheckboxLabeled("Numbers_pawnTableHighSelected".Translate(), ref Numbers_Settings.pawnTableHighlightSelected, "Numbers_pawnTableHighSelected_Desc".Translate());
             listingStandard.SliderLabeled("Numbers_maxTableHeight".Translate(), ref Numbers_Settings.maxHeight, Numbers_Settings.maxHeight.ToStringPercent(), 0.3f);

@@ -43,19 +43,21 @@
         {
             foreach (PawnTableDef type in DefDatabase<PawnTableDef>.AllDefsListForReading.Where(x => x.HasModExtension<DefModExtension_PawnTableDefs>()))
             {
-                if (Scribe.mode == LoadSaveMode.Saving)
+                switch (Scribe.mode)
                 {
-                    if (sessionTable.TryGetValue(type, out List<PawnColumnDef> workList))
-                    {
-                        Scribe_Collections.Look(ref workList, "Numbers_" + type, LookMode.Def);
-                        sessionTable[type] = workList;
-                    }
-                }
-                else if (Scribe.mode == LoadSaveMode.LoadingVars)
-                {
-                    Scribe_Collections.Look(ref loadList, "Numbers_" + type, LookMode.Def);
-                    if (!loadList.NullOrEmpty())
-                        sessionTable[type] = loadList;
+                    case LoadSaveMode.Saving:
+                        if (sessionTable.TryGetValue(type, out List<PawnColumnDef> workList))
+                        {
+                            Scribe_Collections.Look(ref workList, "Numbers_" + type, LookMode.Def);
+                            sessionTable[type] = workList;
+                        }
+                        break;
+
+                    case LoadSaveMode.LoadingVars:
+                        Scribe_Collections.Look(ref loadList, "Numbers_" + type, LookMode.Def);
+                        if (!loadList.NullOrEmpty())
+                            sessionTable[type] = loadList;
+                        break;
                 }
             }
         }
@@ -75,12 +77,18 @@
 
         internal void NotifySettingsChanged()
         {
-            if (Numbers_Settings.coolerThanTheWildlifeTab)
-                DefDatabase<MainButtonDef>.GetNamed("Wildlife").tabWindowClass = typeof(MainTabWindow_NumbersWildLife);
-            else
-                DefDatabase<MainButtonDef>.GetNamed("Wildlife").tabWindowClass = typeof(MainTabWindow_Wildlife);
+            DefDatabase<MainButtonDef>.GetNamed("Wildlife").tabWindowClass
+                = Numbers_Settings.coolerThanTheWildlifeTab
+                      ? typeof(MainTabWindow_NumbersWildLife)
+                      : typeof(MainTabWindow_Wildlife);
+
+            DefDatabase<MainButtonDef>.GetNamed("Animals").tabWindowClass
+                = Numbers_Settings.coolerThanTheAnimalTab
+                      ? typeof(MainTabWindow_NumbersAnimals)
+                      : typeof(MainTabWindow_Animals);
 
             DefDatabase<MainButtonDef>.GetNamed("Wildlife").Notify_ClearingAllMapsMemory();
+            DefDatabase<MainButtonDef>.GetNamed("Animals").Notify_ClearingAllMapsMemory();
         }
     }
 }
