@@ -60,7 +60,7 @@
                 pawnHumanlikeStatDef =
                     ((IEnumerable<StatDrawEntry>)statsToDraw.Invoke(null, new[] { tmpPawn }))
                    .Concat(tmpPawn.def.SpecialDisplayStats(StatRequest.For(tmpPawn)))
-                   .Where(s => s.ShouldDisplay && s.stat != null)
+                   .Where(s => s.stat != null && s.ShouldDisplay && s.stat.Worker != null)
                    .Select(s => s.stat)
                    .OrderBy(stat => stat.LabelCap);
 
@@ -70,7 +70,7 @@
 
                 pawnAnimalStatDef =
                     ((IEnumerable<StatDrawEntry>)statsToDraw.Invoke(null, new[] { tmpPawn }))
-                   .Where(s => s.ShouldDisplay && s.stat != null)
+                   .Where(s => s.stat != null && s.ShouldDisplay && s.stat.Worker != null)
                    .Select(s => s.stat)
                    .OrderBy(stat => stat.LabelCap);
 
@@ -79,7 +79,7 @@
 
                 corpseStatDef = ((IEnumerable<StatDrawEntry>)statsToDraw.Invoke(null, new[] { corpse }))
                                .Concat(tmpPawn.def.SpecialDisplayStats(StatRequest.For(tmpPawn)))
-                               .Where(s => s.ShouldDisplay && s.stat != null)
+                               .Where(s => s.stat != null && s.ShouldDisplay && s.stat.Worker != null)
                                .Select(s => s.stat)
                                .OrderBy(stat => stat.LabelCap);
             }
