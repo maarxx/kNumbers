@@ -55,7 +55,7 @@ namespace Numbers
                 postfix: new HarmonyMethod(typeof(Numbers), nameof(AddHighlightToLabel_PostFix)),
                 transpiler: new HarmonyMethod(typeof(Numbers), nameof(AddHighlightToLabel_Transpiler)));
 
-            this.settings = this.GetSettings<Numbers_Settings>();
+            settings = GetSettings<Numbers_Settings>();
         }
 
         private static void Columndefs()
@@ -331,57 +331,20 @@ namespace Numbers
         }
 
         private static IEnumerable<PawnColumnDef> ImpliedPawnColumnDefs()
+            => DefDatabase<RecordDef>.AllDefsListForReading.Select(GenerateNewPawnColumnDefFor)
+                   .Concat(DefDatabase<PawnCapacityDef>
+                          .AllDefsListForReading.Select(GenerateNewPawnColumnDefFor))
+                   .Concat(DefDatabase<NeedDef>
+                          .AllDefsListForReading.Select(GenerateNewPawnColumnDefFor))
+                   .Concat(DefDatabase<StatDef>
+                          .AllDefsListForReading.Select(GenerateNewPawnColumnDefFor))
+                   .Concat(DefDatabase<SkillDef>
+                          .AllDefsListForReading.Select(GenerateNewPawnColumnDefFor));
+
+        private static PawnColumnDef GenerateNewPawnColumnDefFor(Def def)
         {
-            foreach (RecordDef record in DefDatabase<RecordDef>.AllDefsListForReading)
-            {
-                PawnColumnDef columnDefRecord = GenerateNewPawnColumnDefFor(record, true);
-                columnDefRecord.workerClass = typeof(PawnColumnWorker_Record);
-                columnDefRecord.GetModExtension<DefModExtension_PawnColumnDefs>().record = record;
-
-                yield return columnDefRecord;
-            }
-
-            foreach (PawnCapacityDef capacityDef in DefDatabase<PawnCapacityDef>.AllDefsListForReading)
-            {
-                PawnColumnDef columnDefCapacity = GenerateNewPawnColumnDefFor(capacityDef, false);
-                columnDefCapacity.workerClass = typeof(PawnColumnWorker_Capacity);
-                columnDefCapacity.GetModExtension<DefModExtension_PawnColumnDefs>().capacity = capacityDef;
-
-                yield return columnDefCapacity;
-            }
-
-            foreach (NeedDef need in DefDatabase<NeedDef>.AllDefsListForReading)
-            {
-                PawnColumnDef columnDefNeed = GenerateNewPawnColumnDefFor(need, true);
-                columnDefNeed.workerClass = typeof(PawnColumnWorker_Need);
-                columnDefNeed.GetModExtension<DefModExtension_PawnColumnDefs>().need = need;
-
-                yield return columnDefNeed;
-            }
-
-            foreach (StatDef stat in DefDatabase<StatDef>.AllDefsListForReading
-                                                         .Where(x => x.showOnPawns && !x.alwaysHide))
-            {
-                PawnColumnDef columnDefStat = GenerateNewPawnColumnDefFor(stat, true);
-                columnDefStat.workerClass = typeof(PawnColumnWorker_Stat);
-                columnDefStat.GetModExtension<DefModExtension_PawnColumnDefs>().stat = stat;
-
-                yield return columnDefStat;
-            }
-
-            foreach (SkillDef skill in DefDatabase<SkillDef>.AllDefsListForReading)
-            {
-                PawnColumnDef columnDefSkill = GenerateNewPawnColumnDefFor(skill, true);
-                columnDefSkill.workerClass = typeof(PawnColumnWorker_Skill);
-                columnDefSkill.GetModExtension<DefModExtension_PawnColumnDefs>().skill = skill;
-
-                yield return columnDefSkill;
-            }
-        }
-
-        private static PawnColumnDef GenerateNewPawnColumnDefFor(Def def, bool prependDescription)
-        {
-            return new PawnColumnDef
+            bool prependDescription = !(def is PawnCapacityDef);
+            PawnColumnDef pcd = new PawnColumnDef
             {
                 ////can't have . inside defNames, but GetType() returns NameSpace.Class 
                 defName = "Numbers_" + def.GetType().ToString().Replace('.', '_') + "_" + def.defName,
@@ -392,6 +355,33 @@ namespace Numbers
                 modContentPack = def.modContentPack,
                 modExtensions = new List<DefModExtension> { new DefModExtension_PawnColumnDefs() }
             };
+            switch (def)
+            {
+                case RecordDef _:
+                    pcd.workerClass = typeof(PawnColumnWorker_Record);
+                    pcd.GetModExtension<DefModExtension_PawnColumnDefs>().record = (RecordDef)def;
+                    break;
+                case PawnCapacityDef _:
+                    pcd.workerClass = typeof(PawnColumnWorker_Capacity);
+                    pcd.GetModExtension<DefModExtension_PawnColumnDefs>().capacity = (PawnCapacityDef)def;
+                    break;
+                case NeedDef _:
+                    pcd.workerClass = typeof(PawnColumnWorker_Need);
+                    pcd.GetModExtension<DefModExtension_PawnColumnDefs>().need = (NeedDef)def;
+                    break;
+                case StatDef _:
+                    pcd.workerClass = typeof(PawnColumnWorker_Stat);
+                    pcd.GetModExtension<DefModExtension_PawnColumnDefs>().stat = (StatDef)def;
+                    break;
+                case SkillDef _:
+                    pcd.workerClass = typeof(PawnColumnWorker_Skill);
+                    pcd.GetModExtension<DefModExtension_PawnColumnDefs>().skill = (SkillDef)def;
+                    break;
+                default:
+                    throw new ArgumentException($"Unsupported Def of type {def.GetType()}");
+            }
+
+            return pcd;
         }
 
 
@@ -436,7 +426,7 @@ namespace Numbers
                     Rect rect2 = new Rect(rect.width - buttonHeight, (rect.height - buttonHeight) / 2f, buttonHeight, buttonHeight);
                     if (Widgets.ButtonImage(rect2, StaticConstructorOnGameStart.DeleteX, Color.white, GenUI.SubtleMouseoverColor))
                     {
-                        this.settings.storedPawnTableDefs.RemoveAt(i);
+                        settings.storedPawnTableDefs.RemoveAt(i);
                     }
                     TooltipHandler.TipRegion(rect2, "delet this");
 
@@ -466,17 +456,17 @@ namespace Numbers
 
         private List<string> RegenPawnTableDefsFromSettings()
         {
-            this.cachedList.Clear();
+            cachedList.Clear();
 
-            foreach (string storedPawnTableDef in this.settings.storedPawnTableDefs)
+            foreach (string storedPawnTableDef in settings.storedPawnTableDefs)
             {
                 if (storedPawnTableDef.Split(',')[1] == "Default")
-                    this.cachedList.Add(storedPawnTableDef.Split(',')[0].Split('_')[1] + " (" + storedPawnTableDef.Split(',')[1] + ")");
+                    cachedList.Add(storedPawnTableDef.Split(',')[0].Split('_')[1] + " (" + storedPawnTableDef.Split(',')[1] + ")");
                 //Numbers_MainTable,Default => MainTable (Default)
                 else
-                    this.cachedList.Add(storedPawnTableDef.Split(',')[1]);
+                    cachedList.Add(storedPawnTableDef.Split(',')[1]);
             }
-            return this.cachedList;
+            return cachedList;
         }
 
         public override string SettingsCategory() => "Numbers";
