@@ -30,15 +30,27 @@
 
         static StaticConstructorOnGameStart()
         {
-            //add trainables to animal table
+            AddTrainablesToAnimalTable();
+
+            AddRemainingSpaceToPawnTableDefs();
+
+            AddHeadersToPawnColumns();
+
+            PopulatePresets();
+        }
+
+        private static void AddTrainablesToAnimalTable()
+        {
             PawnTableDef animalsTable = NumbersDefOf.Numbers_Animals;
 
             foreach (PawnColumnDef item in DefDatabase<PawnColumnDef>.AllDefsListForReading.Where(x => x.Worker is PawnColumnWorker_Trainable))
             {
                 animalsTable.columns.Insert(animalsTable.columns.FindIndex(x => x.Worker is PawnColumnWorker_Checkbox) - 1, item);
             }
+        }
 
-            //add remaining space to my PTDefs
+        private static void AddRemainingSpaceToPawnTableDefs()
+        {
             IEnumerable<PawnTableDef> allPawntableDefs = DefDatabase<PawnTableDef>.AllDefsListForReading.Where(x => x.HasModExtension<DefModExtension_PawnTableDefs>());
 
             PawnColumnDef remainingspace = DefDatabase<PawnColumnDef>.AllDefsListForReading.First(x => x.Worker is PawnColumnWorker_RemainingSpace);
@@ -49,7 +61,10 @@
             {
                 PTSDfromPTDs.columns.Insert(PTSDfromPTDs.columns.Count, remainingspace);
             }
+        }
 
+        private static void AddHeadersToPawnColumns()
+        {
             foreach (PawnColumnDef pawnColumnDef in DefDatabase<PawnColumnDef>
                 .AllDefsListForReading
                 .Where(x => !x.generated
@@ -59,11 +74,18 @@
             {
                 pawnColumnDef.headerTip += (pawnColumnDef.headerTip.NullOrEmpty() ? "" : "\n\n") + "Numbers_ColumnHeader_Tooltip".Translate();
             }
+        }
 
+        private static void PopulatePresets()
+        {
             combatPreset.AddRange(DefDatabase<PawnTableDef>.GetNamed("Numbers_CombatPreset").columns);
             workTabPlusPreset.AddRange(DefDatabase<PawnTableDef>.GetNamed("Numbers_WorkTabPlusPreset").columns);
             colonistNeedsPreset.AddRange(DefDatabase<PawnTableDef>.GetNamed("Numbers_ColonistNeedsPreset").columns);
+            PopulateMedicalPreset();
+        }
 
+        private static void PopulateMedicalPreset()
+        {
             medicalPreset.AddRange(new List<PawnColumnDef>
                                        {
                                            DefDatabase<PawnColumnDef>.GetNamed("Label"),
