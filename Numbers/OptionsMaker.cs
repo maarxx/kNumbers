@@ -62,25 +62,23 @@
             settings = LoadedModManager.GetMod<Numbers>().GetSettings<Numbers_Settings>();
         }
 
-        public FloatMenu PresetOptionsMaker()
+        public List<FloatMenuOption> PresetOptionsMaker()
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>
             {
                 new FloatMenuOption("Numbers_SaveCurrentLayout".Translate(), Save),
                 new FloatMenuOption("Numbers_LoadSavedLayout".Translate(), Load),
-                new FloatMenuOption("Numbers_Presets.Load".Translate("Numbers_Presets.Medical".Translate()), () => ChangeTableTo(StaticConstructorOnGameStart.medicalPreset)),
-                new FloatMenuOption("Numbers_Presets.Load".Translate("Numbers_Presets.Combat".Translate()), () => ChangeTableTo(StaticConstructorOnGameStart.combatPreset)),
-                new FloatMenuOption("Numbers_Presets.Load".Translate("Numbers_Presets.WorkTabPlus".Translate()), () => ChangeTableTo(StaticConstructorOnGameStart.workTabPlusPreset)),
-                new FloatMenuOption("Numbers_Presets.Load".Translate("Numbers_Presets.ColonistNeeds".Translate()), () => ChangeTableTo(StaticConstructorOnGameStart.colonistNeedsPreset)),
+                new FloatMenuOption("Numbers_Presets.Load".Translate("Numbers_Presets.Medical".Translate()), () => ChangeMainTableTo(StaticConstructorOnGameStart.medicalPreset)),
+                new FloatMenuOption("Numbers_Presets.Load".Translate("Numbers_Presets.Combat".Translate()), () => ChangeMainTableTo(StaticConstructorOnGameStart.combatPreset)),
+                new FloatMenuOption("Numbers_Presets.Load".Translate("Numbers_Presets.WorkTabPlus".Translate()), () => ChangeMainTableTo(StaticConstructorOnGameStart.workTabPlusPreset)),
+                new FloatMenuOption("Numbers_Presets.Load".Translate("Numbers_Presets.ColonistNeeds".Translate()), () => ChangeMainTableTo(StaticConstructorOnGameStart.colonistNeedsPreset)),
                 new FloatMenuOption("Numbers_SetAsDefault".Translate(), SetAsDefault,
                         extraPartWidth: 29f,
-                        extraPartOnGUI: rect
-                            => Numbers_Utility.InfoCardButton(rect.x + 5f, rect.y + (rect.height - 24f) / 2,
-                                "Numbers_SetAsDefaultExplanation".Translate(PawnTable.LabelCap))),
+                        extraPartOnGUI: rect => Numbers_Utility.InfoCardButton(rect.x + 5f, rect.y + (rect.height - 24f) / 2, "Numbers_SetAsDefaultExplanation".Translate(PawnTable.LabelCap))),
                 new FloatMenuOption("Numbers_LoadDefault".Translate(), LoadDefault)
             };
 
-            return new FloatMenu(list);
+            return list;
         }
 
         private IEnumerable<FloatMenuOption> General()
@@ -89,10 +87,10 @@
             yield return new FloatMenuOption("Faction".Translate(), () => AddPawnColumnAtBestPositionAndRefresh(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Faction")));
         }
 
-        private IEnumerable<FloatMenuOption> FloatMenuOptionsFor(IEnumerable<PawnColumnDef> pcdList)
-            => pcdList.Select(pcd => new FloatMenuOption(TryGetBestPawnColumnDefLabel(pcd), () => AddPawnColumnAtBestPositionAndRefresh(pcd)));
+        public List<FloatMenuOption> FloatMenuOptionsFor(IEnumerable<PawnColumnDef> pcdList)
+            => pcdList.Select(pcd => new FloatMenuOption(GetBestLabelForPawnColumn(pcd), () => AddPawnColumnAtBestPositionAndRefresh(pcd))).ToList();
 
-        public FloatMenu OtherOptionsMaker()
+        public List<FloatMenuOption> OtherOptionsMaker()
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
 
@@ -140,10 +138,10 @@
                 list.AddRange(FloatMenuOptionsFor(DeadThings));
             }
 
-            return new FloatMenu(list);
+            return list;
         }
 
-        public List<FloatMenuOption> OptionsMakerFloatMenu<T>(in IEnumerable<T> listOfDefs) where T : Def
+        public List<FloatMenuOption> OptionsMakerForGenericDef<T>(in IEnumerable<T> listOfDefs) where T : Def
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
 
@@ -151,24 +149,17 @@
             {
                 void Action()
                 {
-                    if (defCurrent is PawnColumnDef columnDef)
-                    {
-                        AddPawnColumnAtBestPositionAndRefresh(columnDef);
-                    }
-                    else
-                    {
-                        PawnColumnDef pcd = DefDatabase<PawnColumnDef>.GetNamedSilentFail(HorribleStringParsersForSaving.CreateDefNameFromType(defCurrent));
-                        AddPawnColumnAtBestPositionAndRefresh(pcd);
-                    }
+                    PawnColumnDef pcd = DefDatabase<PawnColumnDef>.GetNamedSilentFail(HorribleStringParsersForSaving.CreateDefNameFromType(defCurrent));
+                    AddPawnColumnAtBestPositionAndRefresh(pcd);
                 }
-                string label = defCurrent is PawnColumnDef worker ? worker.workType?.labelShort ?? worker.defName : defCurrent.LabelCap;
+                string label = defCurrent.LabelCap;
                 list.Add(new FloatMenuOption(label, Action));
             }
 
             return list;
         }
 
-        public FloatMenu PawnSelectOptionsMaker()
+        public List<FloatMenuOption> PawnSelector()
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
             foreach (KeyValuePair<PawnTableDef, Func<Pawn, bool>> filter in WorldComponent_Numbers.PrimaryFilter)
@@ -188,7 +179,7 @@
                 }
                 list.Add(new FloatMenuOption(filter.Key.label, Action));
             }
-            return new FloatMenu(list);
+            return list;
         }
 
         private void Save()
@@ -230,7 +221,7 @@
             Find.WindowStack.Add(new FloatMenu(loadOptions));
         }
 
-        private void ChangeTableTo(List<PawnColumnDef> list)
+        private void ChangeMainTableTo(List<PawnColumnDef> list)
         {
             PawnTable = NumbersDefOf.Numbers_MainTable;
             PawnTable.columns = new List<PawnColumnDef>(list);
@@ -259,21 +250,29 @@
                     PawnTable.columns = ptD.columns;
                     numbers.UpdateFilter();
                     numbers.RefreshAndStoreSessionInWorldComp();
-                    break; //there's only one default anyway.
+                    break;
                 }
             }
             if (!foundSomething)
                 Messages.Message("Numbers_NoDefaultStoredForThisView".Translate(), MessageTypeDefOf.RejectInput);
         }
 
-        private static string TryGetBestPawnColumnDefLabel(PawnColumnDef pcd)
-            => pcd == null
-                ? string.Empty
-                    : pcd.label.NullOrEmpty()
-                        ? pcd.headerTip.NullOrEmpty()
-                            ? pcd.defName
-                        : pcd.headerTip
-                    : pcd.LabelCap; //return labelcap if available, headertip if not, defName as last resort.
+        private static string GetBestLabelForPawnColumn(PawnColumnDef pcd)
+        {
+            if (pcd == null)
+                return string.Empty;
+
+            if (pcd.workType != null)
+                return pcd.workType.labelShort;
+
+            if (!pcd.LabelCap.NullOrEmpty())
+                return pcd.LabelCap;
+
+            if (!pcd.headerTip.NullOrEmpty())
+                return pcd.headerTip;
+
+            return pcd.defName;
+        }
 
         private void AddPawnColumnAtBestPositionAndRefresh(PawnColumnDef pcd)
         {

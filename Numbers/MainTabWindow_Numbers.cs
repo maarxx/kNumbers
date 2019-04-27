@@ -25,7 +25,7 @@
         private readonly IEnumerable<NeedDef> pawnHumanlikeNeedDef;
         private readonly IEnumerable<NeedDef> pawnAnimalNeedDef;
 
-        private readonly OptionsMaker optionsMaker;
+        public readonly OptionsMaker optionsMaker;
 
         //Code style: Use GetNamedSilentFail in cases where there is null-handling, so any columns that get run through TryGetBestPawnColumnDefLabel() or AddPawnColumnAtBestPositionAndRefresh() can silently fail.
         //Use GetNamed anywhere a null column would throw a null ref.
@@ -35,6 +35,13 @@
                         PawnTableDef.Ext().Animallike ? pawnAnimalStatDef : pawnHumanlikeStatDef;
 
         private IEnumerable<NeedDef> NeedDefs => PawnTableDef.Ext().Animallike ? pawnAnimalNeedDef : pawnHumanlikeNeedDef;
+
+        private IEnumerable<PawnColumnDef> HealthStats
+            => new[] { DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_HediffList"),
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Pain"),
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Bleedrate"),
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_NeedsTreatment"),
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_DiseaseProgress") };
 
         //ctor to populate lists.
         public MainTabWindow_Numbers()
@@ -119,115 +126,83 @@
             float x = 0f;
             Text.Font = GameFont.Small;
 
+            // row count:
+            Rect thingCount = new Rect(3f, 40f, 200f, 30f);
+            Widgets.Label(thingCount, "koisama.Numbers.Count".Translate() + ": " + Pawns.Count());
+
             //pawn selector
             Rect sourceButton = new Rect(x, 0f, buttonWidth, buttonHeight);
-            if (Widgets.ButtonText(sourceButton, PawnTableDef.label))
-            {
-                Find.WindowStack.Add(optionsMaker.PawnSelectOptionsMaker());
-            }
-            x += buttonWidth + buttonGap;
-
+            DoButton(PawnTableDef.label, optionsMaker.PawnSelector(), ref x);
             TooltipHandler.TipRegion(sourceButton, new TipSignal("koisama.Numbers.ClickToToggle".Translate(), sourceButton.GetHashCode()));
 
             //stats
-            Rect addColumnButton = new Rect(x, 0f, buttonWidth, buttonHeight);
-            if (Widgets.ButtonText(addColumnButton, "TabStats".Translate()))
-            {
-                Find.WindowStack.Add(new FloatMenu(optionsMaker.OptionsMakerFloatMenu(StatDefs)));
-            }
-            x += buttonWidth + buttonGap;
+            DoButton("TabStats".Translate(), optionsMaker.OptionsMakerForGenericDef(StatDefs), ref x);
 
             //worktypes
             if (PawnTableDef == NumbersDefOf.Numbers_MainTable)
             {
-                Rect workTypeColumnButton = new Rect(x, 0f, buttonWidth, buttonHeight);
-                if (Widgets.ButtonText(workTypeColumnButton, workTabName))
-                {
-                    Find.WindowStack.Add(new FloatMenu(optionsMaker.OptionsMakerFloatMenu(DefDatabase<PawnColumnDef>.AllDefsListForReading.Where(pcd => pcd.workType != null).Reverse())));
-                }
-                x += buttonWidth + buttonGap;
+                DoButton(workTabName, optionsMaker.FloatMenuOptionsFor(DefDatabase<PawnColumnDef>.AllDefsListForReading.Where(pcd => pcd.workType != null).Reverse()), ref x);
             }
 
             //skills
             if (new[] { NumbersDefOf.Numbers_Enemies, NumbersDefOf.Numbers_Prisoners, NumbersDefOf.Numbers_MainTable }.Contains(PawnTableDef))
             {
-                Rect skillColumnButton = new Rect(x, 0f, buttonWidth, buttonHeight);
-                if (Widgets.ButtonText(skillColumnButton, "Skills".Translate()))
-                {
-                    Find.WindowStack.Add(new FloatMenu(optionsMaker.OptionsMakerFloatMenu(DefDatabase<SkillDef>.AllDefsListForReading)));
-                }
-                x += buttonWidth + buttonGap;
+                DoButton("Skills".Translate(), optionsMaker.OptionsMakerForGenericDef(DefDatabase<SkillDef>.AllDefsListForReading), ref x);
             }
 
             //needs btn (for living things)
             if (!new[] { NumbersDefOf.Numbers_AnimalCorpses, NumbersDefOf.Numbers_Corpses }.Contains(PawnTableDef))
             {
-                Rect needsColumnButton = new Rect(x, 0f, buttonWidth, buttonHeight);
-                if (Widgets.ButtonText(needsColumnButton, "TabNeeds".Translate()))
-                {
-                    Find.WindowStack.Add(new FloatMenu(optionsMaker.OptionsMakerFloatMenu(NeedDefs)));
-                }
-                x += buttonWidth + buttonGap;
+                DoButton("TabNeeds".Translate(), optionsMaker.OptionsMakerForGenericDef(NeedDefs), ref x);
             }
 
             //cap btn (for living things)
             if (!new[] { NumbersDefOf.Numbers_AnimalCorpses, NumbersDefOf.Numbers_Corpses }.Contains(PawnTableDef))
             {
-                Rect capacityColumnButton = new Rect(x, 0f, buttonWidth, buttonHeight);
-                if (Widgets.ButtonText(capacityColumnButton, "TabHealth".Translate()))
+                List<PawnColumnDef> optionalList = new List<PawnColumnDef>();
+
+                if (new[] { NumbersDefOf.Numbers_MainTable, NumbersDefOf.Numbers_Prisoners, NumbersDefOf.Numbers_Animals }.Contains(PawnTableDef))
                 {
-                    List<PawnColumnDef> optionalList = new List<PawnColumnDef>();
+                    optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("MedicalCare"));
+                    optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Operations"));
 
-                    if (new[] { NumbersDefOf.Numbers_MainTable, NumbersDefOf.Numbers_Prisoners, NumbersDefOf.Numbers_Animals }.Contains(PawnTableDef))
-                    {
-                        optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("MedicalCare"));
-                        optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Operations"));
-
-                        if (PawnTableDef == NumbersDefOf.Numbers_MainTable)
-                            optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_SelfTend"));
-                    }
-                    optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_HediffList"));
-                    optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Pain"));
-                    optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Bleedrate"));
-                    optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_NeedsTreatment"));
-                    optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_DiseaseProgress"));
-
-                    var tmp = optionsMaker.OptionsMakerFloatMenu(DefDatabase<PawnCapacityDef>.AllDefsListForReading)
-                                          .Concat(optionsMaker.OptionsMakerFloatMenu(optionalList));
-
-                    Find.WindowStack.Add(new FloatMenu(tmp.ToList()));
+                    if (PawnTableDef == NumbersDefOf.Numbers_MainTable)
+                        optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_SelfTend"));
                 }
-                x += buttonWidth + buttonGap;
+
+                optionalList.AddRange(HealthStats);
+
+                var tmp = optionsMaker.OptionsMakerForGenericDef(DefDatabase<PawnCapacityDef>.AllDefsListForReading)
+                                      .Concat(optionsMaker.FloatMenuOptionsFor(optionalList));
+
+                DoButton("TabHealth".Translate(), tmp.ToList(), ref x);
             }
 
             //records btn
-            Rect recordsColumnBtn = new Rect(x, 0f, buttonWidth, buttonHeight);
-            if (Widgets.ButtonText(recordsColumnBtn, "TabRecords".Translate()))
-            {
-                Find.WindowStack.Add(new FloatMenu(optionsMaker.OptionsMakerFloatMenu(DefDatabase<RecordDef>.AllDefsListForReading)));
-            }
-            x += buttonWidth + buttonGap;
+            DoButton("TabRecords".Translate(), optionsMaker.OptionsMakerForGenericDef(DefDatabase<RecordDef>.AllDefsListForReading), ref x);
 
             //other btn
-            Rect otherColumnBtn = new Rect(x, 0f, buttonWidth, buttonHeight);
-            if (Widgets.ButtonText(otherColumnBtn, "MiscRecordsCategory".Translate()))
-            {
-                Find.WindowStack.Add(optionsMaker.OtherOptionsMaker());
-            }
-            x += buttonWidth + buttonGap;
+            DoButton("MiscRecordsCategory".Translate(), optionsMaker.OtherOptionsMaker(), ref x);
 
+            //presets button
             float startPositionOfPresetsButton = Mathf.Max(rect.xMax - buttonWidth - Margin, x);
             Rect addPresetBtn = new Rect(startPositionOfPresetsButton, 0f, buttonWidth, buttonHeight);
             if (Widgets.ButtonText(addPresetBtn, "koisama.Numbers.SetPresetLabel".Translate()))
             {
-                Find.WindowStack.Add(optionsMaker.PresetOptionsMaker());
+                Find.WindowStack.Add(new FloatMenu(optionsMaker.PresetOptionsMaker()));
             }
 
-            // row count:
-            Rect thingCount = new Rect(3f, 40f, 200f, 30f);
-            Widgets.Label(thingCount, "koisama.Numbers.Count".Translate() + ": " + Pawns.Count());
-
             base.DoWindowContents(rect);
+        }
+
+        void DoButton(string label, List<FloatMenuOption> list, ref float x)
+        {
+            Rect addColumnButton = new Rect(x, 0f, buttonWidth, buttonHeight);
+            if (Widgets.ButtonText(addColumnButton, label))
+            {
+                Find.WindowStack.Add(new FloatMenu(list));
+            }
+            x += buttonWidth + buttonGap;
         }
 
         public override void PostOpen()
@@ -236,7 +211,6 @@
             base.PostOpen();
             Find.World.renderer.wantedMode = WorldRenderMode.None;
         }
-
 
         public void RefreshAndStoreSessionInWorldComp()
         {

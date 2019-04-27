@@ -8,15 +8,24 @@
 
     public static class Numbers_Utility
     {
-        public static bool IsEnemy(this Pawn p) => p.HostileTo(Faction.OfPlayer);
+        public static bool IsEnemy(this Pawn p)
+            => p.HostileTo(Faction.OfPlayer);
 
-        public static bool IsGuest(this Pawn p) => p.guest != null && !p.guest.IsPrisoner
-                        && p.Faction != null && !p.Faction.HostileTo(Faction.OfPlayer)
-                        && p.Faction != Faction.OfPlayer;
+        public static bool IsGuest(this Pawn p)
+            => p.guest != null
+            && !p.guest.IsPrisoner
+            && p.Faction != null
+            && !p.Faction.HostileTo(Faction.OfPlayer)
+            && p.Faction != Faction.OfPlayer;
 
-        public static bool IsVisible(this Pawn p) => p.SpawnedOrAnyParentSpawned && p.PositionHeld != IntVec3.Invalid                && !p.PositionHeld.Fogged(p.MapHeld);
+        public static bool IsVisible(this Pawn p)
+            => p.SpawnedOrAnyParentSpawned
+            && p.PositionHeld != IntVec3.Invalid
+            && !p.PositionHeld.Fogged(p.MapHeld);
 
-        public static bool IsWildAnimal(this Pawn p) => p.Faction == null && p.AnimalOrWildMan();
+        public static bool IsWildAnimal(this Pawn p)
+            => p.Faction == null
+            && p.AnimalOrWildMan();
 
         public static DefModExtension_PawnColumnDefs Ext(this PawnColumnDef def)
         {
