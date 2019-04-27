@@ -16,6 +16,9 @@ namespace Numbers
             return string.Join(",", new string[] { table.defName, label, TurnPawnTableColumnsIntoCommaDelimitedString(table) });
         }
 
+        public static string CreateDefNameFromType(Def def)
+            => "Numbers_" + def.GetType().ToString().Replace('.', '_') + "_" + def.defName;
+
         private static string TurnPawnTableColumnsIntoCommaDelimitedString(PawnTableDef table)
         {
             StringBuilder stringBuilder = new StringBuilder();

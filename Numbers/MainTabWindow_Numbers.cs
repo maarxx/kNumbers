@@ -16,16 +16,14 @@ namespace Numbers
         public const float buttonGap = 4f;
         public const float extraTopSpace = 83f;
 
-        private readonly Numbers_Settings settings;
-
         public static List<Func<Pawn, bool>> filterValidator = new List<Func<Pawn, bool>>
                                                         { Find.World.GetComponent<WorldComponent_Numbers>().primaryFilter.Value };
 
-        private readonly List<StatDef> pawnHumanlikeStatDef;
-        private readonly List<StatDef> pawnAnimalStatDef;
-        private readonly List<StatDef> corpseStatDef;
-        private readonly List<NeedDef> pawnHumanlikeNeedDef;
-        private readonly List<NeedDef> pawnAnimalNeedDef;
+        private readonly IEnumerable<StatDef> pawnHumanlikeStatDef;
+        private readonly IEnumerable<StatDef> pawnAnimalStatDef;
+        private readonly IEnumerable<StatDef> corpseStatDef;
+        private readonly IEnumerable<NeedDef> pawnHumanlikeNeedDef;
+        private readonly IEnumerable<NeedDef> pawnAnimalNeedDef;
 
         private readonly OptionsMaker optionsMaker;
 
@@ -33,10 +31,10 @@ namespace Numbers
         //Use GetNamed anywhere a null column would throw a null ref.
         private static readonly string workTabName = DefDatabase<MainButtonDef>.GetNamed("Work").ShortenedLabelCap;
 
-        private List<StatDef> StatDefs => PawnTableDef.Ext().Corpse ? corpseStatDef :
+        private IEnumerable<StatDef> StatDefs => PawnTableDef.Ext().Corpse ? corpseStatDef :
                         PawnTableDef.Ext().Animallike ? pawnAnimalStatDef : pawnHumanlikeStatDef;
 
-        private List<NeedDef> NeedDefs => PawnTableDef.Ext().Animallike ? pawnAnimalNeedDef : pawnHumanlikeNeedDef;
+        private IEnumerable<NeedDef> NeedDefs => PawnTableDef.Ext().Animallike ? pawnAnimalNeedDef : pawnHumanlikeNeedDef;
 
         //ctor to populate lists.
         public MainTabWindow_Numbers()
@@ -57,17 +55,17 @@ namespace Numbers
                    .Concat(tmpPawn.def.SpecialDisplayStats(StatRequest.For(tmpPawn)))
                    .Where(s => s.ShouldDisplay && s.stat != null)
                    .Select(s => s.stat)
-                   .OrderBy(stat => stat.LabelCap).ToList();
+                   .OrderBy(stat => stat.LabelCap);
 
                 tmpPawn = PawnGenerator.GeneratePawn(PawnKindDefOf.Thrumbo);
 
-                pawnAnimalNeedDef = tmpPawn.needs.AllNeeds.Where(x => x.def.showOnNeedList).Select(x => x.def).ToList();
+                pawnAnimalNeedDef = tmpPawn.needs.AllNeeds.Where(x => x.def.showOnNeedList).Select(x => x.def);
 
                 pawnAnimalStatDef =
                     ((IEnumerable<StatDrawEntry>)statsToDraw.Invoke(null, new[] { tmpPawn }))
                    .Where(s => s.ShouldDisplay && s.stat != null)
                    .Select(s => s.stat)
-                   .OrderBy(stat => stat.LabelCap).ToList();
+                   .OrderBy(stat => stat.LabelCap);
 
                 Corpse corpse = (Corpse)ThingMaker.MakeThing(tmpPawn.RaceProps.corpseDef);
                 corpse.InnerPawn = tmpPawn;
@@ -76,7 +74,7 @@ namespace Numbers
                                .Concat(tmpPawn.def.SpecialDisplayStats(StatRequest.For(tmpPawn)))
                                .Where(s => s.ShouldDisplay && s.stat != null)
                                .Select(s => s.stat)
-                               .OrderBy(stat => stat.LabelCap).ToList();
+                               .OrderBy(stat => stat.LabelCap);
             }
             else
                 Log.Error("ReflectionTypeLoadException in Numbers: statsToDraw was null. Please contact mod author.");
@@ -87,7 +85,6 @@ namespace Numbers
             if (Find.World.GetComponent<WorldComponent_Numbers>().sessionTable.TryGetValue(defaultTable, out List<PawnColumnDef> list))
                 pawnTableDef.columns = list;
 
-            settings = LoadedModManager.GetMod<Numbers>().GetSettings<Numbers_Settings>();
             UpdateFilter();
         }
 
@@ -99,7 +96,7 @@ namespace Numbers
         {
             get
             {
-                var corpseList = Find.CurrentMap.listerThings.ThingsInGroup(ThingRequestGroup.Corpse);
+                var corpseList = Find.CurrentMap.listerThings.ThingsInGroup(ThingRequestGroup.Corpse).Cast<Corpse>();
 
                 foreach (Corpse corpse in corpseList)
                 {
@@ -146,7 +143,7 @@ namespace Numbers
                 Rect workTypeColumnButton = new Rect(x, 0f, buttonWidth, buttonHeight);
                 if (Widgets.ButtonText(workTypeColumnButton, workTabName))
                 {
-                    Find.WindowStack.Add(new FloatMenu(optionsMaker.OptionsMakerFloatMenu(DefDatabase<PawnColumnDef>.AllDefsListForReading.Where(pcd => pcd.workType != null).Reverse().ToList())));
+                    Find.WindowStack.Add(new FloatMenu(optionsMaker.OptionsMakerFloatMenu(DefDatabase<PawnColumnDef>.AllDefsListForReading.Where(pcd => pcd.workType != null).Reverse())));
                 }
                 x += buttonWidth + buttonGap;
             }
@@ -195,7 +192,10 @@ namespace Numbers
                     optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_NeedsTreatment"));
                     optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_DiseaseProgress"));
 
-                    Find.WindowStack.Add(new FloatMenu(optionsMaker.OptionsMakerFloatMenu(DefDatabase<PawnCapacityDef>.AllDefsListForReading, optionalList)));
+                    var tmp = optionsMaker.OptionsMakerFloatMenu(DefDatabase<PawnCapacityDef>.AllDefsListForReading)
+                                          .Concat(optionsMaker.OptionsMakerFloatMenu(optionalList));
+
+                    Find.WindowStack.Add(new FloatMenu(tmp.ToList()));
                 }
                 x += buttonWidth + buttonGap;
             }

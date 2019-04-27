@@ -346,8 +346,7 @@ namespace Numbers
             bool prependDescription = !(def is PawnCapacityDef);
             PawnColumnDef pcd = new PawnColumnDef
             {
-                ////can't have . inside defNames, but GetType() returns NameSpace.Class 
-                defName = "Numbers_" + def.GetType().ToString().Replace('.', '_') + "_" + def.defName,
+                defName = HorribleStringParsersForSaving.CreateDefNameFromType(def),
                 sortable = true,
                 headerTip = (prependDescription ? def.description + "\n\n" : "") + "Numbers_ColumnHeader_Tooltip".Translate(),
                 generated = true,

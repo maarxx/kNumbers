@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using Verse;
 
@@ -12,7 +11,50 @@ namespace Numbers
     {
         private readonly MainTabWindow_Numbers numbers;
         private readonly Numbers_Settings settings;
+
         private PawnTableDef PawnTable { get => numbers.pawnTableDef; set => numbers.pawnTableDef = value; }
+
+        //these should be Defs, probably
+        private static IEnumerable<PawnColumnDef> EquipmentBearers
+            => new[] { DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Equipment") };
+
+        private static IEnumerable<PawnColumnDef> LivingThings
+            => new[] { DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Age"),
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_MentalState"),
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_JobCurrent"),
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_JobQueued"),
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_HediffList") };
+
+        private static IEnumerable<PawnColumnDef> Prisoners
+            => new[] { DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_PrisonerInteraction"),
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_PrisonerRecruitmentDifficulty"),
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_PrisonerResistance"),
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("FoodRestriction"),
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inventory") };
+
+        private static IEnumerable<PawnColumnDef> Animals
+            => new[] { DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Milkfullness"),
+                        DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_AnimalWoolGrowth"),
+                        DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_AnimalEggProgress"),
+                        DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Wildness"),
+                        DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_TameChance"),
+                        DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inventory") }
+               .Concat(DefDatabase<PawnTableDef>.GetNamed("Animals").columns.Where(x => pcdValidator(x)));
+
+        private static IEnumerable<PawnColumnDef> MainTable
+            => new[] { DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inspiration"),
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inventory"),
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_SelfTend") }
+               .Concat(DefDatabase<PawnTableDef>.GetNamed("Assign").columns
+               .Concat(DefDatabase<PawnTableDef>.GetNamed("Restrict").columns).Where(x => pcdValidator(x)));
+
+        private static IEnumerable<PawnColumnDef> WildAnimals
+            => new[] { DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Wildness"),
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_TameChance") }
+               .Concat(DefDatabase<PawnTableDef>.GetNamed("Wildlife").columns.Where(x => pcdValidator(x)));
+
+        private static IEnumerable<PawnColumnDef> DeadThings
+            => new[] { DefDatabase<PawnColumnDef>.GetNamedSilentFail(defName: "Numbers_Forbidden") };
 
         public OptionsMaker(MainTabWindow_Numbers mainTabWindow)
         {
@@ -47,115 +89,8 @@ namespace Numbers
             yield return new FloatMenuOption("Faction".Translate(), () => AddPawnColumnAtBestPositionAndRefresh(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Faction")));
         }
 
-        private IEnumerable<FloatMenuOption> EquipmentBears()
-        {
-            List<PawnColumnDef> pcdList = new List<PawnColumnDef>
-                                          {
-                                              DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Equipment")
-                                          };
-
-            foreach (PawnColumnDef pcd in pcdList)
-            {
-                yield return new FloatMenuOption(TryGetBestPawnColumnDefLabel(pcd), () => AddPawnColumnAtBestPositionAndRefresh(pcd));
-            }
-        }
-
-        private IEnumerable<FloatMenuOption> LivingThings()
-        {
-            List<PawnColumnDef> pcdList = new List<PawnColumnDef>
-                                          {
-                                              DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Age"),
-                                              DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_MentalState"),
-                                              DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_JobCurrent"),
-                                              DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_JobQueued"),
-                                              DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_HediffList")
-                                          };
-
-            foreach (PawnColumnDef pcd in pcdList)
-            {
-                yield return new FloatMenuOption(TryGetBestPawnColumnDefLabel(pcd), () => AddPawnColumnAtBestPositionAndRefresh(pcd));
-            }
-        }
-
-        private IEnumerable<FloatMenuOption> Prisoners()
-        {
-            List<PawnColumnDef> pcdList = new List<PawnColumnDef>
-                                          {
-                                              DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_PrisonerInteraction"),
-                                              DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_PrisonerRecruitmentDifficulty"),
-                                              DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_PrisonerResistance"),
-                                              DefDatabase<PawnColumnDef>.GetNamedSilentFail("FoodRestriction"),
-                                              DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inventory"),
-                                          };
-
-            foreach (PawnColumnDef pcd in pcdList)
-            {
-                yield return new FloatMenuOption(TryGetBestPawnColumnDefLabel(pcd), () => AddPawnColumnAtBestPositionAndRefresh(pcd));
-            }
-        }
-
-        private IEnumerable<FloatMenuOption> Animals()
-        {
-            List<PawnColumnDef> pcdList = new List<PawnColumnDef>
-                                          {
-                                              DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Milkfullness"),
-                                              DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_AnimalWoolGrowth"),
-                                              DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_AnimalEggProgress"),
-                                              DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Wildness"),
-                                              DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_TameChance"),
-                                              DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inventory"),
-                                          };
-
-            IEnumerable<PawnColumnDef> pawnColumnDefs = pcdList.Concat(DefDatabase<PawnTableDef>.GetNamed("Animals").columns.Where(x => pcdValidator(x)));
-
-            foreach (PawnColumnDef pcd in pawnColumnDefs)
-            {
-                yield return new FloatMenuOption(TryGetBestPawnColumnDefLabel(pcd), () => AddPawnColumnAtBestPositionAndRefresh(pcd));
-            }
-        }
-
-        private IEnumerable<FloatMenuOption> MainTable()
-        {
-            List<PawnColumnDef> pcdList = new List<PawnColumnDef>
-                                          {
-                                              DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inspiration"),
-                                              DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inventory"),
-                                              DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_SelfTend"),
-                                          };
-            // (assign + restrict).Where(validator) + pcdList
-            foreach (var pcd in DefDatabase<PawnTableDef>.GetNamed("Assign").columns
-                                                         .Concat(DefDatabase<PawnTableDef>.GetNamed("Restrict").columns).Where(x => pcdValidator(x))
-                                                         .Concat(pcdList))
-            {
-                yield return new FloatMenuOption(TryGetBestPawnColumnDefLabel(pcd), () => AddPawnColumnAtBestPositionAndRefresh(pcd));
-            }
-        }
-
-        private IEnumerable<FloatMenuOption> WildAnimals()
-        {
-            List<PawnColumnDef> pcdList = new List<PawnColumnDef>
-                                          {
-                                              DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Wildness"),
-                                              DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_TameChance"),
-                                          };
-            foreach (var pcd in DefDatabase<PawnTableDef>.GetNamed("Wildlife").columns.Where(x => pcdValidator(x)).Concat(pcdList))
-            {
-                yield return new FloatMenuOption(pcd.defName, () => AddPawnColumnAtBestPositionAndRefresh(pcd));
-            }
-        }
-
-        private IEnumerable<FloatMenuOption> DeadThings()
-        {
-            List<PawnColumnDef> pcdList = new List<PawnColumnDef>
-                                          {
-                                              DefDatabase<PawnColumnDef>.GetNamedSilentFail(defName: "Numbers_Forbidden"),
-                                          };
-
-            foreach (var pcd in pcdList)
-            {
-                yield return new FloatMenuOption(TryGetBestPawnColumnDefLabel(pcd), () => AddPawnColumnAtBestPositionAndRefresh(pcd));
-            }
-        }
+        private IEnumerable<FloatMenuOption> FloatMenuOptionsFor(IEnumerable<PawnColumnDef> pcdList)
+            => pcdList.Select(pcd => new FloatMenuOption(TryGetBestPawnColumnDefLabel(pcd), () => AddPawnColumnAtBestPositionAndRefresh(pcd)));
 
         public FloatMenu OtherOptionsMaker()
         {
@@ -164,66 +99,53 @@ namespace Numbers
             list.AddRange(General());
 
             //equipment bearers
-            //array search is easier to type than if (PawnTableDef == X || PawnTableDef == Y etc etc)
             if (new[] { NumbersDefOf.Numbers_MainTable,
                         NumbersDefOf.Numbers_Prisoners,
                         NumbersDefOf.Numbers_Enemies,
                         NumbersDefOf.Numbers_Corpses
                       }.Contains(PawnTable))
             {
-                list.AddRange(EquipmentBears());
+                list.AddRange(FloatMenuOptionsFor(EquipmentBearers));
             }
 
             //all living things
             if (!new[] { NumbersDefOf.Numbers_AnimalCorpses, NumbersDefOf.Numbers_Corpses, }.Contains(PawnTable))
             {
-                list.AddRange(LivingThings());
+                list.AddRange(FloatMenuOptionsFor(LivingThings));
             }
 
             if (PawnTable == NumbersDefOf.Numbers_Prisoners)
             {
-                list.AddRange(Prisoners());
+                list.AddRange(FloatMenuOptionsFor(Prisoners));
             }
 
             if (PawnTable == NumbersDefOf.Numbers_Animals)
             {
-                list.AddRange(Animals());
+                list.AddRange(FloatMenuOptionsFor(Animals));
             }
 
             if (PawnTable == NumbersDefOf.Numbers_MainTable)
             {
-                list.AddRange(MainTable());
+                list.AddRange(FloatMenuOptionsFor(MainTable));
             }
 
             if (PawnTable == NumbersDefOf.Numbers_WildAnimals)
             {
-                list.AddRange(WildAnimals());
+                list.AddRange(FloatMenuOptionsFor(WildAnimals));
             }
 
             //all dead things
             if (new[] { NumbersDefOf.Numbers_AnimalCorpses, NumbersDefOf.Numbers_Corpses, }.Contains(PawnTable))
             {
-                list.AddRange(DeadThings());
+                list.AddRange(FloatMenuOptionsFor(DeadThings));
             }
 
             return new FloatMenu(list);
         }
 
-        public List<FloatMenuOption> OptionsMakerFloatMenu<T>(in List<T> listOfDefs, in List<PawnColumnDef> optionalList = null) where T : Def
+        public List<FloatMenuOption> OptionsMakerFloatMenu<T>(in IEnumerable<T> listOfDefs) where T : Def
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
-
-            if (optionalList != null)
-            {
-                foreach (PawnColumnDef pawnColumnDef in optionalList)
-                {
-                    void Action()
-                    {
-                        AddPawnColumnAtBestPositionAndRefresh(pawnColumnDef);
-                    }
-                    list.Add(new FloatMenuOption(TryGetBestPawnColumnDefLabel(pawnColumnDef), Action));
-                }
-            }
 
             foreach (var defCurrent in listOfDefs)
             {
@@ -235,7 +157,7 @@ namespace Numbers
                     }
                     else
                     {
-                        PawnColumnDef pcd = DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_" + defCurrent.GetType().ToString().Replace('.', '_') + "_" + defCurrent.defName);
+                        PawnColumnDef pcd = DefDatabase<PawnColumnDef>.GetNamedSilentFail(HorribleStringParsersForSaving.CreateDefNameFromType(defCurrent));
                         AddPawnColumnAtBestPositionAndRefresh(pcd);
                     }
                 }

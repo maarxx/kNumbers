@@ -89,7 +89,7 @@ namespace Numbers
                 .AddRange(DefDatabase<PawnCapacityDef>
                 .AllDefsListForReading
                 .Select(x => DefDatabase<PawnColumnDef>
-                .GetNamed("Numbers_" + x.GetType().ToString().Replace('.', '_') + "_" + x.defName)));
+                .GetNamed(HorribleStringParsersForSaving.CreateDefNameFromType(x))));
 
             medicalPreset.RemoveAll(x => x.defName == "Numbers_Verse_PawnCapacityDef_Metabolism"); //I need space
             medicalPreset.AddRange(new List<PawnColumnDef>
