@@ -1,9 +1,9 @@
 ﻿namespace Numbers
 {
+    using System.Linq;
     using RimWorld;
     using UnityEngine;
     using Verse;
-    using System.Linq;
 
     public class PawnColumnWorker_JobQueued : PawnColumnWorker_Text
     {
@@ -13,7 +13,7 @@
             {
                 string text = pawn.jobs.jobQueue[0].job.GetReport(pawn).CapitalizeFirst();
 
-                GenText.SetTextSizeToFit(text, new Rect(0f, 0f, Mathf.CeilToInt(Text.CalcSize(this.def.LabelCap).x), this.GetMinCellHeight(pawn)));
+                GenText.SetTextSizeToFit(text, new Rect(0f, 0f, Mathf.CeilToInt(Text.CalcSize(def.LabelCap).x), GetMinCellHeight(pawn)));
 
                 return text;
             }
@@ -30,6 +30,6 @@
             => Mathf.Max(base.GetMinWidth(table), 200);
 
         public override int GetMinHeaderHeight(PawnTable table)
-            => Mathf.CeilToInt(Text.CalcSize(Numbers_Utility.WordWrapAt(this.def.LabelCap, this.GetMinWidth(table))).y);
+            => Mathf.CeilToInt(Text.CalcSize(Numbers_Utility.WordWrapAt(def.LabelCap, GetMinWidth(table))).y);
     }
 }

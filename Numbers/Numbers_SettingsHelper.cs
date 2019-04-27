@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
-using RimWorld;
-using Verse;
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using System;
+    using UnityEngine;
+    using Verse;
+
     static class Numbers_SettingsHelper
     {
         public static void SliderLabeled(this Listing_Standard ls, string label, ref int val, string format, float min = 0f, float max = 100f, string tooltip = null)

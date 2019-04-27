@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
-using UnityEngine;
-using Verse;
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using System.Linq;
+    using RimWorld;
+    using UnityEngine;
+    using Verse;
     using Verse.Sound;
 
     public class PawnColumnWorker_PrisonerInteraction : PawnColumnWorker
@@ -58,7 +54,7 @@ namespace Numbers
                     if (dragging && pawn.guest.interactionMode != prisonerInteraction)
                     {
                         pawn.guest.interactionMode = prisonerInteraction;
-                        SoundDefOf.Designate_DragStandard_Changed.PlayOneShotOnCamera(null);
+                        SoundDefOf.Designate_DragStandard_Changed.PlayOneShotOnCamera();
                     }
                 }
             }
@@ -71,6 +67,6 @@ namespace Numbers
             => width;
 
         public override int GetMinHeaderHeight(PawnTable table)
-            => Mathf.CeilToInt(Text.CalcSize(this.def.LabelCap.WordWrapAt(this.GetMinWidth(table))).y);
+            => Mathf.CeilToInt(Text.CalcSize(Numbers_Utility.WordWrapAt(def.LabelCap, GetMinWidth(table))).y);
     }
 }

@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
-using Verse;
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using RimWorld;
+    using Verse;
+
     public class DefModExtension_PawnColumnDefs : DefModExtension
     {
         public RecordDef       record;
@@ -14,9 +10,5 @@ namespace Numbers
         public NeedDef         need;
         public StatDef         stat;
         public SkillDef        skill;
-
-        public DefModExtension_PawnColumnDefs()
-        {
-        }
     }
 }

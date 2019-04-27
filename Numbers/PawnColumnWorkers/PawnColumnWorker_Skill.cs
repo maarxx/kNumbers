@@ -1,21 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
-using UnityEngine;
-using Verse;
-using System.Reflection;
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using System.Reflection;
+    using RimWorld;
+    using UnityEngine;
+    using Verse;
+
     [StaticConstructorOnStartup]
     //mostly from Koisama
     public class PawnColumnWorker_Skill : PawnColumnWorker
     {
 
-        private static readonly Texture2D passionMinorIcon = ContentFinder<Texture2D>.Get("UI/Icons/PassionMinor", true);
-        private static readonly Texture2D passionMajorIcon = ContentFinder<Texture2D>.Get("UI/Icons/PassionMajor", true);
+        private static readonly Texture2D passionMinorIcon = ContentFinder<Texture2D>.Get("UI/Icons/PassionMinor");
+        private static readonly Texture2D passionMajorIcon = ContentFinder<Texture2D>.Get("UI/Icons/PassionMajor");
         private static readonly Texture2D SkillBarFillTex = SolidColorMaterials.NewSolidColorTexture(new Color(1f, 1f, 1f, 0.25f));
         private static readonly Texture2D SkillBarBgTex = SolidColorMaterials.NewSolidColorTexture(new Color(1f, 1f, 1f, 0.07f));
         private static readonly Color DisabledSkillColor = new Color(1f, 1f, 1f, 0.5f);
@@ -29,7 +25,7 @@ namespace Numbers
             if (pawn.RaceProps.Animal)
                 return;
 
-            SkillRecord skill = pawn.skills?.GetSkill(this.def.Ext().skill);
+            SkillRecord skill = pawn.skills?.GetSkill(def.Ext().skill);
 
             if (skill == null)
                 return;
@@ -63,7 +59,7 @@ namespace Numbers
             GenUI.ResetLabelAlign();
             GUI.color = Color.white;
             GUI.EndGroup();
-            string tip = this.GetTip(pawn, skill);
+            string tip = GetTip(pawn, skill);
             if (!tip.NullOrEmpty())
             {
                 TooltipHandler.TipRegion(rect, tip);
@@ -76,7 +72,7 @@ namespace Numbers
 
         public override int Compare(Pawn a, Pawn b)
         {
-            return (a.skills?.GetSkill(this.def.Ext().skill)?.XpTotalEarned ?? 0).CompareTo(b.skills?.GetSkill(this.def.Ext().skill)?.XpTotalEarned ?? 0);
+            return (a.skills?.GetSkill(def.Ext().skill)?.XpTotalEarned ?? 0).CompareTo(b.skills?.GetSkill(def.Ext().skill)?.XpTotalEarned ?? 0);
         }
     }
 }

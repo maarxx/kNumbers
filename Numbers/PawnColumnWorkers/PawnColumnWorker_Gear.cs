@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
-using UnityEngine;
-using Verse;
-using Verse.AI;
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using RimWorld;
+    using UnityEngine;
+    using Verse;
+    using Verse.AI;
+
     public class PawnColumnWorker_Equipment : PawnColumnWorker
     {
         private int width;
@@ -16,38 +15,40 @@ namespace Numbers
 
         public override void DoCell(Rect rect, Pawn pawn, PawnTable table)
         {
-            Pawn p1 = pawn;
-            if (p1.RaceProps.Animal) return;
-            if (p1.equipment != null)
+            GUI.BeginGroup(rect);
+
+            float x = 0;
+            float gWidth = 28f;
+            float gHeight = 28f;
+
+            if (pawn.equipment != null)
             {
-                GUI.BeginGroup(rect);
-                float x = 0;
-                float gWidth = 28f;
-                float gHeight = 28f;
-                foreach (ThingWithComps thing in p1.equipment.AllEquipmentListForReading)
+                foreach (ThingWithComps thing in pawn.equipment.AllEquipmentListForReading)
                 {
                     Rect rect2 = new Rect(x, 0, gWidth, gHeight);
-                    DrawThing(rect2, thing, p1);
+                    DrawThing(rect2, thing, pawn);
                     x += gWidth;
                 }
-
-                if (p1.apparel != null)
-                    foreach (Apparel thing in from ap in p1.apparel.WornApparel
-                                              orderby ap.def.apparel.bodyPartGroups[0].listOrder descending
-                                              select ap)
-                    {
-                        Rect rect2 = new Rect(x, 0, gWidth, gHeight);
-                        DrawThing(rect2, thing, p1);
-                        x += gWidth;
-                        if (x > width)
-                            this.width = (int)x;
-                    }
-                GUI.EndGroup();
             }
+
+            if (pawn.apparel != null)
+            {
+                foreach (Apparel thing in pawn.apparel.WornApparel.OrderByDescending(ap => ap.def.apparel.bodyPartGroups[0].listOrder))
+                {
+                    Rect rect2 = new Rect(x, 0, gWidth, gHeight);
+                    DrawThing(rect2, thing, pawn);
+                    x += gWidth;
+                    if (x > width)
+                        width = (int)x;
+                }
+            }
+
+            GUI.EndGroup();
+
         }
 
         public override int GetMinWidth(PawnTable table)
-            => Mathf.Max(this.width, baseWidth);
+            => Mathf.Max(width, baseWidth);
 
         private void DrawThing(Rect rect, Thing thing, Pawn selPawn)
         {
@@ -86,7 +87,7 @@ namespace Numbers
                     }
                     list.Add(new FloatMenuOption("DropThing".Translate(), action));
                 }
-                FloatMenu window = new FloatMenu(list, thing.LabelCap, false);
+                FloatMenu window = new FloatMenu(list, thing.LabelCap);
                 Find.WindowStack.Add(window);
             }
             GUI.BeginGroup(rect);

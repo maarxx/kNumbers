@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
-using UnityEngine;
-using Verse;
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using System;
+    using RimWorld;
+    using Verse;
+
     public class PawnColumnWorker_TameChance : PawnColumnWorker_Text
     {
         public override int Compare(Pawn a, Pawn b) => GetValue(a).CompareTo(GetValue(b));
@@ -26,7 +22,7 @@ namespace Numbers
         {
             new CurvePoint(1f, 0f),
             new CurvePoint(0.5f, 1f),
-            new CurvePoint(0f, 2f),
+            new CurvePoint(0f, 2f)
         };
     }
 }

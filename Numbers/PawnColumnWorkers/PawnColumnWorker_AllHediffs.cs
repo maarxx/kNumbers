@@ -1,13 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
-using UnityEngine;
-using Verse;
-
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using RimWorld;
+    using UnityEngine;
+    using Verse;
+
     public class PawnColumnWorker_AllHediffs : PawnColumnWorker_Icon
     {
         protected override Texture2D GetIconFor(Pawn pawn)

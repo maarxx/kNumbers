@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
-using Verse;
-using UnityEngine;
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using RimWorld;
+    using UnityEngine;
+    using Verse;
+
     public class PawnColumnWorker_Inventory : PawnColumnWorker
     {
         private int width;
@@ -29,12 +28,12 @@ namespace Numbers
                 DrawThing(rect2, thing, pawn);
                 x += gWidth;
                 if (x > width)
-                    this.width = (int)x;
+                    width = (int)x;
             }
             GUI.EndGroup();
         }
 
-        public override int GetMinWidth(PawnTable table) => Mathf.Max(this.width, baseWidth, base.GetMinWidth(table));
+        public override int GetMinWidth(PawnTable table) => Mathf.Max(width, baseWidth, base.GetMinWidth(table));
 
         private void DrawThing(Rect rect, Thing thing, Pawn selPawn)
         {
@@ -58,7 +57,7 @@ namespace Numbers
                     }
                     list.Add(new FloatMenuOption("DropThing".Translate(), action));
                 }
-                FloatMenu window = new FloatMenu(list, thing.LabelCap, false);
+                FloatMenu window = new FloatMenu(list, thing.LabelCap);
                 Find.WindowStack.Add(window);
             }
 

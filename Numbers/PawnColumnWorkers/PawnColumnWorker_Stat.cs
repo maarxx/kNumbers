@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
-using UnityEngine;
-using Verse;
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using RimWorld;
+    using UnityEngine;
+    using Verse;
+
     public class PawnColumnWorker_Stat : PawnColumnWorker_Text
     {
         public const int minWidthBasedOnNarrowestColumnThatColumnBeingMass = 69;
@@ -27,11 +23,11 @@ namespace Numbers
 
         public override int GetMinWidth(PawnTable table)
             => Mathf.Max(minWidthBasedOnNarrowestColumnThatColumnBeingMass,
-                         Mathf.CeilToInt(Text.CalcSize(def.LabelCap.WordWrapAt(maxWidthBasedOnColumnsWithALongAssNameLikeThisInt)).x))
+                         Mathf.CeilToInt(Text.CalcSize(Numbers_Utility.WordWrapAt(def.LabelCap, maxWidthBasedOnColumnsWithALongAssNameLikeThisInt)).x))
                     + margin;
 
         public override int GetMinHeaderHeight(PawnTable table)
-            => Mathf.CeilToInt(Text.CalcSize(def.LabelCap.WordWrapAt(GetMinWidth(table))).y); //not messy at all.
+            => Mathf.CeilToInt(Text.CalcSize(Numbers_Utility.WordWrapAt(def.LabelCap, GetMinWidth(table))).y); //not messy at all.
 
         public override int Compare(Pawn a, Pawn b)
             => (def.Ext().stat.Worker.IsDisabledFor(a) ? 0 : a.GetStatValue(def.Ext().stat)).CompareTo

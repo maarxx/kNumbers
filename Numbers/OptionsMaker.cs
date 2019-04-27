@@ -1,12 +1,12 @@
-﻿using RimWorld;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using Verse;
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using RimWorld;
+    using UnityEngine;
+    using Verse;
+
     public class OptionsMaker
     {
         private readonly MainTabWindow_Numbers numbers;
@@ -74,10 +74,10 @@ namespace Numbers
                 new FloatMenuOption("Numbers_Presets.Load".Translate("Numbers_Presets.ColonistNeeds".Translate()), () => ChangeTableTo(StaticConstructorOnGameStart.colonistNeedsPreset)),
                 new FloatMenuOption("Numbers_SetAsDefault".Translate(), SetAsDefault,
                         extraPartWidth: 29f,
-                        extraPartOnGUI: (Rect rect)
+                        extraPartOnGUI: rect
                             => Numbers_Utility.InfoCardButton(rect.x + 5f, rect.y + (rect.height - 24f) / 2,
                                 "Numbers_SetAsDefaultExplanation".Translate(PawnTable.LabelCap))),
-                new FloatMenuOption("Numbers_LoadDefault".Translate(), LoadDefault),
+                new FloatMenuOption("Numbers_LoadDefault".Translate(), LoadDefault)
             };
 
             return new FloatMenu(list);
@@ -109,7 +109,7 @@ namespace Numbers
             }
 
             //all living things
-            if (!new[] { NumbersDefOf.Numbers_AnimalCorpses, NumbersDefOf.Numbers_Corpses, }.Contains(PawnTable))
+            if (!new[] { NumbersDefOf.Numbers_AnimalCorpses, NumbersDefOf.Numbers_Corpses }.Contains(PawnTable))
             {
                 list.AddRange(FloatMenuOptionsFor(LivingThings));
             }
@@ -135,7 +135,7 @@ namespace Numbers
             }
 
             //all dead things
-            if (new[] { NumbersDefOf.Numbers_AnimalCorpses, NumbersDefOf.Numbers_Corpses, }.Contains(PawnTable))
+            if (new[] { NumbersDefOf.Numbers_AnimalCorpses, NumbersDefOf.Numbers_Corpses }.Contains(PawnTable))
             {
                 list.AddRange(FloatMenuOptionsFor(DeadThings));
             }
@@ -200,7 +200,7 @@ namespace Numbers
                 modContentPack = PawnTable.modContentPack,
                 workerClass = PawnTable.workerClass,
                 defName = PawnTable.defName,
-                label = "NumbersTable" + Rand.Range(0, 10000),
+                label = "NumbersTable" + Rand.Range(0, 10000)
             };
             Find.WindowStack.Add(new Dialog_IHaveToCreateAnEntireFuckingDialogForAGODDAMNOKAYBUTTONFFS(ref ptdPawnTableDef));
         }

@@ -1,9 +1,8 @@
-﻿using RimWorld;
-using Verse;
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using RimWorld;
     using UnityEngine;
+    using Verse;
 
     public class PawnColumnWorker_MentalState : PawnColumnWorker_Text
     {
@@ -15,6 +14,6 @@ namespace Numbers
                 .CompareTo((int?)b.MentalState?.def?.category ?? -1);
 
         public override int GetMinHeaderHeight(PawnTable table)
-            => Mathf.CeilToInt(Text.CalcSize(this.def.LabelCap.WordWrapAt(this.GetMinWidth(table))).y);
+            => Mathf.CeilToInt(Text.CalcSize(Numbers_Utility.WordWrapAt(def.LabelCap, GetMinWidth(table))).y);
     }
 }

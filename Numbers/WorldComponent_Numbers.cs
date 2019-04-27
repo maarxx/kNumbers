@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
-using RimWorld.Planet;
-using Verse;
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using RimWorld;
+    using RimWorld.Planet;
+    using Verse;
+
     public class WorldComponent_Numbers : WorldComponent
     {
         public WorldComponent_Numbers(World world) : base(world)
@@ -46,17 +45,17 @@ namespace Numbers
             {
                 if (Scribe.mode == LoadSaveMode.Saving)
                 {
-                    if (this.sessionTable.TryGetValue(type, out List<PawnColumnDef> workList))
+                    if (sessionTable.TryGetValue(type, out List<PawnColumnDef> workList))
                     {
                         Scribe_Collections.Look(ref workList, "Numbers_" + type, LookMode.Def);
-                        this.sessionTable[type] = workList;
+                        sessionTable[type] = workList;
                     }
                 }
                 else if (Scribe.mode == LoadSaveMode.LoadingVars)
                 {
-                    Scribe_Collections.Look(ref this.loadList, "Numbers_" + type, LookMode.Def);
-                    if (!this.loadList.NullOrEmpty())
-                        this.sessionTable[type] = this.loadList;
+                    Scribe_Collections.Look(ref loadList, "Numbers_" + type, LookMode.Def);
+                    if (!loadList.NullOrEmpty())
+                        sessionTable[type] = loadList;
                 }
             }
         }

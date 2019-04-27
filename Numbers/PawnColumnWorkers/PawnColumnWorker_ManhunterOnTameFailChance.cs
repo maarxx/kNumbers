@@ -1,9 +1,9 @@
-﻿using RimWorld;
-using Verse;
-using UnityEngine;
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using RimWorld;
+    using UnityEngine;
+    using Verse;
+
     public class PawnColumnWorker_ManhunterOnTameFailChance : PawnColumnWorker_Text
     {
         public override int Compare(Pawn a, Pawn b)

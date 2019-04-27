@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
-using Verse;
-using UnityEngine;
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using RimWorld;
+    using UnityEngine;
+    using Verse;
 
     [StaticConstructorOnStartup]
     static class StaticConstructorOnGameStart
@@ -77,7 +74,7 @@ namespace Numbers
                                            DefDatabase<PawnColumnDef>.GetNamed("Numbers_RimWorld_StatDef_MedicalTendQuality"),
                                            DefDatabase<PawnColumnDef>.GetNamed("Numbers_RimWorld_StatDef_MedicalTendSpeed"),
                                            DefDatabase<PawnColumnDef>.GetNamed("Numbers_Bleedrate"),
-                                           DefDatabase<PawnColumnDef>.GetNamed("Numbers_Pain"),
+                                           DefDatabase<PawnColumnDef>.GetNamed("Numbers_Pain")
                                        });
             medicalPreset.AddRange(DefDatabase<PawnColumnDef>.AllDefsListForReading
                                                                     .Where(pcd => pcd.workType != null)
@@ -97,7 +94,7 @@ namespace Numbers
                 DefDatabase<PawnColumnDef>.GetNamed("Numbers_NeedsTreatment"),
                 DefDatabase<PawnColumnDef>.GetNamed("Numbers_Operations"),
                 DefDatabase<PawnColumnDef>.GetNamed("Numbers_DiseaseProgress"),
-                DefDatabase<PawnColumnDef>.GetNamed("RemainingSpace"),
+                DefDatabase<PawnColumnDef>.GetNamed("RemainingSpace")
             });
         }
     }

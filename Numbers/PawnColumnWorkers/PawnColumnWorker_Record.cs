@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
-using Verse;
-using UnityEngine;
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using RimWorld;
+    using UnityEngine;
+    using Verse;
+
     public class PawnColumnWorker_Record : PawnColumnWorker_Text
     {
         protected override string GetTextFor(Pawn pawn)
@@ -25,9 +21,9 @@ namespace Numbers
 
         protected override string GetTip(Pawn pawn) => def.Ext().record.description;
 
-        public override int GetMinWidth(PawnTable table) => Mathf.Max(50, Mathf.CeilToInt(Text.CalcSize(def.LabelCap.WordWrapAt(150)).x));
+        public override int GetMinWidth(PawnTable table) => Mathf.Max(50, Mathf.CeilToInt(Text.CalcSize(Numbers_Utility.WordWrapAt(def.LabelCap, 150)).x));
 
-        public override int GetMinHeaderHeight(PawnTable table) => Mathf.CeilToInt(Text.CalcSize(def.LabelCap.WordWrapAt(GetMinWidth(table))).y); //not messy at all.
+        public override int GetMinHeaderHeight(PawnTable table) => Mathf.CeilToInt(Text.CalcSize(Numbers_Utility.WordWrapAt(def.LabelCap, GetMinWidth(table))).y); //not messy at all.
 
         public override int Compare(Pawn a, Pawn b)
         {
@@ -35,8 +31,7 @@ namespace Numbers
 
             if (recordDef.type == RecordType.Time)
                 return a.records.GetAsInt(recordDef).CompareTo(b.records.GetAsInt(recordDef));
-            else
-                return a.records.GetValue(recordDef).CompareTo(b.records.GetValue(recordDef));
+            return a.records.GetValue(recordDef).CompareTo(b.records.GetValue(recordDef));
         }
 
     }

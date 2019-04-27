@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Text;
-using RimWorld;
-using Verse;
-using Harmony;
-using UnityEngine;
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using System.Reflection.Emit;
+    using Harmony;
     using JetBrains.Annotations;
+    using RimWorld;
     using RimWorld.Planet;
+    using UnityEngine;
+    using Verse;
 
     public class Numbers : Mod
     {
@@ -95,8 +93,8 @@ namespace Numbers
         private static IEnumerable<CodeInstruction> MakeHeadersReOrderable(IEnumerable<CodeInstruction> instructions)
         {
             MethodInfo recacheIfDirty = AccessTools.Method(typeof(PawnTable), "RecacheIfDirty");
-            MethodInfo reorderableGroup = AccessTools.Method(typeof(Numbers), nameof(Numbers.ReorderableGroup));
-            MethodInfo reorderableWidget = AccessTools.Method(typeof(Numbers), nameof(Numbers.CallReorderableWidget));
+            MethodInfo reorderableGroup = AccessTools.Method(typeof(Numbers), nameof(ReorderableGroup));
+            MethodInfo reorderableWidget = AccessTools.Method(typeof(Numbers), nameof(CallReorderableWidget));
 
             CodeInstruction[] codeInstructions = instructions.ToArray();
 
@@ -228,7 +226,7 @@ namespace Numbers
                     yield return instruction;
                     CodeInstruction codeInst = new CodeInstruction(OpCodes.Ldarg_2)
                     {
-                        labels = new List<Label> { generator.DefineLabel(), }
+                        labels = new List<Label> { generator.DefineLabel() }
                     };
                     codeInst.labels.AddRange(instructionArr[i + 1].labels);
                     yield return codeInst;
@@ -396,7 +394,7 @@ namespace Numbers
             listingStandard.CheckboxLabeled("Numbers_coolerThanTheWildlifeTab".Translate(), ref Numbers_Settings.coolerThanTheWildlifeTab);
             listingStandard.CheckboxLabeled("Numbers_pawnTableClickSelect".Translate(), ref Numbers_Settings.pawnTableClickSelect, "Numbers_pawnTableClickSelect_Desc".Translate());
             listingStandard.CheckboxLabeled("Numbers_pawnTableHighSelected".Translate(), ref Numbers_Settings.pawnTableHighlightSelected, "Numbers_pawnTableHighSelected_Desc".Translate());
-            listingStandard.SliderLabeled("Numbers_maxTableHeight".Translate(), ref Numbers_Settings.maxHeight, Numbers_Settings.maxHeight.ToStringPercent(), 0.3f, 1);
+            listingStandard.SliderLabeled("Numbers_maxTableHeight".Translate(), ref Numbers_Settings.maxHeight, Numbers_Settings.maxHeight.ToStringPercent(), 0.3f);
             listingStandard.End();
 
             float rowHeight = 20f;

@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
-using Verse;
-using UnityEngine;
-using System.Reflection;
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using RimWorld;
+    using RimWorld.Planet;
+    using UnityEngine;
+    using Verse;
+
     public class MainTabWindow_Numbers : MainTabWindow_PawnTable
     {
         public const float buttonWidth = 110f;
@@ -160,7 +160,7 @@ namespace Numbers
             }
 
             //needs btn (for living things)
-            if (!new[] { NumbersDefOf.Numbers_AnimalCorpses, NumbersDefOf.Numbers_Corpses, }.Contains(PawnTableDef))
+            if (!new[] { NumbersDefOf.Numbers_AnimalCorpses, NumbersDefOf.Numbers_Corpses }.Contains(PawnTableDef))
             {
                 Rect needsColumnButton = new Rect(x, 0f, buttonWidth, buttonHeight);
                 if (Widgets.ButtonText(needsColumnButton, "TabNeeds".Translate()))
@@ -171,14 +171,14 @@ namespace Numbers
             }
 
             //cap btn (for living things)
-            if (!new[] { NumbersDefOf.Numbers_AnimalCorpses, NumbersDefOf.Numbers_Corpses, }.Contains(PawnTableDef))
+            if (!new[] { NumbersDefOf.Numbers_AnimalCorpses, NumbersDefOf.Numbers_Corpses }.Contains(PawnTableDef))
             {
                 Rect capacityColumnButton = new Rect(x, 0f, buttonWidth, buttonHeight);
                 if (Widgets.ButtonText(capacityColumnButton, "TabHealth".Translate()))
                 {
                     List<PawnColumnDef> optionalList = new List<PawnColumnDef>();
 
-                    if (new[] { NumbersDefOf.Numbers_MainTable, NumbersDefOf.Numbers_Prisoners, NumbersDefOf.Numbers_Animals, }.Contains(PawnTableDef))
+                    if (new[] { NumbersDefOf.Numbers_MainTable, NumbersDefOf.Numbers_Prisoners, NumbersDefOf.Numbers_Animals }.Contains(PawnTableDef))
                     {
                         optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("MedicalCare"));
                         optionalList.Add(DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Operations"));
@@ -234,7 +234,7 @@ namespace Numbers
         {
             UpdateFilter();
             base.PostOpen();
-            Find.World.renderer.wantedMode = RimWorld.Planet.WorldRenderMode.None;
+            Find.World.renderer.wantedMode = WorldRenderMode.None;
         }
 
 

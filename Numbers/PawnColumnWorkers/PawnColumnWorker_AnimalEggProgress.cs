@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
-using Verse;
-using Harmony;
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using System.Linq;
+    using Harmony;
+    using RimWorld;
+    using Verse;
+
     public class PawnColumnWorker_AnimalEggProgress : PawnColumnWorker_Text
     {
         protected override string GetTextFor(Pawn pawn)

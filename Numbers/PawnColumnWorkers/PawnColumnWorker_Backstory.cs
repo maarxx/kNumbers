@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
-using Verse;
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using RimWorld;
+    using Verse;
+
     public class PawnColumnWorker_Backstory : PawnColumnWorker_Text
     {
         protected override string GetTextFor(Pawn pawn)

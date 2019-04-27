@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using RimWorld;
-using UnityEngine;
-using Verse;
-using System.Reflection;
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using RimWorld;
+    using UnityEngine;
+    using Verse;
+
     public class PawnColumnWorker_OperationDropDown : PawnColumnWorker
     {
         public delegate TResult Func<in T1, in T2, in T3, in T4, in T5, out TResult>
@@ -24,7 +24,7 @@ namespace Numbers
 
         public override void DoCell(Rect rect, Pawn pawn, PawnTable table)
         {
-            if (Widgets.ButtonText(rect, "AddBill".Translate(), true, false, true))
+            if (Widgets.ButtonText(rect, "AddBill".Translate()))
             {
                 Find.WindowStack.Add(new FloatMenu(RecipeOptionsMaker(pawn)));
             }

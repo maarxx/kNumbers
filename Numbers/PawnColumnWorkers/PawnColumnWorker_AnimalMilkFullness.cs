@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Verse;
-using RimWorld;
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using System.Linq;
+    using RimWorld;
+    using Verse;
+
     public class PawnColumnWorker_AnimalMilkFullness : PawnColumnWorker_Text
     {
         protected override string GetTextFor(Pawn pawn)

@@ -36,7 +36,7 @@
             Widgets.Label(rect2, GetTextFor(mostSevere).ToStringPercent());
             Text.WordWrap = true;
             Text.Anchor = TextAnchor.UpperLeft;
-            string tip = this.GetTip(pawn, mostSevere);
+            string tip = GetTip(pawn, mostSevere);
             if (!tip.NullOrEmpty())
             {
                 TooltipHandler.TipRegion(rect2, tip);
@@ -95,33 +95,33 @@
             Text.Anchor = TextAnchor.UpperLeft;
 
             //rest is copypasta
-            if (table.SortingBy == this.def)
+            if (table.SortingBy == def)
             {
                 Texture2D texture2D = (!table.SortingDescending) ? StaticConstructorOnGameStart.SortingIcon : StaticConstructorOnGameStart.SortingDescendingIcon;
-                Rect position2 = new Rect(rect.xMax - (float)texture2D.width - 1f, rect.yMax - (float)texture2D.height - 1f, (float)texture2D.width, (float)texture2D.height);
+                Rect position2 = new Rect(rect.xMax - texture2D.width - 1f, rect.yMax - texture2D.height - 1f, texture2D.width, texture2D.height);
                 GUI.DrawTexture(position2, texture2D);
             }
-            if (this.def.HeaderInteractable)
+            if (def.HeaderInteractable)
             {
-                Rect interactableHeaderRect = this.GetInteractableHeaderRect(rect, table);
+                Rect interactableHeaderRect = GetInteractableHeaderRect(rect, table);
                 Widgets.DrawHighlightIfMouseover(interactableHeaderRect);
                 if (interactableHeaderRect.Contains(Event.current.mousePosition))
                 {
-                    string headerTip = this.GetHeaderTip(table);
+                    string headerTip = GetHeaderTip(table);
                     if (!headerTip.NullOrEmpty())
                     {
                         TooltipHandler.TipRegion(interactableHeaderRect, headerTip);
                     }
                 }
-                if (Widgets.ButtonInvisible(interactableHeaderRect, false))
+                if (Widgets.ButtonInvisible(interactableHeaderRect))
                 {
-                    this.HeaderClicked(rect, table);
+                    HeaderClicked(rect, table);
                 }
             }
         }
 
         public override int GetMinWidth(PawnTable table)
-            => this.def.width;
+            => def.width;
 
         private string GetTip(Pawn pawn, HediffWithComps severe)
             => severe.LabelCap + ": " + severe.SeverityLabel + "\n" + severe.TipStringExtra;
@@ -175,7 +175,7 @@
         }
 
         public override int GetMinHeaderHeight(PawnTable table)
-            => Mathf.CeilToInt(Text.CalcSize(this.def.LabelCap.WordWrapAt(this.GetMinWidth(table))).y);
+            => Mathf.CeilToInt(Text.CalcSize(def.LabelCap.WordWrapAt(GetMinWidth(table))).y);
 
         public override int Compare(Pawn a, Pawn b)
             => GetTextFor(FindMostSevereHediff(a)).CompareTo(GetTextFor(FindMostSevereHediff(b)));

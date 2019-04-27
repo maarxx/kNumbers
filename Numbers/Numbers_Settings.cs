@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
-using Verse;
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using System.Collections.Generic;
+    using Verse;
+
     public class Numbers_Settings : ModSettings
     {
 
@@ -39,7 +35,7 @@ namespace Numbers
             else
                 storedPawnTableDefs.Add(pawnTableDeftoSave);
 
-            base.Write();
+            Write();
         }
 
         public override void ExposeData()

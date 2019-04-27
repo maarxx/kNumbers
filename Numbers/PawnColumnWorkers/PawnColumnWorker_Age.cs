@@ -1,9 +1,9 @@
-﻿using System;
-using RimWorld;
-using Verse;
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using System;
+    using RimWorld;
+    using Verse;
+
     public class PawnColumnWorker_Age : PawnColumnWorker_Text
     {
         protected override string GetTextFor(Pawn pawn)

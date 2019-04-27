@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
-using Verse;
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using RimWorld;
+    using UnityEngine;
+    using Verse;
+
     public class PawnColumnWorker_Race : PawnColumnWorker_Text
     {
         protected override string GetTextFor(Pawn pawn)
@@ -16,7 +13,7 @@ namespace Numbers
 
         public override int GetMinWidth(PawnTable table)
         {
-            return UnityEngine.Mathf.Max(base.GetMinWidth(table), 80);
+            return Mathf.Max(base.GetMinWidth(table), 80);
         }
 
         public override int Compare(Pawn a, Pawn b) => a.kindDef.race.LabelCap.CompareTo(b.kindDef.race.LabelCap);

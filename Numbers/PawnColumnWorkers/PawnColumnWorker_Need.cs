@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using RimWorld;
-using UnityEngine;
-using Verse;
-using System.Reflection;
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using System.Collections.Generic;
+    using System.Reflection;
+    using RimWorld;
+    using UnityEngine;
+    using Verse;
+
     [StaticConstructorOnStartup]
     public class PawnColumnWorker_Need : PawnColumnWorker
     {
@@ -23,7 +23,7 @@ namespace Numbers
             if (!Numbers_Settings.showMoreInfoThanVanilla && pawn.RaceProps.Animal && pawn.Faction == null)
                 return;
 
-            Need need = pawn.needs.TryGetNeed(this.def.Ext().need);
+            Need need = pawn.needs.TryGetNeed(def.Ext().need);
 
             if (need == null)
                 return;
@@ -48,7 +48,7 @@ namespace Numbers
             {
                 foreach (float t in threshPercents)
                 {
-                    this.NeedDrawBarThreshold(rect3, t, need.CurLevelPercentage);
+                    NeedDrawBarThreshold(rect3, t, need.CurLevelPercentage);
                 }
             }
 
@@ -95,7 +95,7 @@ namespace Numbers
             => Mathf.Max(base.GetMinWidth(table), 110);
 
         public override int Compare(Pawn a, Pawn b)
-            => (a.needs?.TryGetNeed(this.def.Ext().need)?.CurLevel ?? 0)
-                .CompareTo(b.needs?.TryGetNeed(this.def.Ext().need)?.CurLevel ?? 0);
+            => (a.needs?.TryGetNeed(def.Ext().need)?.CurLevel ?? 0)
+                .CompareTo(b.needs?.TryGetNeed(def.Ext().need)?.CurLevel ?? 0);
     }
 }

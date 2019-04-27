@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
-using Verse;
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using System.Linq;
+    using System.Text;
+    using RimWorld;
+    using Verse;
+
     public static class HorribleStringParsersForSaving
     {
         public static string TurnPawnTableDefIntoCommaDelimitedString(PawnTableDef table, bool asDefault = false)
         {
             string label = asDefault ? "Default" : table.label;
 
-            return string.Join(",", new string[] { table.defName, label, TurnPawnTableColumnsIntoCommaDelimitedString(table) });
+            return string.Join(",", new[] { table.defName, label, TurnPawnTableColumnsIntoCommaDelimitedString(table) });
         }
 
         public static string CreateDefNameFromType(Def def)

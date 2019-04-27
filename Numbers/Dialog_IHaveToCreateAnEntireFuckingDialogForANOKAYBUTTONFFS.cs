@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
-using Verse;
-
-namespace Numbers
+﻿namespace Numbers
 {
+    using RimWorld;
+    using Verse;
+
     public class Dialog_IHaveToCreateAnEntireFuckingDialogForAGODDAMNOKAYBUTTONFFS : Dialog_Rename
     {
         private readonly PawnTableDef pawnTableDef;
@@ -14,7 +10,7 @@ namespace Numbers
         public Dialog_IHaveToCreateAnEntireFuckingDialogForAGODDAMNOKAYBUTTONFFS(ref PawnTableDef pawnTableDef)
         {
             this.pawnTableDef = pawnTableDef;
-            this.curName = pawnTableDef.label;
+            curName = pawnTableDef.label;
         }
 
         protected override AcceptanceReport NameIsValid(string name)
@@ -33,9 +29,9 @@ namespace Numbers
 
         protected override void SetName(string name)
         {
-            this.pawnTableDef.label = this.curName;
+            pawnTableDef.label = curName;
 
-            string pawnTableDeftoSave = HorribleStringParsersForSaving.TurnPawnTableDefIntoCommaDelimitedString(this.pawnTableDef);
+            string pawnTableDeftoSave = HorribleStringParsersForSaving.TurnPawnTableDefIntoCommaDelimitedString(pawnTableDef);
 
             LoadedModManager.GetMod<Numbers>().GetSettings<Numbers_Settings>().StoreNewPawnTableDef(pawnTableDeftoSave);
         }
