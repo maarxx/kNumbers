@@ -1,5 +1,6 @@
 ﻿namespace Numbers
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using RimWorld;
@@ -28,6 +29,9 @@
                                           colonistNeedsPreset = new List<PawnColumnDef>(),
                                           medicalPreset = new List<PawnColumnDef>();
 
+        public static Type animalTab;
+        public static Type wildLifeTab;
+
         static StaticConstructorOnGameStart()
         {
             AddTrainablesToAnimalTable();
@@ -37,6 +41,10 @@
             AddHeadersToPawnColumns();
 
             PopulatePresets();
+
+            //for the sake of compatibility (Better Pawn Control / other mods which subclass it.)
+            animalTab = DefDatabase<MainButtonDef>.GetNamed("Animals").tabWindowClass;
+            wildLifeTab = DefDatabase<MainButtonDef>.GetNamed("Wildlife").tabWindowClass;
         }
 
         private static void AddTrainablesToAnimalTable()

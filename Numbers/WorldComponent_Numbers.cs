@@ -80,12 +80,12 @@
             DefDatabase<MainButtonDef>.GetNamed("Wildlife").tabWindowClass
                 = Numbers_Settings.coolerThanTheWildlifeTab
                       ? typeof(MainTabWindow_NumbersWildLife)
-                      : typeof(MainTabWindow_Wildlife);
+                      : StaticConstructorOnGameStart.wildLifeTab;
 
             DefDatabase<MainButtonDef>.GetNamed("Animals").tabWindowClass
                 = Numbers_Settings.coolerThanTheAnimalTab
                       ? typeof(MainTabWindow_NumbersAnimals)
-                      : typeof(MainTabWindow_Animals);
+                      : StaticConstructorOnGameStart.animalTab;
 
             DefDatabase<MainButtonDef>.GetNamed("Wildlife").Notify_ClearingAllMapsMemory();
             DefDatabase<MainButtonDef>.GetNamed("Animals").Notify_ClearingAllMapsMemory();
