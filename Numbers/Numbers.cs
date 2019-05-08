@@ -62,11 +62,11 @@
             {
                 DefGenerator.AddImpliedDef(pawnColumnDef);
             }
-            //yeah I will set an icon for it because I can. 
-            var pcd = DefDatabase<PawnColumnDef>.GetNamedSilentFail("ManhunterOnDamageChance");
+            //yeah I will set an icon for it because I can.
+            var pcd = DefDatabase<PawnColumnDef>.GetNamed("ManhunterOnDamageChance");
             pcd.headerIcon = "UI/Icons/Animal/Predator";
             pcd.headerAlwaysInteractable = true;
-            var pred = DefDatabase<PawnColumnDef>.GetNamedSilentFail("Predator");
+            var pred = DefDatabase<PawnColumnDef>.GetNamed("Predator");
             pred.sortable = true;
         }
 
