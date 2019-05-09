@@ -78,16 +78,18 @@
             if (!(table is PawnTable_NumbersMain numbersTable))
                 return true;
 
-            if (Event.current.button == 1)
-            {
-                numbersTable.ColumnsListForReading.RemoveAll(x => x == __instance.def);
+            if (!Mouse.IsOver(headerRect))
+                return true;
 
-                if (Find.WindowStack.currentlyDrawnWindow is MainTabWindow_Numbers numbers)
-                    numbers.RefreshAndStoreSessionInWorldComp();
+            if (!Input.GetMouseButtonDown(1))
+                return true;
 
-                return false;
-            }
-            return true;
+            numbersTable.ColumnsListForReading.RemoveAll(x => ReferenceEquals(__instance, x.Worker));
+
+            if (Find.WindowStack.currentlyDrawnWindow is MainTabWindow_Numbers numbers)
+                numbers.RefreshAndStoreSessionInWorldComp();
+
+            return false;
         }
 
         private static IEnumerable<CodeInstruction> MakeHeadersReOrderable(IEnumerable<CodeInstruction> instructions)
