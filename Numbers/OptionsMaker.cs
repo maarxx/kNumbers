@@ -50,7 +50,8 @@
 
         private static IEnumerable<PawnColumnDef> WildAnimals
             => new[] { DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Wildness"),
-                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_TameChance") }
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_TameChance"),
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_ManhunterOnTameFailChance") }
                .Concat(DefDatabase<PawnTableDef>.GetNamed("Wildlife").columns.Where(x => pcdValidator(x)));
 
         private static IEnumerable<PawnColumnDef> DeadThings
