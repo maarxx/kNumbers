@@ -81,7 +81,7 @@
             if (!Mouse.IsOver(headerRect))
                 return true;
 
-            if (!Input.GetMouseButtonDown(1))
+            if (Event.current.button != 1)
                 return true;
 
             numbersTable.ColumnsListForReading.RemoveAll(x => ReferenceEquals(__instance, x.Worker));
