@@ -12,14 +12,14 @@
     {
         private int width;
         private static readonly int baseWidth = 6 * 28; //6 boxes, 28 wide each.
+        private const float gWidth  = 28f;
+        private const float gHeight = 28f;
 
         public override void DoCell(Rect rect, Pawn pawn, PawnTable table)
         {
             GUI.BeginGroup(rect);
 
             float x = 0;
-            float gWidth = 28f;
-            float gHeight = 28f;
 
             if (pawn.equipment != null)
             {
@@ -44,7 +44,6 @@
             }
 
             GUI.EndGroup();
-
         }
 
         public override int GetMinWidth(PawnTable table)
@@ -59,32 +58,9 @@
                     new FloatMenuOption("ThingInfo".Translate(), () => Find.WindowStack.Add(new Dialog_InfoCard(thing)))
                 };
 
-                //leans heavily on ITab_Pawn_Gear
                 if (selPawn.IsColonistPlayerControlled)
                 {
-                    Action action = null;
-                    ThingWithComps eq = thing as ThingWithComps;
-                    if (thing is Apparel ap && selPawn.apparel != null && selPawn.apparel.WornApparel.Contains(ap))
-                    {
-                        action = delegate
-                        {
-                            selPawn.jobs.TryTakeOrderedJob(new Job(JobDefOf.RemoveApparel, ap));
-                        };
-                    }
-                    else if (eq != null && selPawn.equipment.AllEquipmentListForReading.Contains(eq))
-                    {
-                        action = delegate
-                        {
-                            selPawn.jobs.TryTakeOrderedJob(new Job(JobDefOf.DropEquipment, eq));
-                        };
-                    }
-                    else if (!thing.def.destroyOnDrop)
-                    {
-                        action = delegate
-                        {
-                            selPawn.inventory.innerContainer.TryDrop(thing, selPawn.Position, selPawn.Map, ThingPlaceMode.Near, out Thing unused);
-                        };
-                    }
+                    Action action = DropThing(thing, selPawn);
                     list.Add(new FloatMenuOption("DropThing".Translate(), action));
                 }
                 FloatMenu window = new FloatMenu(list, thing.LabelCap);
@@ -97,6 +73,35 @@
             }
             GUI.EndGroup();
             TooltipHandler.TipRegion(rect, new TipSignal(thing.LabelCap));
+        }
+
+        private static Action DropThing(Thing thing, Pawn selPawn)
+        {
+            Action action = null;
+            ThingWithComps eq = thing as ThingWithComps;
+            if (thing is Apparel ap && selPawn.apparel != null && selPawn.apparel.WornApparel.Contains(ap))
+            {
+                action = delegate
+                {
+                    selPawn.jobs.TryTakeOrderedJob(new Job(JobDefOf.RemoveApparel, ap));
+                };
+            }
+            else if (eq != null && selPawn.equipment.AllEquipmentListForReading.Contains(eq))
+            {
+                action = delegate
+                {
+                    selPawn.jobs.TryTakeOrderedJob(new Job(JobDefOf.DropEquipment, eq));
+                };
+            }
+            else if (!thing.def.destroyOnDrop)
+            {
+                action = delegate
+                {
+                    selPawn.inventory.innerContainer.TryDrop(thing, selPawn.Position, selPawn.Map, ThingPlaceMode.Near, out Thing unused);
+                };
+            }
+
+            return action;
         }
 
         public override int Compare(Pawn a, Pawn b)
