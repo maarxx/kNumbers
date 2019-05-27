@@ -9,17 +9,18 @@
         public override int Compare(Pawn a, Pawn b)
             => GetValue(a).CompareTo(GetValue(b));
 
-        protected override string GetTextFor(Pawn pawn) => GetValue(pawn).ToStringPercent();
+        protected override string GetTextFor(Pawn pawn)
+            => GetValue(pawn).ToStringPercent();
 
-        protected override string GetTip(Pawn pawn) =>
-            "MessageAnimalManhuntsOnTameFailed".Translate(pawn.kindDef.GetLabelPlural().CapitalizeFirst(),
-                                                          GetValue(pawn).ToStringPercent(), pawn.Named("ANIMAL"));
+        protected override string GetTip(Pawn pawn)
+            => "MessageAnimalManhuntsOnTameFailed".Translate(pawn.kindDef.GetLabelPlural().CapitalizeFirst(),
+                                                             GetValue(pawn).ToStringPercent(), pawn.Named("ANIMAL"));
 
         private float GetValue(Pawn pawn)
             => pawn.RaceProps.manhunterOnTameFailChance;
 
         protected override string GetHeaderTip(PawnTable table)
-            => "TameFailedRevengeChance".Translate();
+            => "TameFailedRevengeChance".Translate() + "\n\n" + "Numbers_ColumnHeader_Tooltip".Translate();
 
         public override void DoHeader(Rect rect, PawnTable table)
         {
