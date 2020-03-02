@@ -64,7 +64,9 @@
                    .Select(s => s.stat)
                    .OrderBy(stat => stat.LabelCap);
 
-                tmpPawn = PawnGenerator.GeneratePawn(PawnKindDefOf.Thrumbo);
+                tmpPawn.Destroy();
+
+								tmpPawn = PawnGenerator.GeneratePawn(PawnKindDefOf.Thrumbo);
 
                 pawnAnimalNeedDef = tmpPawn.needs.AllNeeds.Where(x => x.def.showOnNeedList).Select(x => x.def);
 
@@ -82,6 +84,8 @@
                                .Where(s => s.stat != null && s.ShouldDisplay && s.stat.Worker != null)
                                .Select(s => s.stat)
                                .OrderBy(stat => stat.LabelCap);
+
+                tmpPawn.Destroy();
             }
             else
                 Log.Error("ReflectionTypeLoadException in Numbers: statsToDraw was null. Please contact mod author.");
