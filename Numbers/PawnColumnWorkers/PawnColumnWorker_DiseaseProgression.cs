@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Harmony;
+    using HarmonyLib;
     using RimWorld;
     using UnityEngine;
     using Verse;
@@ -175,7 +175,7 @@
         }
 
         public override int GetMinHeaderHeight(PawnTable table)
-            => Mathf.CeilToInt(Text.CalcSize(def.LabelCap.WordWrapAt(GetMinWidth(table))).y);
+            => Mathf.CeilToInt(Text.CalcSize(def.LabelCap.Resolve().WordWrapAt(GetMinWidth(table))).y);
 
         public override int Compare(Pawn a, Pawn b)
             => GetTextFor(FindMostSevereHediff(a)).CompareTo(GetTextFor(FindMostSevereHediff(b)));

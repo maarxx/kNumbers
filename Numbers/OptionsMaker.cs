@@ -143,10 +143,22 @@
             return list;
         }
 
-        public List<FloatMenuOption> OptionsMakerForGenericDef<T>(in IEnumerable<T> listOfDefs) where T : Def
+        public List<FloatMenuOption> OptionsMakerForGenericDef<T>(T[] listOfDefs) where T : Def
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
 
+            //for (int i = 0; i < listOfDefs.Count(); i++)
+            //{
+            //    var defCurrent = listOfDefs[i];
+            //    Log.Message(defCurrent.defName);
+            //    void Action()
+            //    {
+            //        PawnColumnDef pcd = DefDatabase<PawnColumnDef>.GetNamedSilentFail(HorribleStringParsersForSaving.CreateDefNameFromType(defCurrent));
+            //        AddPawnColumnAtBestPositionAndRefresh(pcd);
+            //    }
+            //    string label = defCurrent.LabelCap;
+            //    list.Add(new FloatMenuOption(label, Action));
+            //}
             foreach (var defCurrent in listOfDefs)
             {
                 void Action()

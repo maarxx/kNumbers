@@ -5,7 +5,7 @@
     using System.Linq;
     using System.Reflection;
     using System.Reflection.Emit;
-    using Harmony;
+    using HarmonyLib;
     using JetBrains.Annotations;
     using RimWorld;
     using RimWorld.Planet;
@@ -18,8 +18,7 @@
 
         public Numbers(ModContentPack content) : base(content)
         {
-            HarmonyInstance harmony = HarmonyInstance.Create("mehni.rimworld.numbers");
-            //HarmonyInstance.DEBUG = true;
+            Harmony harmony = new Harmony("mehni.rimworld.numbers");
 
             harmony.Patch(AccessTools.Method(typeof(DefGenerator), nameof(DefGenerator.GenerateImpliedDefs_PreResolve)),
                 postfix: new HarmonyMethod(typeof(Numbers), nameof(Columndefs)));
@@ -92,6 +91,7 @@
             return false;
         }
 
+        [HarmonyDebug]
         private static IEnumerable<CodeInstruction> MakeHeadersReOrderable(IEnumerable<CodeInstruction> instructions)
         {
             MethodInfo recacheIfDirty = AccessTools.Method(typeof(PawnTable), "RecacheIfDirty");
@@ -110,12 +110,12 @@
                     yield return new CodeInstruction(OpCodes.Stloc, 7);
                 }
 
-                if (instruction.opcode == OpCodes.Ldloc_S && ((LocalBuilder)instruction.operand).LocalIndex == 4)
-                {
-                    yield return new CodeInstruction(OpCodes.Ldloc, 7);
-                    yield return instruction;
-                    yield return new CodeInstruction(OpCodes.Call, reorderableWidget);
-                }
+                //    if (instruction.opcode == OpCodes.Ldloc_S && ((LocalBuilder)instruction.operand).LocalIndex == 4)
+                //    {
+                //        yield return new CodeInstruction(OpCodes.Ldloc, 7);
+                //        yield return instruction;
+                //        yield return new CodeInstruction(OpCodes.Call, reorderableWidget);
+                //    }
                 yield return instruction;
             }
         }
@@ -127,6 +127,8 @@
 
             return ReorderableWidget.NewGroup(delegate (int from, int to)
             {
+                Log.Message("Reorderable Group!");
+
                 PawnColumnDef pawnColumnDef = numbersPawnTable.PawnTableDef.columns[from];
                 numbersPawnTable.PawnTableDef.columns.Insert(to, pawnColumnDef);
                 //if it got inserted at a lower number, the index shifted up 1. If not, stick to the old.
@@ -148,7 +150,7 @@
 
         private static IEnumerable<CodeInstruction> UseWordWrapOnHeaders(IEnumerable<CodeInstruction> instructions)
         {
-            MethodInfo Truncate = AccessTools.Method(typeof(GenText), nameof(GenText.Truncate));
+            MethodInfo Truncate = AccessTools.Method(typeof(GenText), nameof(GenText.Truncate), new Type[] { typeof(string), typeof(float), typeof(Dictionary<string, string>) });
             MethodInfo WordWrap = AccessTools.Method(typeof(Numbers_Utility), nameof(Numbers_Utility.WordWrapAt));
 
             var instructionList = instructions.ToList();
@@ -156,12 +158,18 @@
             {
                 if (instructionList[i].opcode == OpCodes.Ldnull && instructionList[i + 1].operand == Truncate)
                 {
+                    yield return new CodeInstruction(OpCodes.Ldarg_2);
+                    yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Numbers), nameof(Numbers.GetGameFont)));
+                    yield return new CodeInstruction(OpCodes.Call, AccessTools.Property(typeof(Text), nameof(Text.Font)).GetSetMethod());
+
                     instructionList[i].opcode = OpCodes.Ldarg_2;
                     instructionList[i + 1].operand = WordWrap;
                 }
                 yield return instructionList[i];
             }
         }
+
+        private static GameFont GetGameFont(PawnTable table) => table is PawnTable_NumbersMain && Numbers_Settings.useTinyFont ? GameFont.Tiny : GameFont.Small;
 
         private static IEnumerable<CodeInstruction> CentreCell(IEnumerable<CodeInstruction> instructions)
         {
@@ -273,9 +281,9 @@
 
             foreach (CodeInstruction i in instructions)
             {
-                if (i.opcode == OpCodes.Call && i.operand == TryJumpAndSelectInfo)
+                if (i.Calls(TryJumpAndSelectInfo))
                     i.operand = AccessTools.Method(typeof(Numbers), nameof(ClickPawn));
-                if (i.opcode == OpCodes.Callvirt && i.operand == EscapeCurrentTabInfo)
+                if (i.Calls(EscapeCurrentTabInfo))
                     i.operand = AccessTools.Method(typeof(Numbers), nameof(SodThisImOut));
 
                 yield return i;
@@ -397,6 +405,7 @@
             listingStandard.CheckboxLabeled("Numbers_coolerThanTheAnimalTab".Translate(), ref Numbers_Settings.coolerThanTheAnimalTab);
             listingStandard.CheckboxLabeled("Numbers_pawnTableClickSelect".Translate(), ref Numbers_Settings.pawnTableClickSelect, "Numbers_pawnTableClickSelect_Desc".Translate());
             listingStandard.CheckboxLabeled("Numbers_pawnTableHighSelected".Translate(), ref Numbers_Settings.pawnTableHighlightSelected, "Numbers_pawnTableHighSelected_Desc".Translate());
+            listingStandard.CheckboxLabeled("Numbers_useSmolFont", ref Numbers_Settings.useTinyFont);
             listingStandard.SliderLabeled("Numbers_maxTableHeight".Translate(), ref Numbers_Settings.maxHeight, Numbers_Settings.maxHeight.ToStringPercent(), 0.3f);
             listingStandard.End();
 

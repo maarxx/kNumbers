@@ -17,7 +17,7 @@
         {
             int? inspirationTimeRemaining = (int?)((pawn.InspirationDef?.baseDurationDays - pawn.Inspiration?.AgeDays) * GenDate.TicksPerDay);
 
-            return inspirationTimeRemaining.HasValue ? "ExpiresIn".Translate() + ": " + inspirationTimeRemaining.Value.ToStringTicksToPeriod() : string.Empty;
+            return inspirationTimeRemaining.HasValue ? "ExpiresIn".Translate().Resolve() + ": " + inspirationTimeRemaining.Value.ToStringTicksToPeriod() : string.Empty;
         }
 
         public override int GetMinWidth(PawnTable table)

@@ -15,6 +15,8 @@
         public static bool pawnTableHighlightSelected = true;
         public static bool pawnTableClickSelect = true;
 
+        public static bool useTinyFont = false;
+
         public List<string> storedPawnTableDefs = new List<string>();
         private readonly List<string> workingList = new List<string>();
 
@@ -47,6 +49,7 @@
             Scribe_Values.Look(ref pawnTableHighlightSelected, "pawnTableHighlightSelected", true);
             Scribe_Values.Look(ref pawnTableClickSelect, "pawnTableClickSelect", true);
             Scribe_Values.Look(ref maxHeight, "maxHeight", 1f);
+            Scribe_Values.Look(ref useTinyFont, "useTinyFont");
             Scribe_Collections.Look(ref storedPawnTableDefs, "numbersPawnTableDefs");
         }
     }

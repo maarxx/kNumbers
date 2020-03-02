@@ -8,7 +8,7 @@
     {
         protected override bool GetValue(Pawn pawn) => pawn.playerSettings.selfTend;
 
-        protected override bool HasCheckbox(Pawn pawn) => pawn.IsColonist && !pawn.Dead && !(pawn.story.WorkTypeIsDisabled(WorkTypeDefOf.Doctor));
+        protected override bool HasCheckbox(Pawn pawn) => pawn.IsColonist && !pawn.Dead && !(pawn.WorkTypeIsDisabled(WorkTypeDefOf.Doctor));
 
         protected override void SetValue(Pawn pawn, bool value)
         {
