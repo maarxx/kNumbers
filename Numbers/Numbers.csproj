@@ -36,9 +36,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony, Version=1.2.0.1, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="0Harmony, Version=2.0.0.8, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\workshop\content\294100\2009463077\v1.1\Assemblies\0Harmony.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\workshop\content\294100\2009463077\Assemblies\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">

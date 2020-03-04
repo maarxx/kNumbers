@@ -120,7 +120,7 @@
             TooltipHandler.TipRegion(sourceButton, new TipSignal("koisama.Numbers.ClickToToggle".Translate(), sourceButton.GetHashCode()));
 
             //stats
-            DoButton("TabStats".Translate(), optionsMaker.OptionsMakerForGenericDef(StatDefs.ToArray()), ref x);
+            DoButton("TabStats".Translate(), optionsMaker.OptionsMakerForGenericDef(StatDefs), ref x);
 
             //worktypes
             if (PawnTableDef == NumbersDefOf.Numbers_MainTable)
@@ -131,13 +131,13 @@
             //skills
             if (new[] { NumbersDefOf.Numbers_Enemies, NumbersDefOf.Numbers_Prisoners, NumbersDefOf.Numbers_MainTable }.Contains(PawnTableDef))
             {
-                DoButton("Skills".Translate(), optionsMaker.OptionsMakerForGenericDef(DefDatabase<SkillDef>.AllDefsListForReading.ToArray()), ref x);
+                DoButton("Skills".Translate(), optionsMaker.OptionsMakerForGenericDef(DefDatabase<SkillDef>.AllDefsListForReading), ref x);
             }
 
             //needs btn (for living things)
             if (!new[] { NumbersDefOf.Numbers_AnimalCorpses, NumbersDefOf.Numbers_Corpses }.Contains(PawnTableDef))
             {
-                DoButton("TabNeeds".Translate(), optionsMaker.OptionsMakerForGenericDef(NeedDefs.ToArray()), ref x);
+                DoButton("TabNeeds".Translate(), optionsMaker.OptionsMakerForGenericDef(NeedDefs), ref x);
             }
 
             //cap btn (for living things)
@@ -156,14 +156,14 @@
 
                 optionalList.AddRange(HealthStats);
 
-                var tmp = optionsMaker.OptionsMakerForGenericDef(DefDatabase<PawnCapacityDef>.AllDefsListForReading.ToArray())
+                var tmp = optionsMaker.OptionsMakerForGenericDef(DefDatabase<PawnCapacityDef>.AllDefsListForReading)
                                       .Concat(optionsMaker.FloatMenuOptionsFor(optionalList));
 
                 DoButton("TabHealth".Translate(), tmp.ToList(), ref x);
             }
 
             //records btn
-            DoButton("TabRecords".Translate(), optionsMaker.OptionsMakerForGenericDef(DefDatabase<RecordDef>.AllDefsListForReading.ToArray()), ref x);
+            DoButton("TabRecords".Translate(), optionsMaker.OptionsMakerForGenericDef(DefDatabase<RecordDef>.AllDefsListForReading), ref x);
 
             //other btn
             DoButton("MiscRecordsCategory".Translate(), optionsMaker.OtherOptionsMaker(), ref x);
@@ -233,7 +233,7 @@
                            .Select(s => s.stat)
                            .OrderBy(stat => stat.LabelCap.Resolve());
 
-            tmpPawn.Destroy();
+            tmpPawn.Destroy(DestroyMode.KillFinalize);
             corpse.Destroy();
 
             return (pawnAnimalNeedDef, pawnAnimalStatDef, corpseStatDef);
@@ -253,7 +253,7 @@
                            .Select(s => s.stat)
                            .OrderBy(stat => stat.LabelCap.Resolve());
 
-            tmpPawn.Destroy();
+            tmpPawn.Destroy(DestroyMode.KillFinalize);
 
             return pawnHumanlikeStatDef;
         }

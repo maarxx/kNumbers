@@ -91,31 +91,34 @@
             return false;
         }
 
-        [HarmonyDebug]
         private static IEnumerable<CodeInstruction> MakeHeadersReOrderable(IEnumerable<CodeInstruction> instructions)
         {
             MethodInfo recacheIfDirty = AccessTools.Method(typeof(PawnTable), "RecacheIfDirty");
             MethodInfo reorderableGroup = AccessTools.Method(typeof(Numbers), nameof(ReorderableGroup));
             MethodInfo reorderableWidget = AccessTools.Method(typeof(Numbers), nameof(CallReorderableWidget));
+            MethodInfo doHeader = AccessTools.Method(typeof(PawnColumnWorker), nameof(PawnColumnWorker.DoHeader));
 
             CodeInstruction[] codeInstructions = instructions.ToArray();
-
             for (int i = 0; i < codeInstructions.Length; i++)
             {
                 CodeInstruction instruction = codeInstructions[i];
-                if (i > 2 && codeInstructions[i - 1].operand != null && codeInstructions[i - 1].operand == recacheIfDirty)
+                if (i > 2 && codeInstructions[i - 1].Calls(recacheIfDirty))
                 {
                     yield return new CodeInstruction(OpCodes.Ldarg_0);
                     yield return new CodeInstruction(OpCodes.Call, reorderableGroup);
                     yield return new CodeInstruction(OpCodes.Stloc, 7);
                 }
 
-                //    if (instruction.opcode == OpCodes.Ldloc_S && ((LocalBuilder)instruction.operand).LocalIndex == 4)
-                //    {
-                //        yield return new CodeInstruction(OpCodes.Ldloc, 7);
-                //        yield return instruction;
-                //        yield return new CodeInstruction(OpCodes.Call, reorderableWidget);
-                //    }
+                //IL_0092: callvirt instance class RimWorld.PawnColumnWorker RimWorld.PawnColumnDef::get_Worker()
+                //IL_0097: ldloc.s 6 <-- insert here.
+                //IL_0099: ldarg.0
+                //IL_009a: callvirt instance void RimWorld.PawnColumnWorker::DoHeader(valuetype [UnityEngine.CoreModule]UnityEngine.Rect, class RimWorld.PawnTable)
+                if (instruction.opcode == OpCodes.Ldloc_S && codeInstructions[i + 2].Calls(doHeader))
+                {
+                    yield return new CodeInstruction(OpCodes.Ldloc, 7);
+                    yield return instruction;
+                    yield return new CodeInstruction(OpCodes.Call, reorderableWidget);
+                }
                 yield return instruction;
             }
         }
@@ -127,8 +130,6 @@
 
             return ReorderableWidget.NewGroup(delegate (int from, int to)
             {
-                Log.Message("Reorderable Group!");
-
                 PawnColumnDef pawnColumnDef = numbersPawnTable.PawnTableDef.columns[from];
                 numbersPawnTable.PawnTableDef.columns.Insert(to, pawnColumnDef);
                 //if it got inserted at a lower number, the index shifted up 1. If not, stick to the old.
@@ -156,7 +157,7 @@
             var instructionList = instructions.ToList();
             for (int i = 0; i < instructionList.Count; i++)
             {
-                if (instructionList[i].opcode == OpCodes.Ldnull && instructionList[i + 1].operand == Truncate)
+                if (instructionList[i].opcode == OpCodes.Ldnull && instructionList[i + 1].Calls(Truncate))
                 {
                     yield return new CodeInstruction(OpCodes.Ldarg_2);
                     yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Numbers), nameof(Numbers.GetGameFont)));
@@ -181,7 +182,7 @@
             for (int i = 0; i < instructionList.Count; i++)
             {
                 CodeInstruction instruction = instructionList[i];
-                if (instruction.opcode == OpCodes.Ldc_I4_3 && instructionList[i + 1].operand == anchorSetter)
+                if (instruction.opcode == OpCodes.Ldc_I4_3 && instructionList[i + 1].Calls(anchorSetter))
                 {
                     yield return new CodeInstruction(OpCodes.Ldarg_3); //put Table on stack
                     instruction = new CodeInstruction(OpCodes.Call, transpilerHelper);
@@ -212,9 +213,9 @@
             for (int i = 0; i < instructionArr.ToArray().Length; i++)
             {
                 CodeInstruction instruction = instructionArr[i];
-                if (instruction.operand != null && instruction.operand == GetCurrent)
+                if (instruction.Calls(GetCurrent))
                 {
-                    if (instructionArr[i + 1].operand != null && instructionArr[i + 1].operand == GetRawType)
+                    if (instructionArr[i + 1].operand != null && instructionArr[i + 1].Calls(GetRawType))
                     {
                         //L_02bc: Label1
                         //L_02bc: call UnityEngine.Event get_current()
@@ -231,7 +232,7 @@
                         instructionArr.RemoveAt(i + 1);
                     }
                 }
-                if (instruction.opcode == OpCodes.Stsfld && instruction.operand == released)
+                if (instruction.StoresField(released))
                 {
                     yield return instruction;
                     CodeInstruction codeInst = new CodeInstruction(OpCodes.Ldarg_2)
@@ -250,7 +251,7 @@
                 if (yieldNext)
                     yield return instruction;
 
-                if (instruction.opcode == OpCodes.Call && instruction.operand == AccessTools.Method(typeof(Mouse), nameof(Mouse.IsOver)))
+                if (instruction.Calls(AccessTools.Method(typeof(Mouse), nameof(Mouse.IsOver))))
                     yield return new CodeInstruction(OpCodes.And);
             }
         }

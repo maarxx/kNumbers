@@ -12,7 +12,11 @@
         private readonly MainTabWindow_Numbers numbers;
         private readonly Numbers_Settings settings;
 
-        private PawnTableDef PawnTable { get => numbers.pawnTableDef; set => numbers.pawnTableDef = value; }
+        private PawnTableDef PawnTable
+        {
+            get => numbers.pawnTableDef;
+            set => numbers.pawnTableDef = value;
+        }
 
         //these should be Defs, probably
         private static IEnumerable<PawnColumnDef> EquipmentBearers
@@ -143,22 +147,10 @@
             return list;
         }
 
-        public List<FloatMenuOption> OptionsMakerForGenericDef<T>(T[] listOfDefs) where T : Def
+        public List<FloatMenuOption> OptionsMakerForGenericDef<T>(IEnumerable<T> listOfDefs) where T : Def
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
 
-            //for (int i = 0; i < listOfDefs.Count(); i++)
-            //{
-            //    var defCurrent = listOfDefs[i];
-            //    Log.Message(defCurrent.defName);
-            //    void Action()
-            //    {
-            //        PawnColumnDef pcd = DefDatabase<PawnColumnDef>.GetNamedSilentFail(HorribleStringParsersForSaving.CreateDefNameFromType(defCurrent));
-            //        AddPawnColumnAtBestPositionAndRefresh(pcd);
-            //    }
-            //    string label = defCurrent.LabelCap;
-            //    list.Add(new FloatMenuOption(label, Action));
-            //}
             foreach (var defCurrent in listOfDefs)
             {
                 void Action()
