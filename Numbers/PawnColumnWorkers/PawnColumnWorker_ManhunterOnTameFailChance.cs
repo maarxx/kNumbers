@@ -6,6 +6,9 @@
 
     public class PawnColumnWorker_ManhunterOnTameFailChance : PawnColumnWorker_Text
     {
+        public static float IconPositionVertical = 35f;
+        public static float IconPositionHorizontal = 5f;
+
         public override int Compare(Pawn a, Pawn b)
             => GetValue(a).CompareTo(GetValue(b));
 
@@ -24,11 +27,11 @@
 
         public override void DoHeader(Rect rect, PawnTable table)
         {
-            float scale = 0.7f;
+            float scale = 0.3f;
             base.DoHeader(rect, table);
-            Vector2 headerIconSize = new Vector2(StaticConstructorOnGameStart.Tame.width * scale, StaticConstructorOnGameStart.Tame.height * scale);
-            int     num            = (int)((rect.width - headerIconSize.x) / 2f);
-            Rect    position       = new Rect(rect.x + num, rect.yMax - StaticConstructorOnGameStart.Tame.height, headerIconSize.x, headerIconSize.y);
+            Vector2 headerIconSize = new Vector2(StaticConstructorOnGameStart.Tame.width, StaticConstructorOnGameStart.Tame.height) * scale;
+            int num = (int)((rect.width - headerIconSize.x) / 2f);
+            Rect position = new Rect(rect.x + num + IconPositionHorizontal, rect.yMax - StaticConstructorOnGameStart.Tame.height + IconPositionVertical, headerIconSize.x, headerIconSize.y);
             GUI.DrawTexture(position, StaticConstructorOnGameStart.Tame);
         }
     }

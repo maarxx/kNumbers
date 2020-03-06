@@ -209,18 +209,18 @@
             filterValidator.Insert(0, WorldComponent_Numbers.PrimaryFilter[PawnTableDef]);
         }
 
-        private (IEnumerable<NeedDef> pawnAnimalNeedDef, IEnumerable<StatDef> pawnAnimalStatDef, IEnumerable<StatDef> corpseStatDef) PopulateLists()
+        private (List<NeedDef> pawnAnimalNeedDef, List<StatDef> pawnAnimalStatDef, List<StatDef> corpseStatDef) PopulateLists()
         {
             Pawn tmpPawn = PawnGenerator.GeneratePawn(PawnKindDefOf.Thrumbo);
 
-            var pawnAnimalNeedDef = tmpPawn.needs.AllNeeds.Where(x => x.def.showOnNeedList).Select(x => x.def);
+            var pawnAnimalNeedDef = tmpPawn.needs.AllNeeds.Where(x => x.def.showOnNeedList).Select(x => x.def).ToList();
 
             var animalStatDef = ((IEnumerable<StatDrawEntry>)StatsToDraw?.Invoke(null, new[] { tmpPawn })) ?? Enumerable.Empty<StatDrawEntry>();
 
             var pawnAnimalStatDef = animalStatDef
                            .Where(s => s.stat != null && s.ShouldDisplay && s.stat.Worker != null)
                            .Select(s => s.stat)
-                           .OrderBy(stat => stat.LabelCap.Resolve());
+                           .OrderBy(stat => stat.LabelCap.Resolve()).ToList();
 
             Corpse corpse = (Corpse)ThingMaker.MakeThing(tmpPawn.RaceProps.corpseDef);
             corpse.InnerPawn = tmpPawn;
@@ -231,7 +231,7 @@
                            .Concat(tmpPawn.def.SpecialDisplayStats(StatRequest.For(tmpPawn)))
                            .Where(s => s.stat != null && s.ShouldDisplay && s.stat.Worker != null)
                            .Select(s => s.stat)
-                           .OrderBy(stat => stat.LabelCap.Resolve());
+                           .OrderBy(stat => stat.LabelCap.Resolve()).ToList();
 
             tmpPawn.Destroy(DestroyMode.KillFinalize);
             corpse.Destroy();
@@ -239,9 +239,9 @@
             return (pawnAnimalNeedDef, pawnAnimalStatDef, corpseStatDef);
         }
 
-        private IEnumerable<NeedDef> GetHumanLikeNeedDef() => DefDatabase<NeedDef>.AllDefsListForReading;
+        private List<NeedDef> GetHumanLikeNeedDef() => DefDatabase<NeedDef>.AllDefsListForReading;
 
-        private IEnumerable<StatDef> GetHumanLikeStatDefs()
+        private List<StatDef> GetHumanLikeStatDefs()
         {
             Pawn tmpPawn = PawnGenerator.GeneratePawn(PawnKindDefOf.AncientSoldier, Faction.OfPlayerSilentFail);
 
@@ -255,7 +255,7 @@
 
             tmpPawn.Destroy(DestroyMode.KillFinalize);
 
-            return pawnHumanlikeStatDef;
+            return pawnHumanlikeStatDef.ToList();
         }
     }
 }
