@@ -12,7 +12,11 @@
         private readonly MainTabWindow_Numbers numbers;
         private readonly Numbers_Settings settings;
 
-        private PawnTableDef PawnTable { get => numbers.pawnTableDef; set => numbers.pawnTableDef = value; }
+        private PawnTableDef PawnTable
+        {
+            get => numbers.pawnTableDef;
+            set => numbers.pawnTableDef = value;
+        }
 
         //these should be Defs, probably
         private static IEnumerable<PawnColumnDef> EquipmentBearers
@@ -143,7 +147,7 @@
             return list;
         }
 
-        public List<FloatMenuOption> OptionsMakerForGenericDef<T>(in IEnumerable<T> listOfDefs) where T : Def
+        public List<FloatMenuOption> OptionsMakerForGenericDef<T>(IEnumerable<T> listOfDefs) where T : Def
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
 

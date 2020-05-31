@@ -25,6 +25,8 @@
         private readonly IEnumerable<NeedDef> pawnHumanlikeNeedDef;
         private readonly IEnumerable<NeedDef> pawnAnimalNeedDef;
 
+        private readonly MethodInfo StatsToDraw;
+
         public readonly OptionsMaker optionsMaker;
 
         //Code style: Use GetNamedSilentFail in cases where there is null-handling, so any columns that get run through TryGetBestPawnColumnDefLabel() or AddPawnColumnAtBestPositionAndRefresh() can silently fail.
@@ -48,49 +50,27 @@
         {
             optionsMaker = new OptionsMaker(this);
 
-            MethodInfo statsToDraw = typeof(StatsReportUtility).GetMethod("StatsToDraw",
-                                                                          BindingFlags.NonPublic | BindingFlags.Static |
-                                                                          BindingFlags.InvokeMethod, null,
-                                                                          new[] { typeof(Thing) }, null);
+            StatsToDraw = typeof(StatsReportUtility).GetMethod("StatsToDraw",
+                                                              BindingFlags.NonPublic | BindingFlags.Static |
+                                                              BindingFlags.InvokeMethod, null,
+                                                              new[] { typeof(Thing) }, null);
 
-            Pawn tmpPawn = PawnGenerator.GeneratePawn(PawnKindDefOf.AncientSoldier, Faction.OfPlayerSilentFail);
-
-            if (statsToDraw != null)
-            {
-                pawnHumanlikeStatDef =
-                    ((IEnumerable<StatDrawEntry>)statsToDraw.Invoke(null, new[] { tmpPawn }))
-                   .Concat(tmpPawn.def.SpecialDisplayStats(StatRequest.For(tmpPawn)))
-                   .Where(s => s.stat != null && s.ShouldDisplay && s.stat.Worker != null)
-                   .Select(s => s.stat)
-                   .OrderBy(stat => stat.LabelCap);
-
-                tmpPawn.Destroy();
-
-								tmpPawn = PawnGenerator.GeneratePawn(PawnKindDefOf.Thrumbo);
-
-                pawnAnimalNeedDef = tmpPawn.needs.AllNeeds.Where(x => x.def.showOnNeedList).Select(x => x.def);
-
-                pawnAnimalStatDef =
-                    ((IEnumerable<StatDrawEntry>)statsToDraw.Invoke(null, new[] { tmpPawn }))
-                   .Where(s => s.stat != null && s.ShouldDisplay && s.stat.Worker != null)
-                   .Select(s => s.stat)
-                   .OrderBy(stat => stat.LabelCap);
-
-                Corpse corpse = (Corpse)ThingMaker.MakeThing(tmpPawn.RaceProps.corpseDef);
-                corpse.InnerPawn = tmpPawn;
-
-                corpseStatDef = ((IEnumerable<StatDrawEntry>)statsToDraw.Invoke(null, new[] { corpse }))
-                               .Concat(tmpPawn.def.SpecialDisplayStats(StatRequest.For(tmpPawn)))
-                               .Where(s => s.stat != null && s.ShouldDisplay && s.stat.Worker != null)
-                               .Select(s => s.stat)
-                               .OrderBy(stat => stat.LabelCap);
-
-                tmpPawn.Destroy();
-            }
-            else
+            if (StatsToDraw == null)
                 Log.Error("ReflectionTypeLoadException in Numbers: statsToDraw was null. Please contact mod author.");
 
-            pawnHumanlikeNeedDef = DefDatabase<NeedDef>.AllDefsListForReading;
+            if (pawnHumanlikeNeedDef == null)
+                pawnHumanlikeNeedDef = GetHumanLikeNeedDef();
+
+            if (pawnHumanlikeStatDef == null)
+                pawnHumanlikeStatDef = GetHumanLikeStatDefs();
+
+            if (pawnAnimalNeedDef == null || pawnAnimalStatDef == null || corpseStatDef == null)
+            {
+                var statDefs = PopulateLists();
+                pawnAnimalStatDef = statDefs.pawnAnimalStatDef;
+                pawnAnimalNeedDef = statDefs.pawnAnimalNeedDef;
+                corpseStatDef = statDefs.corpseStatDef;
+            }
 
             PawnTableDef defaultTable = WorldComponent_Numbers.PrimaryFilter.First().Key;
             if (Find.World.GetComponent<WorldComponent_Numbers>().sessionTable.TryGetValue(defaultTable, out List<PawnColumnDef> list))
@@ -227,6 +207,55 @@
         {
             filterValidator.Clear();
             filterValidator.Insert(0, WorldComponent_Numbers.PrimaryFilter[PawnTableDef]);
+        }
+
+        private (List<NeedDef> pawnAnimalNeedDef, List<StatDef> pawnAnimalStatDef, List<StatDef> corpseStatDef) PopulateLists()
+        {
+            Pawn tmpPawn = PawnGenerator.GeneratePawn(PawnKindDefOf.Thrumbo);
+
+            var pawnAnimalNeedDef = tmpPawn.needs.AllNeeds.Where(x => x.def.showOnNeedList).Select(x => x.def).ToList();
+
+            var animalStatDef = ((IEnumerable<StatDrawEntry>)StatsToDraw?.Invoke(null, new[] { tmpPawn })) ?? Enumerable.Empty<StatDrawEntry>();
+
+            var pawnAnimalStatDef = animalStatDef
+                           .Where(s => s.stat != null && s.ShouldDisplay && s.stat.Worker != null)
+                           .Select(s => s.stat)
+                           .OrderBy(stat => stat.LabelCap.Resolve()).ToList();
+
+            Corpse corpse = (Corpse)ThingMaker.MakeThing(tmpPawn.RaceProps.corpseDef);
+            corpse.InnerPawn = tmpPawn;
+
+            var deadAnimalStatDef = ((IEnumerable<StatDrawEntry>)StatsToDraw?.Invoke(null, new[] { corpse })) ?? Enumerable.Empty<StatDrawEntry>();
+
+            var corpseStatDef = deadAnimalStatDef
+                           .Concat(tmpPawn.def.SpecialDisplayStats(StatRequest.For(tmpPawn)))
+                           .Where(s => s.stat != null && s.ShouldDisplay && s.stat.Worker != null)
+                           .Select(s => s.stat)
+                           .OrderBy(stat => stat.LabelCap.Resolve()).ToList();
+
+            tmpPawn.Destroy(DestroyMode.KillFinalize);
+            corpse.Destroy();
+
+            return (pawnAnimalNeedDef, pawnAnimalStatDef, corpseStatDef);
+        }
+
+        private List<NeedDef> GetHumanLikeNeedDef() => DefDatabase<NeedDef>.AllDefsListForReading;
+
+        private List<StatDef> GetHumanLikeStatDefs()
+        {
+            Pawn tmpPawn = PawnGenerator.GeneratePawn(PawnKindDefOf.AncientSoldier, Faction.OfPlayerSilentFail);
+
+            var source = ((IEnumerable<StatDrawEntry>)StatsToDraw?.Invoke(null, new[] { tmpPawn })) ?? Enumerable.Empty<StatDrawEntry>();
+
+            var pawnHumanlikeStatDef = source
+                           .Concat(tmpPawn.def.SpecialDisplayStats(StatRequest.For(tmpPawn)))
+                           .Where(s => s.stat != null && s.ShouldDisplay && s.stat.Worker != null)
+                           .Select(s => s.stat)
+                           .OrderBy(stat => stat.LabelCap.Resolve());
+
+            tmpPawn.Destroy(DestroyMode.KillFinalize);
+
+            return pawnHumanlikeStatDef.ToList();
         }
     }
 }

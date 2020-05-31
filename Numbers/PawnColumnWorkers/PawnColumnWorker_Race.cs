@@ -13,7 +13,7 @@
 
         protected override string GetTextFor(Pawn pawn)
         {
-            string text = pawn.kindDef.race.LabelCap ?? string.Empty;
+            string text = pawn.kindDef.race.LabelCap.Resolve() ?? string.Empty;
 
             if (Find.WindowStack.currentlyDrawnWindow is MainTabWindow_Numbers numbers)
             {
@@ -32,6 +32,6 @@
             return Mathf.Max(base.GetMinWidth(table), 80, (int)widthsTables[tableDef]);
         }
 
-        public override int Compare(Pawn a, Pawn b) => a.kindDef.race.LabelCap.CompareTo(b.kindDef.race.LabelCap);
+        public override int Compare(Pawn a, Pawn b) => a.kindDef.race.LabelCap.Resolve().CompareTo(b.kindDef.race.LabelCap.Resolve());
     }
 }

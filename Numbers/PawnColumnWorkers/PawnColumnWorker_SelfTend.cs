@@ -6,9 +6,12 @@
 
     public class PawnColumnWorker_SelfTend : PawnColumnWorker_Checkbox
     {
+        public static float IconPositionVertical = 35f;
+        public static float IconPositionHorizontal = 5f;
+
         protected override bool GetValue(Pawn pawn) => pawn.playerSettings.selfTend;
 
-        protected override bool HasCheckbox(Pawn pawn) => pawn.IsColonist && !pawn.Dead && !(pawn.story.WorkTypeIsDisabled(WorkTypeDefOf.Doctor));
+        protected override bool HasCheckbox(Pawn pawn) => pawn.IsColonist && !pawn.Dead && !(pawn.WorkTypeIsDisabled(WorkTypeDefOf.Doctor));
 
         protected override void SetValue(Pawn pawn, bool value)
         {
@@ -24,11 +27,11 @@
 
         public override void DoHeader(Rect rect, PawnTable table)
         {
-            float scale = 0.7f;
+            float scale = 0.3f;
             base.DoHeader(rect, table);
-            Vector2 headerIconSize = new Vector2(StaticConstructorOnGameStart.Tame.width * scale, StaticConstructorOnGameStart.Tame.height * scale);
+            Vector2 headerIconSize = new Vector2(StaticConstructorOnGameStart.Tame.width, StaticConstructorOnGameStart.Tame.height) * scale;
             int     num            = (int)((rect.width - headerIconSize.x) / 2f);
-            Rect    position       = new Rect(rect.x + num, rect.yMax - StaticConstructorOnGameStart.Tame.height, headerIconSize.x, headerIconSize.y);
+            Rect    position       = new Rect(rect.x + num + IconPositionHorizontal, rect.yMax - StaticConstructorOnGameStart.Tame.height + IconPositionVertical, headerIconSize.x, headerIconSize.y);
             GUI.DrawTexture(position, StaticConstructorOnGameStart.Tame);
         }
     }
