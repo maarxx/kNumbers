@@ -128,25 +128,30 @@
             if (!(pawnTable is PawnTable_NumbersMain numbersPawnTable))
                 return int.MinValue;
 
-            return ReorderableWidget.NewGroup(delegate (int from, int to)
-            {
-                PawnColumnDef pawnColumnDef = numbersPawnTable.PawnTableDef.columns[from];
-                numbersPawnTable.PawnTableDef.columns.Insert(to, pawnColumnDef);
-                //if it got inserted at a lower number, the index shifted up 1. If not, stick to the old.
-                numbersPawnTable.PawnTableDef.columns.RemoveAt(from >= to ? from + 1 : from);
-                numbersPawnTable.SetDirty();
-                if (Find.WindowStack.currentlyDrawnWindow is MainTabWindow_Numbers numbers)
-                    numbers.RefreshAndStoreSessionInWorldComp();
-            }, ReorderableDirection.Horizontal);
+            return ReorderableWidget.NewGroup(ReorderAction, ReorderableDirection.Horizontal);
         }
+
+        private static readonly Action<int, int> ReorderAction = delegate (int from, int to)
+        {
+            var numbers = Find.WindowStack.Windows.OfType<MainTabWindow_Numbers>().FirstOrDefault();
+
+            if (numbers != null)
+            {
+                PawnColumnDef pawnColumnDef = numbers.pawnTableDef.columns[from];
+                numbers.pawnTableDef.columns.Insert(to, pawnColumnDef);
+                //if it got inserted at a lower number, the index shifted up 1. If not, stick to the old.
+                numbers.pawnTableDef.columns.RemoveAt(from >= to ? from + 1 : from);
+
+                numbers.RefreshAndStoreSessionInWorldComp();
+            }
+        };
 
         private static void CallReorderableWidget(int groupId, Rect rect)
         {
             if (groupId == int.MinValue)
                 return;
 
-            if (ReorderableWidget.Reorderable(groupId, rect))
-                Widgets.DrawRectFast(rect, Widgets.WindowBGFillColor * new Color(1f, 1f, 1f, 0.5f));
+            ReorderableWidget.Reorderable(groupId, rect);
         }
 
         private static IEnumerable<CodeInstruction> UseWordWrapOnHeaders(IEnumerable<CodeInstruction> instructions)
