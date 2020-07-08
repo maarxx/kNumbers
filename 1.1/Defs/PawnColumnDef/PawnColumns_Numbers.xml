@@ -203,4 +203,18 @@
     <label>Faction</label>
   </PawnColumnDef>
 
+  <PawnColumnDef>
+    <defName>Numbers_AnimalFilthRate</defName>
+    <workerClass>Numbers.PawnColumnWorker_AnimalFilthRate</workerClass>
+    <sortable>true</sortable>
+    <label>Filth rate</label>
+  </PawnColumnDef>
+
+    <PawnColumnDef>
+    <defName>Numbers_Meditation</defName>
+    <workerClass>Numbers.PawnColumnWorker_Meditation</workerClass>
+    <sortable>true</sortable>
+    <label>Focus</label>
+  </PawnColumnDef>
+
 </Defs>

@@ -88,6 +88,7 @@
     <Compile Include="PawnColumnWorkers\PawnColumnWorker_AllHediffs.cs" />
     <Compile Include="PawnColumnWorkers\PawnColumnWorker_AnimalMilkFullness.cs" />
     <Compile Include="PawnColumnWorkers\PawnColumnWorker_AnimalWildness.cs" />
+    <Compile Include="PawnColumnWorkers\PawnColumnWorker_AnimalFilthRate.cs" />
     <Compile Include="PawnColumnWorkers\PawnColumnWorker_AnimalWoolGrowth.cs" />
     <Compile Include="PawnColumnWorkers\PawnColumnWorker_Backstory.cs" />
     <Compile Include="PawnColumnWorkers\PawnColumnWorker_Bleedrate.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="PawnColumnWorkers\PawnColumnWorker_Inventory.cs" />
     <Compile Include="PawnColumnWorkers\PawnColumnWorker_JobCurrent.cs" />
     <Compile Include="PawnColumnWorkers\PawnColumnWorker_ManhunterOnTameFailChance.cs" />
+    <Compile Include="PawnColumnWorkers\PawnColumnWorker_Meditation.cs" />
     <Compile Include="PawnColumnWorkers\PawnColumnWorker_MentalState.cs" />
     <Compile Include="PawnColumnWorkers\PawnColumnWorker_Need.cs" />
     <Compile Include="PawnColumnWorkers\PawnColumnWorker_OperationDropDown.cs" />

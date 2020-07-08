@@ -9,7 +9,7 @@
     [StaticConstructorOnStartup]
     public class PawnColumnWorker_Need : PawnColumnWorker
     {
-        private static FieldInfo needThreshPercent = typeof(Need).GetField("threshPercents", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static readonly FieldInfo needThreshPercent = typeof(Need).GetField("threshPercents", BindingFlags.NonPublic | BindingFlags.Instance);
 
         //mostly from Koisama
         public override void DoCell(Rect rect, Pawn pawn, PawnTable table)

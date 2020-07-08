@@ -42,13 +42,15 @@
                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_AnimalEggProgress"),
                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Wildness"),
                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_TameChance"),
-                        DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inventory") }
+                        DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inventory"),
+                        DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_AnimalFilthRate"), }
                .Concat(DefDatabase<PawnTableDef>.GetNamed("Animals").columns.Where(x => pcdValidator(x)));
 
         private static IEnumerable<PawnColumnDef> MainTable
             => new[] { DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inspiration"),
                          DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inventory"),
-                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_SelfTend") }
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_SelfTend"),
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Meditation"), }
                .Concat(DefDatabase<PawnTableDef>.GetNamed("Assign").columns
                .Concat(DefDatabase<PawnTableDef>.GetNamed("Restrict").columns).Where(x => pcdValidator(x)));
 
