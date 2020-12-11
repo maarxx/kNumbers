@@ -50,7 +50,9 @@
             => new[] { DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inspiration"),
                          DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inventory"),
                          DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_SelfTend"),
-                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Meditation"), }
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Meditation"),
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Psyfocus"),
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Entropy") }
                .Concat(DefDatabase<PawnTableDef>.GetNamed("Assign").columns
                .Concat(DefDatabase<PawnTableDef>.GetNamed("Restrict").columns).Where(x => pcdValidator(x)));
 
