@@ -50,7 +50,10 @@
             => new[] { DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inspiration"),
                          DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Inventory"),
                          DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_SelfTend"),
-                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Meditation"), }
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Meditation"),
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Psyfocus"),
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Entropy"),
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_PsylinkLevel") }
                .Concat(DefDatabase<PawnTableDef>.GetNamed("Assign").columns
                .Concat(DefDatabase<PawnTableDef>.GetNamed("Restrict").columns).Where(x => pcdValidator(x)));
 
@@ -79,6 +82,7 @@
                 new FloatMenuOption("Numbers_Presets.Load".Translate("Numbers_Presets.Combat".Translate()), () => ChangeMainTableTo(StaticConstructorOnGameStart.combatPreset)),
                 new FloatMenuOption("Numbers_Presets.Load".Translate("Numbers_Presets.WorkTabPlus".Translate()), () => ChangeMainTableTo(StaticConstructorOnGameStart.workTabPlusPreset)),
                 new FloatMenuOption("Numbers_Presets.Load".Translate("Numbers_Presets.ColonistNeeds".Translate()), () => ChangeMainTableTo(StaticConstructorOnGameStart.colonistNeedsPreset)),
+                new FloatMenuOption("Numbers_Presets.Load".Translate("Numbers_Presets.Psycasting".Translate()), () => ChangeMainTableTo(StaticConstructorOnGameStart.psycastingPreset)),
                 new FloatMenuOption("Numbers_SetAsDefault".Translate(), SetAsDefault,
                         extraPartWidth: 29f,
                         extraPartOnGUI: rect => Numbers_Utility.InfoCardButton(rect.x + 5f, rect.y + (rect.height - 24f) / 2, "Numbers_SetAsDefaultExplanation".Translate(PawnTable.LabelCap))),
