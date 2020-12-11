@@ -103,6 +103,18 @@
             psycastingPreset.Add(DefDatabase<PawnColumnDef>.GetNamed("Numbers_Psyfocus"));
             psycastingPreset.Add(DefDatabase<PawnColumnDef>.GetNamed("Numbers_Entropy"));
             List<PawnColumnDef> abilities = DefDatabase<PawnColumnDef>.AllDefsListForReading.Where(pcd => pcd.Ext()?.ability != null).ToList();
+            abilities.Sort(delegate (PawnColumnDef xpcd, PawnColumnDef ypcd)
+            {
+                AbilityDef x = xpcd.Ext().ability;
+                AbilityDef y = ypcd.Ext().ability;
+                int levelCompare = x.level.CompareTo(y.level);
+                int psyfocusCompare = x.PsyfocusCost.CompareTo(y.PsyfocusCost);
+                int entropyCompare = x.EntropyGain.CompareTo(y.EntropyGain);
+                if (levelCompare != 0) { return levelCompare; }
+                if (psyfocusCompare != 0) { return psyfocusCompare; }
+                if (entropyCompare != 0) { return entropyCompare; }
+                return x.defName.CompareTo(y.defName);
+            });
             psycastingPreset.AddRange(
                 abilities
             );
