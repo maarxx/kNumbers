@@ -56,7 +56,7 @@
     <defName>Numbers_Entropy</defName>
     <workerClass>Numbers.PawnColumnWorker_Entropy</workerClass>
     <sortable>true</sortable>
-    <label>NeuralHeat</label>
+    <label>Heat</label>
   </PawnColumnDef>
   
   <PawnColumnDef>
