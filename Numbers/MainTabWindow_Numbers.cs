@@ -162,6 +162,9 @@
                 DoButton("TabHealth".Translate(), tmp.ToList(), ref x);
             }
 
+            //abilities btn
+            DoButton("TabAbilities".Translate(), optionsMaker.OptionsMakerForGenericDef(DefDatabase<AbilityDef>.AllDefsListForReading), ref x);
+
             //records btn
             DoButton("TabRecords".Translate(), optionsMaker.OptionsMakerForGenericDef(DefDatabase<RecordDef>.AllDefsListForReading), ref x);
 

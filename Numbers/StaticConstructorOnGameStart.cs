@@ -79,7 +79,8 @@
                         && x.defName.StartsWith("Numbers_")
                         && !(x.Worker is PawnColumnWorker_AllHediffs
                         || x.Worker is PawnColumnWorker_SelfTend
-                        || x.Worker is PawnColumnWorker_ManhunterOnTameFailChance))) //special treatment for those.
+                        || x.Worker is PawnColumnWorker_ManhunterOnTameFailChance
+                        || x.Worker is PawnColumnWorker_Ability))) //special treatment for those.
             {
                 pawnColumnDef.headerTip += (pawnColumnDef.headerTip.NullOrEmpty() ? "" : "\n\n") + "Numbers_ColumnHeader_Tooltip".Translate();
             }
