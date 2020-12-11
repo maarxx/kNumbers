@@ -27,6 +27,7 @@
         public static List<PawnColumnDef> combatPreset = new List<PawnColumnDef>(),
                                           workTabPlusPreset = new List<PawnColumnDef>(),
                                           colonistNeedsPreset = new List<PawnColumnDef>(),
+                                          psycastingPreset = new List<PawnColumnDef>(),
                                           medicalPreset = new List<PawnColumnDef>();
 
         public static Type animalTab;
@@ -91,7 +92,20 @@
             combatPreset.AddRange(DefDatabase<PawnTableDef>.GetNamed("Numbers_CombatPreset").columns);
             workTabPlusPreset.AddRange(DefDatabase<PawnTableDef>.GetNamed("Numbers_WorkTabPlusPreset").columns);
             colonistNeedsPreset.AddRange(DefDatabase<PawnTableDef>.GetNamed("Numbers_ColonistNeedsPreset").columns);
+            PopulatePsycastingPreset();
             PopulateMedicalPreset();
+        }
+
+        private static void PopulatePsycastingPreset()
+        {
+            psycastingPreset.Add(DefDatabase<PawnColumnDef>.GetNamed("Label"));
+            psycastingPreset.Add(DefDatabase<PawnColumnDef>.GetNamed("Numbers_PsylinkLevel"));
+            psycastingPreset.Add(DefDatabase<PawnColumnDef>.GetNamed("Numbers_Psyfocus"));
+            psycastingPreset.Add(DefDatabase<PawnColumnDef>.GetNamed("Numbers_Entropy"));
+            List<PawnColumnDef> abilities = DefDatabase<PawnColumnDef>.AllDefsListForReading.Where(pcd => pcd.Ext()?.ability != null).ToList();
+            psycastingPreset.AddRange(
+                abilities
+            );
         }
 
         private static void PopulateMedicalPreset()

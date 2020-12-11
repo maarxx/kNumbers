@@ -82,6 +82,7 @@
                 new FloatMenuOption("Numbers_Presets.Load".Translate("Numbers_Presets.Combat".Translate()), () => ChangeMainTableTo(StaticConstructorOnGameStart.combatPreset)),
                 new FloatMenuOption("Numbers_Presets.Load".Translate("Numbers_Presets.WorkTabPlus".Translate()), () => ChangeMainTableTo(StaticConstructorOnGameStart.workTabPlusPreset)),
                 new FloatMenuOption("Numbers_Presets.Load".Translate("Numbers_Presets.ColonistNeeds".Translate()), () => ChangeMainTableTo(StaticConstructorOnGameStart.colonistNeedsPreset)),
+                new FloatMenuOption("Numbers_Presets.Load".Translate("Numbers_Presets.Psycasting".Translate()), () => ChangeMainTableTo(StaticConstructorOnGameStart.psycastingPreset)),
                 new FloatMenuOption("Numbers_SetAsDefault".Translate(), SetAsDefault,
                         extraPartWidth: 29f,
                         extraPartOnGUI: rect => Numbers_Utility.InfoCardButton(rect.x + 5f, rect.y + (rect.height - 24f) / 2, "Numbers_SetAsDefaultExplanation".Translate(PawnTable.LabelCap))),
