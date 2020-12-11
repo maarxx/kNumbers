@@ -52,7 +52,8 @@
                          DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_SelfTend"),
                          DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Meditation"),
                          DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Psyfocus"),
-                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Entropy") }
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Entropy"),
+                         DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_PsylinkLevel") }
                .Concat(DefDatabase<PawnTableDef>.GetNamed("Assign").columns
                .Concat(DefDatabase<PawnTableDef>.GetNamed("Restrict").columns).Where(x => pcdValidator(x)));
 

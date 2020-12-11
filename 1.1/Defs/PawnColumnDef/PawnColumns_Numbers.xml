@@ -58,6 +58,13 @@
     <sortable>true</sortable>
     <label>NeuralHeat</label>
   </PawnColumnDef>
+  
+  <PawnColumnDef>
+    <defName>Numbers_PsylinkLevel</defName>
+    <workerClass>Numbers.PawnColumnWorker_PsylinkLevel</workerClass>
+    <sortable>true</sortable>
+    <label>Psylevel</label>
+  </PawnColumnDef>
 
   <PawnColumnDef>
     <defName>Numbers_Equipment</defName>
