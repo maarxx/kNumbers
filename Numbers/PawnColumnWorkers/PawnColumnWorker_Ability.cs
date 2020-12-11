@@ -25,6 +25,13 @@
             return 26;
         }
 
+        private string GetAbilityText()
+        {
+            return def.Ext().ability.description;
+        }
+
+        protected override string GetHeaderTip(PawnTable table) => def.Ext().ability.GetTooltip() + "\n\n" + "Numbers_ColumnHeader_Tooltip".Translate();
+
         public override void DoHeader(Rect rect, PawnTable table)
         {
             Rect interactableHeaderRect = GetInteractableHeaderRect(rect, table);
