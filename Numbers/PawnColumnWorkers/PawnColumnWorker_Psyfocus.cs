@@ -6,7 +6,6 @@
     using UnityEngine;
     using Verse;
 
-    [StaticConstructorOnStartup]
     public class PawnColumnWorker_Psyfocus : PawnColumnWorker
     {
         //mostly from PawnColumnWorker_Need
@@ -54,7 +53,9 @@
 
         public override int Compare(Pawn a, Pawn b)
         {
-            return ((float)(a.psychicEntropy?.CurrentPsyfocus ?? -1.0f)).CompareTo((float)(b.psychicEntropy?.CurrentPsyfocus ?? -1.0f));
+            int hasPsylink = a.HasPsylink.CompareTo(b.HasPsylink);
+            if (hasPsylink != 0) { return hasPsylink; }
+            return (a.psychicEntropy?.CurrentPsyfocus ?? 0f).CompareTo(b.psychicEntropy?.CurrentPsyfocus ?? 0f);
         }
     }
 }

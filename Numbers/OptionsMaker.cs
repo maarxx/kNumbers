@@ -54,8 +54,10 @@
                          DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Psyfocus"),
                          DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Entropy"),
                          DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_PsylinkLevel") }
-               .Concat(DefDatabase<PawnTableDef>.GetNamed("Assign").columns
-               .Concat(DefDatabase<PawnTableDef>.GetNamed("Restrict").columns).Where(x => pcdValidator(x)));
+               .Concat(DefDatabase<PawnTableDef>.GetNamed("Assign").columns)
+               .Concat(DefDatabase<PawnTableDef>.GetNamed("Restrict").columns).Where(x => pcdValidator(x) && filterRoyalty(x));
+
+        private static readonly Func<PawnColumnDef, bool> filterRoyalty = pcd => ModLister.RoyaltyInstalled || !pcd.HasModExtension<DefModExtension_NeedsRoyalty>();
 
         private static IEnumerable<PawnColumnDef> WildAnimals
             => new[] { DefDatabase<PawnColumnDef>.GetNamedSilentFail("Numbers_Wildness"),

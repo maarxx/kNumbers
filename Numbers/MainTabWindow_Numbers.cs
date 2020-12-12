@@ -165,7 +165,7 @@
             //abilities btn
             if (ModLister.RoyaltyInstalled)
             {
-                DoButton("Abilities".Translate(), optionsMaker.OptionsMakerForGenericDef(DefDatabase<AbilityDef>.AllDefsListForReading), ref x);
+                DoButton("Abilities".Translate(), optionsMaker.OptionsMakerForGenericDef(DefDatabase<AbilityDef>.AllDefsListForReading.OrderBy(y => y.label)), ref x);
             }
 
             //records btn
