@@ -6,7 +6,6 @@
     using UnityEngine;
     using Verse;
 
-    [StaticConstructorOnStartup]
     public class PawnColumnWorker_Psyfocus : PawnColumnWorker
     {
         //mostly from PawnColumnWorker_Need

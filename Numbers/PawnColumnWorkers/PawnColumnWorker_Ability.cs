@@ -4,6 +4,7 @@
     using UnityEngine;
     using Verse;
 
+    [StaticConstructorOnStartup]
     public class PawnColumnWorker_Ability : PawnColumnWorker_Icon
     {
 
@@ -45,7 +46,6 @@
             }
 
             Texture2D abilityIcon = def.Ext().ability.uiIcon;
-            Vector2 headerIconSize = new Vector2(26, 26);
             Rect position = new Rect(rect.x, rect.yMax - 26, 26, 26);
             GUI.DrawTexture(position, abilityIcon);
         }
