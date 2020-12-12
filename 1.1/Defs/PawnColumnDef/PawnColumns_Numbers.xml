@@ -51,7 +51,7 @@
     <sortable>true</sortable>
     <label>Psyfocus</label>
     <modExtensions>
-      <li>Numbers.DefModExtension_NeedsRoyalty</li>
+      <li Class="Numbers.DefModExtension_NeedsRoyalty"/>
     </modExtensions>
   </PawnColumnDef>
   
@@ -61,7 +61,7 @@
     <sortable>true</sortable>
     <label>Heat</label>
     <modExtensions>
-      <li>Numbers.DefModExtension_NeedsRoyalty</li>
+      <li Class="Numbers.DefModExtension_NeedsRoyalty"/>
     </modExtensions>
   </PawnColumnDef>
   
@@ -71,7 +71,7 @@
     <sortable>true</sortable>
     <label>Psylevel</label>
     <modExtensions>
-      <li>Numbers.DefModExtension_NeedsRoyalty</li>
+      <li Class="Numbers.DefModExtension_NeedsRoyalty"/>
     </modExtensions>
   </PawnColumnDef>
 
